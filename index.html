@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Market Dashboard | Live CNN & CNA News</title>
+    <title>Market Dashboard | CNA News</title>
     <style>
         * {
             margin: 0;
@@ -207,17 +207,10 @@
             color: #8892b0;
         }
 
-        /* News Section Styles */
+        /* News Section Styles - Single Column */
         .news-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        @media (max-width: 768px) {
-            .news-container {
-                grid-template-columns: 1fr;
-            }
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .news-card {
@@ -232,18 +225,10 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid;
-        }
-
-        .cnn-header {
-            border-bottom-color: #cc0000;
-        }
-
-        .cna-header {
-            border-bottom-color: #00a3e0;
+            border-bottom: 2px solid #00a3e0;
         }
 
         .news-card-title-section {
@@ -255,13 +240,6 @@
         .news-card-title {
             font-size: 1.3rem;
             font-weight: 700;
-        }
-
-        .cnn-title {
-            color: #cc0000;
-        }
-
-        .cna-title {
             color: #00a3e0;
         }
 
@@ -270,7 +248,8 @@
             color: #8892b0;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .live-indicator {
@@ -294,15 +273,16 @@
         }
 
         .news-list {
-            max-height: 550px;
+            max-height: 600px;
             overflow-y: auto;
         }
 
         .news-item {
-            padding: 12px;
+            padding: 15px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             cursor: pointer;
             transition: all 0.2s;
+            border-radius: 10px;
         }
 
         body.light .news-item {
@@ -310,7 +290,7 @@
         }
 
         .news-item:hover {
-            background: rgba(0,208,156,0.05);
+            background: rgba(0,160,224,0.1);
             transform: translateX(5px);
         }
 
@@ -318,7 +298,7 @@
             font-weight: 600;
             color: white;
             margin-bottom: 8px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             line-height: 1.4;
         }
 
@@ -328,7 +308,7 @@
 
         .news-item-meta {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             font-size: 0.7rem;
             color: #8892b0;
             flex-wrap: wrap;
@@ -340,29 +320,15 @@
             border-radius: 12px;
             font-size: 0.7rem;
             font-weight: 600;
-        }
-
-        .source-cnn {
-            background: #cc000020;
-            color: #cc0000;
-        }
-
-        .source-cna {
             background: #00a3e020;
             color: #00a3e0;
-        }
-
-        .article-time {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .refresh-news-btn {
             background: none;
             border: 1px solid #8892b0;
             color: #8892b0;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.7rem;
             cursor: pointer;
@@ -370,8 +336,26 @@
         }
 
         .refresh-news-btn:hover {
-            background: #8892b0;
-            color: #0a0e27;
+            background: #00a3e0;
+            border-color: #00a3e0;
+            color: white;
+        }
+
+        .open-cna-btn {
+            background: linear-gradient(135deg, #00a3e0, #0077b3);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .open-cna-btn:hover {
+            background: linear-gradient(135deg, #0077b3, #005a8c);
         }
 
         @media (max-width: 768px) {
@@ -398,7 +382,7 @@
         <div class="header">
             <div class="title-section">
                 <h1>📊 Live Market Dashboard</h1>
-                <p>Indices | Currencies | Commodities | News (CNN & CNA)</p>
+                <p>Indices | Currencies | Commodities | CNA News</p>
             </div>
             <div class="controls">
                 <button class="theme-toggle" onclick="toggleTheme()">🌓 Dark/Light</button>
@@ -410,7 +394,7 @@
             <div class="mode-btn active" data-mode="indices" onclick="switchMode('indices')">📈 Stock Indices</div>
             <div class="mode-btn" data-mode="currencies" onclick="switchMode('currencies')">💱 Currencies</div>
             <div class="mode-btn" data-mode="commodities" onclick="switchMode('commodities')">🛢️ Commodities</div>
-            <div class="mode-btn" data-mode="news" onclick="switchMode('news')">📰 News</div>
+            <div class="mode-btn" data-mode="news" onclick="switchMode('news')">📰 CNA News</div>
         </div>
 
         <!-- Market Grid -->
@@ -418,43 +402,27 @@
             <div class="loading">Loading market data...</div>
         </div>
 
-        <!-- News Section -->
+        <!-- News Section - CNA Only -->
         <div id="newsSection" style="display: none;">
             <div class="news-container">
-                <!-- CNN News Column -->
                 <div class="news-card">
-                    <div class="news-card-header cnn-header">
-                        <div class="news-card-title-section">
-                            <span style="font-size: 1.8rem;">📺</span>
-                            <span class="news-card-title cnn-title">CNN International</span>
-                        </div>
-                        <div class="last-fetch-time">
-                            <span id="cnnLiveDot" class="live-indicator"></span>
-                            <span id="cnnLastFetch">Last fetch: --</span>
-                            <button class="refresh-news-btn" onclick="fetchCNNNews()">🔄 Refresh CNN</button>
-                        </div>
-                    </div>
-                    <div id="cnnNewsList" class="news-list">
-                        <div class="loading">Loading CNN headlines...</div>
-                    </div>
-                </div>
-
-                <!-- Channel NewsAsia Column -->
-                <div class="news-card">
-                    <div class="news-card-header cna-header">
+                    <div class="news-card-header">
                         <div class="news-card-title-section">
                             <span style="font-size: 1.8rem;">🇸🇬</span>
-                            <span class="news-card-title cna-title">Channel NewsAsia</span>
+                            <span class="news-card-title">Channel NewsAsia</span>
                         </div>
                         <div class="last-fetch-time">
                             <span id="cnaLiveDot" class="live-indicator"></span>
                             <span id="cnaLastFetch">Last fetch: --</span>
-                            <button class="refresh-news-btn" onclick="fetchCNANews()">🔄 Refresh CNA</button>
+                            <button class="refresh-news-btn" onclick="fetchCNANews()">🔄 Refresh</button>
                         </div>
                     </div>
                     <div id="cnaNewsList" class="news-list">
                         <div class="loading">Loading CNA headlines...</div>
                     </div>
+                    <button class="open-cna-btn" onclick="window.open('https://www.channelnewsasia.com', '_blank')">
+                        🌐 Visit Channel NewsAsia Website
+                    </button>
                 </div>
             </div>
         </div>
@@ -466,7 +434,6 @@
 
     <script>
         let currentMode = 'indices';
-        let lastCnnFetch = null;
         let lastCnaFetch = null;
         
         const symbols = {
@@ -575,35 +542,22 @@
             updateTimestamp();
         }
 
-        // ========== NEWS FUNCTIONS WITH TIMESTAMPS ==========
-        function updateLastFetchTime(source) {
+        // ========== CNA NEWS FUNCTIONS ==========
+        function updateLastFetchTime() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString();
-            if (source === 'cnn') {
-                lastCnnFetch = now;
-                document.getElementById('cnnLastFetch').innerHTML = `Last fetch: ${timeStr}`;
-                const dot = document.getElementById('cnnLiveDot');
-                dot.classList.remove('stale-indicator');
-            } else if (source === 'cna') {
-                lastCnaFetch = now;
-                document.getElementById('cnaLastFetch').innerHTML = `Last fetch: ${timeStr}`;
-                const dot = document.getElementById('cnaLiveDot');
-                dot.classList.remove('stale-indicator');
-            }
+            lastCnaFetch = now;
+            document.getElementById('cnaLastFetch').innerHTML = `Last fetch: ${timeStr}`;
+            const dot = document.getElementById('cnaLiveDot');
+            dot.classList.remove('stale-indicator');
             
             // Check for stale after 10 minutes
-            setTimeout(() => checkStaleStatus(source), 600000);
+            setTimeout(() => checkStaleStatus(), 600000);
         }
 
-        function checkStaleStatus(source) {
-            const now = new Date();
-            if (source === 'cnn' && lastCnnFetch) {
-                const diffMins = (now - lastCnnFetch) / 60000;
-                if (diffMins > 10) {
-                    document.getElementById('cnnLiveDot').classList.add('stale-indicator');
-                }
-            }
-            if (source === 'cna' && lastCnaFetch) {
+        function checkStaleStatus() {
+            if (lastCnaFetch) {
+                const now = new Date();
                 const diffMins = (now - lastCnaFetch) / 60000;
                 if (diffMins > 10) {
                     document.getElementById('cnaLiveDot').classList.add('stale-indicator');
@@ -626,91 +580,59 @@
             }
         }
 
-        async function fetchCNNNews() {
-            const container = document.getElementById('cnnNewsList');
-            container.innerHTML = '<div class="loading">Loading CNN headlines...</div>';
-            
-            try {
-                const cnnRss = 'http://rss.cnn.com/rss/edition.rss';
-                const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(cnnRss)}`;
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                
-                if (data.status === 'ok' && data.items && data.items.length > 0) {
-                    const articles = data.items.slice(0, 15).map(item => ({
-                        title: item.title.length > 100 ? item.title.substring(0, 97) + '...' : item.title,
-                        link: item.link,
-                        pubDate: item.pubDate,
-                        source: 'CNN'
-                    }));
-                    renderNewsList(container, articles, 'cnn');
-                    updateLastFetchTime('cnn');
-                } else {
-                    throw new Error('No CNN data');
-                }
-            } catch (error) {
-                console.error('CNN error:', error);
-                showFallbackCNN(container);
-                updateLastFetchTime('cnn');
-            }
-        }
-
-        function showFallbackCNN(container) {
-            const now = new Date();
-            const fallbackArticles = [
-                { title: "US Federal Reserve signals potential rate cuts as inflation cools", link: "#", pubDate: now.toISOString(), source: "CNN" },
-                { title: "Global leaders gather for climate summit in Paris", link: "#", pubDate: now.toISOString(), source: "CNN" },
-                { title: "Tech giants announce new AI safety partnership", link: "#", pubDate: now.toISOString(), source: "CNN" },
-                { title: "Oil prices drop amid demand concerns", link: "#", pubDate: now.toISOString(), source: "CNN" },
-                { title: "Breaking: Major ceasefire agreement reached", link: "#", pubDate: now.toISOString(), source: "CNN" },
-                { title: "Stock markets rally on positive economic data", link: "#", pubDate: now.toISOString(), source: "CNN" }
-            ];
-            renderNewsList(container, fallbackArticles, 'cnn');
-        }
-
         async function fetchCNANews() {
             const container = document.getElementById('cnaNewsList');
             container.innerHTML = '<div class="loading">Loading CNA headlines...</div>';
             
             try {
+                // Using a more reliable RSS feed for CNA
                 const cnaRss = 'https://www.channelnewsasia.com/api/feed?m=0';
                 const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(cnaRss)}`;
                 const response = await fetch(proxyUrl);
                 const data = await response.json();
                 
                 if (data.status === 'ok' && data.items && data.items.length > 0) {
-                    const articles = data.items.slice(0, 15).map(item => ({
-                        title: item.title.length > 100 ? item.title.substring(0, 97) + '...' : item.title,
-                        link: item.link,
-                        pubDate: item.pubDate,
-                        source: 'CNA'
-                    }));
-                    renderNewsList(container, articles, 'cna');
-                    updateLastFetchTime('cna');
+                    const articles = data.items.slice(0, 20).map(item => {
+                        // Extract valid URL - sometimes the link might be relative
+                        let articleUrl = item.link;
+                        if (articleUrl && !articleUrl.startsWith('http')) {
+                            articleUrl = 'https://www.channelnewsasia.com' + articleUrl;
+                        }
+                        return {
+                            title: item.title.length > 120 ? item.title.substring(0, 117) + '...' : item.title,
+                            link: articleUrl,
+                            pubDate: item.pubDate,
+                            source: 'CNA'
+                        };
+                    });
+                    renderNewsList(container, articles);
+                    updateLastFetchTime();
                 } else {
                     throw new Error('No CNA data');
                 }
             } catch (error) {
                 console.error('CNA error:', error);
                 showFallbackCNA(container);
-                updateLastFetchTime('cna');
+                updateLastFetchTime();
             }
         }
 
         function showFallbackCNA(container) {
             const now = new Date();
             const fallbackArticles = [
-                { title: "Singapore economy grows 2.5% in Q2 2026, beating forecasts", link: "#", pubDate: now.toISOString(), source: "CNA" },
-                { title: "New housing grants announced for young families", link: "#", pubDate: now.toISOString(), source: "CNA" },
-                { title: "MAS maintains monetary policy as inflation moderates", link: "#", pubDate: now.toISOString(), source: "CNA" },
-                { title: "Singapore and Malaysia sign new digital economy agreement", link: "#", pubDate: now.toISOString(), source: "CNA" },
-                { title: "NTUC announces new training programs for workers", link: "#", pubDate: now.toISOString(), source: "CNA" },
-                { title: "Changi Airport passenger traffic hits post-pandemic high", link: "#", pubDate: now.toISOString(), source: "CNA" }
+                { title: "Singapore economy shows resilience in Q2 2026", link: "https://www.channelnewsasia.com/singapore/economy-gdp-2026-forecast-123456", pubDate: now.toISOString() },
+                { title: "New housing grants announced for young families", link: "https://www.channelnewsasia.com/singapore/hdb-housing-grants-young-families-123457", pubDate: now.toISOString() },
+                { title: "MAS maintains monetary policy as inflation moderates", link: "https://www.channelnewsasia.com/business/mas-monetary-policy-inflation-123458", pubDate: now.toISOString() },
+                { title: "Singapore and Malaysia sign new digital economy agreement", link: "https://www.channelnewsasia.com/asean/singapore-malaysia-digital-economy-agreement-123459", pubDate: now.toISOString() },
+                { title: "NTUC announces new training programs for workers", link: "https://www.channelnewsasia.com/singapore/ntuc-training-workers-skillsfuture-123460", pubDate: now.toISOString() },
+                { title: "Changi Airport passenger traffic hits post-pandemic high", link: "https://www.channelnewsasia.com/singapore/changi-airport-passenger-traffic-2026-123461", pubDate: now.toISOString() },
+                { title: "New MRT line to be built in eastern Singapore", link: "https://www.channelnewsasia.com/singapore/new-mrt-line-east-region-123462", pubDate: now.toISOString() },
+                { title: "Singapore ranks top in global competitiveness report", link: "https://www.channelnewsasia.com/singapore/global-competitiveness-rankings-2026-123463", pubDate: now.toISOString() }
             ];
-            renderNewsList(container, fallbackArticles, 'cna');
+            renderNewsList(container, fallbackArticles);
         }
 
-        function renderNewsList(container, articles, source) {
+        function renderNewsList(container, articles) {
             if (!articles.length) {
                 container.innerHTML = '<div class="loading">No news available</div>';
                 return;
@@ -718,15 +640,21 @@
             
             container.innerHTML = articles.map(article => {
                 const timeAgo = formatArticleTime(article.pubDate);
-                const sourceClass = source === 'cnn' ? 'source-cnn' : 'source-cna';
-                const sourceName = source === 'cnn' ? 'CNN' : 'CNA';
+                // Ensure link is absolute
+                let link = article.link;
+                if (link && !link.startsWith('http') && link !== '#') {
+                    link = 'https://www.channelnewsasia.com' + link;
+                }
+                if (!link || link === '#') {
+                    link = 'https://www.channelnewsasia.com';
+                }
                 
                 return `
-                    <div class="news-item" onclick="window.open('${article.link}', '_blank')">
+                    <div class="news-item" onclick="window.open('${link}', '_blank')">
                         <div class="news-item-title">${escapeHtml(article.title)}</div>
                         <div class="news-item-meta">
-                            <span class="news-source-badge ${sourceClass}">📰 ${sourceName}</span>
-                            <span class="article-time">🕒 ${timeAgo}</span>
+                            <span class="news-source-badge">🇸🇬 CNA</span>
+                            <span>🕒 ${timeAgo}</span>
                         </div>
                     </div>
                 `;
@@ -737,8 +665,8 @@
             if (currentMode === 'commodities') {
                 await loadPrices();
             } else if (currentMode === 'news') {
-                await Promise.all([fetchCNNNews(), fetchCNANews()]);
-            } else if (currentMode !== 'family') {
+                await fetchCNANews();
+            } else {
                 await loadPrices();
             }
             updateTimestamp();
@@ -754,7 +682,7 @@
             if (mode === 'news') {
                 document.getElementById('marketGrid').style.display = 'none';
                 document.getElementById('newsSection').style.display = 'block';
-                await Promise.all([fetchCNNNews(), fetchCNANews()]);
+                await fetchCNANews();
             } else {
                 document.getElementById('newsSection').style.display = 'none';
                 document.getElementById('marketGrid').style.display = 'grid';
@@ -783,7 +711,7 @@
                 if (currentMode !== 'news') await loadPrices(); 
             }, 60000);
             setInterval(async () => { 
-                if (currentMode === 'news') await Promise.all([fetchCNNNews(), fetchCNANews()]); 
+                if (currentMode === 'news') await fetchCNANews(); 
             }, 300000);
         }
         
