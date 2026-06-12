@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h2>Supabase Test</h2>
+    <input type="email" id="email" placeholder="Email"><br><br>
+    <input type="password" id="password" placeholder="Password"><br><br>
+    <button onclick="testSignup()">Test Sign Up</button>
+    <button onclick="testSignin()">Test Sign In</button>
+    <div id="result" style="margin-top:20px; padding:10px; background:#f0f0f0;"></div>
+
+    <script>
+        // 🔴 REPLACE THESE WITH YOUR ACTUAL SUPABASE CREDENTIALS 🔴
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-anon-key-here';
+        
+        console.log('Testing Supabase with URL:', SUPABASE_URL);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function testSignup() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            document.getElementById('result').innerHTML = 'Attempting sign up...';
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) {
+                    document.getElementById('result').innerHTML = '❌ Error: ' + error.message;
+                    console.error('Signup error:', error);
+                } else {
+                    document.getElementById('result').innerHTML = '✅ Success! User created: ' + data.user?.email;
+                    console.log('Signup success:', data);
+                }
+            } catch (err) {
+                document.getElementById('result').innerHTML = '❌ Exception: ' + err.message;
+                console.error('Exception:', err);
+            }
+        }
+        
+        async function testSignin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            document.getElementById('result').innerHTML = 'Attempting sign in...';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) {
+                    document.getElementById('result').innerHTML = '❌ Error: ' + error.message;
+                    console.error('Signin error:', error);
+                } else {
+                    document.getElementById('result').innerHTML = '✅ Logged in as: ' + data.user.email;
+                    console.log('Signin success:', data);
+                }
+            } catch (err) {
+                document.getElementById('result').innerHTML = '❌ Exception: ' + err.message;
+                console.error('Exception:', err);
+            }
+        }
+    </script>
+</body>
+</html>
