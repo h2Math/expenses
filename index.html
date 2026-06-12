@@ -1,5 +1,4 @@
-      
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -138,8 +137,8 @@
             <div id="loginMessage" class="success-msg" style="display:none; margin-bottom:15px;"></div>
             <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
             <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
-            <button onclick="window.handleLogin()" class="btn-primary" style="width:100%">Sign In</button>
-            <div class="login-toggle">Don't have an account? <span onclick="window.showSignup()">Create one</span></div>
+            <button onclick="handleLogin()" class="btn-primary" style="width:100%">Sign In</button>
+            <div class="login-toggle">Don't have an account? <span onclick="showSignup()">Create one</span></div>
         </div>
 
         <div id="mainApp" style="display:none">
@@ -150,30 +149,30 @@
                         <p>Cloud Sync | Multi-User | Export/Import Backup</p>
                     </div>
                     <div class="controls">
-                        <button onclick="window.toggleTheme()">🌓 Dark/Light</button>
-                        <button onclick="window.openAddGroupModal()" class="btn-primary">➕ Add Family</button>
-                        <button onclick="window.openAddStudentModal()" class="btn-primary">👨‍🎓 Add Student</button>
-                        <button onclick="window.handleLogout()" class="btn-logout">🚪 Logout</button>
+                        <button onclick="toggleTheme()">🌓 Dark/Light</button>
+                        <button onclick="openAddGroupModal()" class="btn-primary">➕ Add Family</button>
+                        <button onclick="openAddStudentModal()" class="btn-primary">👨‍🎓 Add Student</button>
+                        <button onclick="handleLogout()" class="btn-logout">🚪 Logout</button>
                     </div>
                 </div>
 
                 <div class="mode-selector">
-                    <div class="mode-btn active" data-mode="groups" onclick="window.switchMode('groups')">👥 Family</div>
-                    <div class="mode-btn" data-mode="students" onclick="window.switchMode('students')">👨‍🎓 Students</div>
-                    <div class="mode-btn" data-mode="lessons" onclick="window.switchMode('lessons')">📅 Calendar</div>
-                    <div class="mode-btn" data-mode="payment" onclick="window.switchMode('payment')">💰 Payment Status</div>
-                    <div class="mode-btn" data-mode="analysis" onclick="window.switchMode('analysis')">📊 Analysis</div>
-                    <div class="mode-btn" data-mode="invoice" onclick="window.switchMode('invoice')">🧾 Invoice</div>
-                    <div class="mode-btn" data-mode="backup" onclick="window.switchMode('backup')">💾 Backup</div>
+                    <div class="mode-btn active" data-mode="groups" onclick="switchMode('groups')">👥 Family</div>
+                    <div class="mode-btn" data-mode="students" onclick="switchMode('students')">👨‍🎓 Students</div>
+                    <div class="mode-btn" data-mode="lessons" onclick="switchMode('lessons')">📅 Calendar</div>
+                    <div class="mode-btn" data-mode="payment" onclick="switchMode('payment')">💰 Payment Status</div>
+                    <div class="mode-btn" data-mode="analysis" onclick="switchMode('analysis')">📊 Analysis</div>
+                    <div class="mode-btn" data-mode="invoice" onclick="switchMode('invoice')">🧾 Invoice</div>
+                    <div class="mode-btn" data-mode="backup" onclick="switchMode('backup')">💾 Backup</div>
                 </div>
 
-                <div id="groupsView"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add New Family</div><div id="groupFormMessage" class="success-msg"></div><div class="form-group"><label>Family Name *</label><input type="text" id="groupName" placeholder="e.g., Smith Family"></div><button onclick="window.addGroup()" class="btn-primary" style="width:100%">✨ Create Family</button></div><div class="card"><div class="card-title">👥 All Families</div><div id="groupList" class="group-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
-                <div id="studentsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage" class="success-msg"></div><div class="form-group"><label>Student Name *</label><input type="text" id="studentName" placeholder="e.g., Emma Wong"></div><div class="form-group"><label>Select Family *</label><select id="studentGroup"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>Rate Type *</label><div class="rate-group"><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="window.addStudent()" class="btn-primary" style="width:100%">✨ Add Student</button></div><div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList" class="student-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
-                <div id="lessonsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage" class="success-msg"></div><div class="form-group"><label>Select Student *</label><select id="lessonStudent"><option value="">-- Select Student --</option></select></div><div class="form-group"><label>Lesson Date & Time *</label><input type="datetime-local" id="lessonStart"><div class="auto-hint">⏱️ End time auto-sets to 1.5 hours later</div></div><div class="form-group"><label>End Time *</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic Covered</label><input type="text" id="lessonTopic" placeholder="e.g., Algebra"></div><div class="form-group"><label>Notes / Homework</label><textarea id="lessonNotes" rows="2" placeholder="Homework assigned"></textarea></div><button onclick="window.addLesson()" class="btn-primary" style="width:100%">✨ Add Lesson</button></div><div class="card"><div class="card-title">📋 Lesson History</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Total Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Total Earnings</div></div></div><div id="lessonList" class="lesson-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
-                <div id="paymentView" style="display:none"><div class="card"><div class="card-title">💰 Family Payment Status</div><div id="paymentFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>Select Family</label><select id="paymentGroupFilter" onchange="window.renderGroupPayment()"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>Payment Status</label><select id="groupPaymentStatus"><option value="unpaid">⚠️ Unpaid</option><option value="paid">✅ Paid</option><option value="invoiced">📄 Invoiced</option></select></div></div><button onclick="window.updateGroupPaymentStatus()" class="btn-primary" style="width:100%;margin-bottom:20px">💾 Update Payment Status</button><div id="groupPaymentInfo" style="display:none"><div class="stats-bar"><div class="stat"><div class="stat-number" id="groupTotalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="groupTotalAmount">$0</div><div class="stat-label">Total Amount</div></div><div class="stat"><div class="stat-number" id="groupPaymentBadge"></div><div class="stat-label">Current Status</div></div></div></div><div id="groupPaymentList" class="lesson-list"><div style="text-align:center;padding:40px;color:#8892b0">Select a family to view payment status</div></div></div></div>
-                <div id="analysisView" style="display:none"><div class="card"><div class="card-title">📊 Fee Analysis & Payment Report</div><div id="analysisFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>From Date *</label><input type="date" id="analysisFromDate"></div><div class="form-group"><label>To Date *</label><input type="date" id="analysisToDate"></div></div><div class="button-group"><button onclick="window.generateAnalysis()" class="btn-primary" style="flex:1">📊 Generate Report</button><button id="shareAnalysisBtn" onclick="window.shareAnalysis()" class="btn-share" style="flex:1;display:none">📤 Share Report</button></div><div id="analysisPreview" style="display:none;margin-top:20px"></div></div></div>
-                <div id="invoiceView" style="display:none"><div class="card"><div class="card-title">🧾 Generate Invoice</div><div id="invoiceFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>Select Family *</label><select id="invoiceGroup"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>From Date *</label><input type="date" id="invoiceFromDate"></div><div class="form-group"><label>To Date *</label><input type="date" id="invoiceToDate"></div></div><div class="button-group"><button onclick="window.generateInvoice()" class="btn-primary" style="flex:1">📄 Generate Invoice</button><button id="shareBtn" onclick="window.shareInvoice()" class="btn-share" style="flex:1;display:none">📤 Share Invoice</button></div><div id="invoicePreview" style="display:none;margin-top:20px"></div></div></div>
-                <div id="backupView" style="display:none"><div class="card"><div class="card-title">💾 Backup & Restore Data</div><div id="backupFormMessage" class="success-msg"></div><div class="backup-info"><strong>📊 Current Data Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div><div class="success-box" style="margin-bottom:20px"><strong>💾 How to Backup:</strong><ul style="margin-top:10px;margin-left:20px"><li>Click <strong>"Export to File"</strong> to save your data as a JSON file</li><li>Save the file to your computer, iCloud Drive, Google Drive, or email it to yourself</li></ul></div><div class="success-box" style="margin-bottom:20px"><strong>🔄 How to Restore:</strong><ul style="margin-top:10px;margin-left:20px"><li>Click <strong>"Import from File"</strong> to select a previously saved backup file</li><li><strong>⚠️ Warning:</strong> This will replace ALL current data</li></ul></div><div class="button-group"><button onclick="window.exportToFile()" class="btn-backup" style="flex:1">📁 Export to File</button><button onclick="window.importFromFile()" class="btn-primary" style="flex:1">📂 Import from File</button></div></div></div>
+                <div id="groupsView"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add New Family</div><div id="groupFormMessage" class="success-msg"></div><div class="form-group"><label>Family Name *</label><input type="text" id="groupName" placeholder="e.g., Smith Family"></div><button onclick="addGroup()" class="btn-primary" style="width:100%">✨ Create Family</button></div><div class="card"><div class="card-title">👥 All Families</div><div id="groupList" class="group-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
+                <div id="studentsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage" class="success-msg"></div><div class="form-group"><label>Student Name *</label><input type="text" id="studentName" placeholder="e.g., Emma Wong"></div><div class="form-group"><label>Select Family *</label><select id="studentGroup"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>Rate Type *</label><div class="rate-group"><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="addStudent()" class="btn-primary" style="width:100%">✨ Add Student</button></div><div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList" class="student-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
+                <div id="lessonsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage" class="success-msg"></div><div class="form-group"><label>Select Student *</label><select id="lessonStudent"><option value="">-- Select Student --</option></select></div><div class="form-group"><label>Lesson Date & Time *</label><input type="datetime-local" id="lessonStart"><div class="auto-hint">⏱️ End time auto-sets to 1.5 hours later</div></div><div class="form-group"><label>End Time *</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic Covered</label><input type="text" id="lessonTopic" placeholder="e.g., Algebra"></div><div class="form-group"><label>Notes / Homework</label><textarea id="lessonNotes" rows="2" placeholder="Homework assigned"></textarea></div><button onclick="addLesson()" class="btn-primary" style="width:100%">✨ Add Lesson</button></div><div class="card"><div class="card-title">📋 Lesson History</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Total Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Total Earnings</div></div></div><div id="lessonList" class="lesson-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
+                <div id="paymentView" style="display:none"><div class="card"><div class="card-title">💰 Family Payment Status</div><div id="paymentFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>Select Family</label><select id="paymentGroupFilter" onchange="renderGroupPayment()"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>Payment Status</label><select id="groupPaymentStatus"><option value="unpaid">⚠️ Unpaid</option><option value="paid">✅ Paid</option><option value="invoiced">📄 Invoiced</option></select></div></div><button onclick="updateGroupPaymentStatus()" class="btn-primary" style="width:100%;margin-bottom:20px">💾 Update Payment Status</button><div id="groupPaymentInfo" style="display:none"><div class="stats-bar"><div class="stat"><div class="stat-number" id="groupTotalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="groupTotalAmount">$0</div><div class="stat-label">Total Amount</div></div><div class="stat"><div class="stat-number" id="groupPaymentBadge"></div><div class="stat-label">Current Status</div></div></div></div><div id="groupPaymentList" class="lesson-list"><div style="text-align:center;padding:40px;color:#8892b0">Select a family to view payment status</div></div></div></div>
+                <div id="analysisView" style="display:none"><div class="card"><div class="card-title">📊 Fee Analysis & Payment Report</div><div id="analysisFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>From Date *</label><input type="date" id="analysisFromDate"></div><div class="form-group"><label>To Date *</label><input type="date" id="analysisToDate"></div></div><div class="button-group"><button onclick="generateAnalysis()" class="btn-primary" style="flex:1">📊 Generate Report</button><button id="shareAnalysisBtn" onclick="shareAnalysis()" class="btn-share" style="flex:1;display:none">📤 Share Report</button></div><div id="analysisPreview" style="display:none;margin-top:20px"></div></div></div>
+                <div id="invoiceView" style="display:none"><div class="card"><div class="card-title">🧾 Generate Invoice</div><div id="invoiceFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>Select Family *</label><select id="invoiceGroup"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>From Date *</label><input type="date" id="invoiceFromDate"></div><div class="form-group"><label>To Date *</label><input type="date" id="invoiceToDate"></div></div><div class="button-group"><button onclick="generateInvoice()" class="btn-primary" style="flex:1">📄 Generate Invoice</button><button id="shareBtn" onclick="shareInvoice()" class="btn-share" style="flex:1;display:none">📤 Share Invoice</button></div><div id="invoicePreview" style="display:none;margin-top:20px"></div></div></div>
+                <div id="backupView" style="display:none"><div class="card"><div class="card-title">💾 Backup & Restore Data</div><div id="backupFormMessage" class="success-msg"></div><div class="backup-info"><strong>📊 Current Data Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div><div class="success-box" style="margin-bottom:20px"><strong>💾 How to Backup:</strong><ul style="margin-top:10px;margin-left:20px"><li>Click <strong>"Export to File"</strong> to save your data as a JSON file</li><li>Save the file to your computer, iCloud Drive, Google Drive, or email it to yourself</li></ul></div><div class="success-box" style="margin-bottom:20px"><strong>🔄 How to Restore:</strong><ul style="margin-top:10px;margin-left:20px"><li>Click <strong>"Import from File"</strong> to select a previously saved backup file</li><li><strong>⚠️ Warning:</strong> This will replace ALL current data</li></ul></div><div class="button-group"><button onclick="exportToFile()" class="btn-backup" style="flex:1">📁 Export to File</button><button onclick="importFromFile()" class="btn-primary" style="flex:1">📂 Import from File</button></div></div></div>
 
                 <div class="instructions"><h3>📖 How It Works</h3><div class="success-box"><strong>✅ Features:</strong><ul><li>☁️ <strong>Cloud Sync</strong> - Your data is saved to Supabase and accessible anywhere</li><li>👥 <strong>Multi-User</strong> - Each user has their own private data</li><li>💾 <strong>Export to File</strong> - Save your data as a JSON backup file</li><li>📂 <strong>Import from File</strong> - Restore data from a backup file</li><li>💰 <strong>Family Payment Status</strong> - Set status: Unpaid / Paid / Invoiced</li><li>📊 <strong>Analysis Report</strong> - Includes payment history by family</li><li>🧾 <strong>Invoices</strong> - Generate shareable PDF invoices</li><li>📅 <strong>Add to Calendar</strong> - Export lessons to Apple Calendar</li></ul></div></div>
                 <div class="status-text">Last updated: <span id="timestamp">--</span></div>
@@ -181,11 +180,11 @@
         </div>
     </div>
 
-    <div id="groupModal" class="modal"><div class="modal-content"><h3 id="groupModalTitle">Edit Family</h3><input type="hidden" id="editGroupId"><div class="form-group"><label>Family Name</label><input type="text" id="editGroupName"></div><div class="form-group"><label>Payment Status</label><select id="editGroupPaymentStatus"><option value="unpaid">⚠️ Unpaid</option><option value="paid">✅ Paid</option><option value="invoiced">📄 Invoiced</option></select></div><button onclick="window.saveGroupEdit()" class="btn-primary" style="width:100%">💾 Save Changes</button><button onclick="window.closeGroupModal()" style="width:100%;margin-top:10px">Cancel</button></div></div>
-    <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><div class="form-group"><label>Student Name</label><input type="text" id="editStudentName"></div><div class="form-group"><label>Family</label><select id="editStudentGroup"></select></div><div class="form-group"><label>Rate Type</label><div class="rate-group"><select id="editRateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="editRateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="window.saveStudentEdit()" class="btn-primary" style="width:100%">💾 Save Changes</button><button onclick="window.closeStudentModal()" style="width:100%;margin-top:10px">Cancel</button></div></div>
+    <div id="groupModal" class="modal"><div class="modal-content"><h3 id="groupModalTitle">Edit Family</h3><input type="hidden" id="editGroupId"><div class="form-group"><label>Family Name</label><input type="text" id="editGroupName"></div><div class="form-group"><label>Payment Status</label><select id="editGroupPaymentStatus"><option value="unpaid">⚠️ Unpaid</option><option value="paid">✅ Paid</option><option value="invoiced">📄 Invoiced</option></select></div><button onclick="saveGroupEdit()" class="btn-primary" style="width:100%">💾 Save Changes</button><button onclick="closeGroupModal()" style="width:100%;margin-top:10px">Cancel</button></div></div>
+    <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><div class="form-group"><label>Student Name</label><input type="text" id="editStudentName"></div><div class="form-group"><label>Family</label><select id="editStudentGroup"></select></div><div class="form-group"><label>Rate Type</label><div class="rate-group"><select id="editRateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="editRateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="saveStudentEdit()" class="btn-primary" style="width:100%">💾 Save Changes</button><button onclick="closeStudentModal()" style="width:100%;margin-top:10px">Cancel</button></div></div>
 
     <script>
-        // 🔴 REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS 🔴
+        // 🔴 YOUR SUPABASE CREDENTIALS - REPLACE WITH YOUR ACTUAL VALUES 🔴
         const SUPABASE_URL = 'https://trsfjyasjraeqhqoqpve.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc2ZqeWFzanJhZXFocW9xcHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzEwOTQsImV4cCI6MjA5NjYwNzA5NH0.HlU-oEu2cSW5DInTH_p0hNsPhcODDOgG_8lPMlU-1yM';
         
@@ -196,30 +195,6 @@
         let currentCalendarYear = new Date().getFullYear();
         let currentCalendarMonth = new Date().getMonth();
         let copiedLesson = null;
-
-        // Make functions global
-        window.handleLogin = handleLogin;
-        window.showSignup = showSignup;
-        window.handleLogout = handleLogout;
-        window.toggleTheme = toggleTheme;
-        window.addGroup = addGroup;
-        window.addStudent = addStudent;
-        window.addLesson = addLesson;
-        window.switchMode = switchMode;
-        window.openAddGroupModal = openAddGroupModal;
-        window.openAddStudentModal = openAddStudentModal;
-        window.saveGroupEdit = saveGroupEdit;
-        window.closeGroupModal = closeGroupModal;
-        window.saveStudentEdit = saveStudentEdit;
-        window.closeStudentModal = closeStudentModal;
-        window.renderGroupPayment = renderGroupPayment;
-        window.updateGroupPaymentStatus = updateGroupPaymentStatus;
-        window.generateAnalysis = generateAnalysis;
-        window.shareAnalysis = shareAnalysis;
-        window.generateInvoice = generateInvoice;
-        window.shareInvoice = shareInvoice;
-        window.exportToFile = exportToFile;
-        window.importFromFile = importFromFile;
 
         function parseLocalDateTime(dateStr) {
             if (!dateStr) return new Date();
@@ -247,6 +222,7 @@
         function toggleTheme() { document.body.classList.toggle('light'); }
         
         async function initSupabase() {
+            console.log('Initializing Supabase with URL:', SUPABASE_URL);
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -378,7 +354,7 @@
             c.innerHTML = groups.map(g => {
                 const cls = g.paymentStatus === 'paid' ? 'status-paid' : (g.paymentStatus === 'invoiced' ? 'status-invoiced' : 'status-unpaid');
                 const txt = g.paymentStatus === 'paid' ? '✅ Paid' : (g.paymentStatus === 'invoiced' ? '📄 Invoiced' : '⚠️ Unpaid');
-                return `<div class="group-item"><div class="group-info"><div class="group-name">${escapeHtml(g.name)}</div><div class="group-details">👨‍🎓 ${studentCount(g.id)} students | 📚 ${lessonCount(g.id)} lessons | 💰 $${groupTotal(g.id).toFixed(2)}</div><div class="group-details"><span class="payment-status-badge ${cls}">${txt}</span></div></div><div><button class="edit-btn" onclick='window.openEditGroup(${JSON.stringify(g)})'>✏️ Edit</button><button class="delete-btn" onclick="window.deleteGroup('${g.id}','${escapeHtml(g.name).replace(/'/g, "\\'")}')">🗑️ Delete</button></div></div>`;
+                return `<div class="group-item"><div class="group-info"><div class="group-name">${escapeHtml(g.name)}</div><div class="group-details">👨‍🎓 ${studentCount(g.id)} students | 📚 ${lessonCount(g.id)} lessons | 💰 $${groupTotal(g.id).toFixed(2)}</div><div class="group-details"><span class="payment-status-badge ${cls}">${txt}</span></div></div><div><button class="edit-btn" onclick='openEditGroup(${JSON.stringify(g)})'>✏️ Edit</button><button class="delete-btn" onclick="deleteGroup('${g.id}','${escapeHtml(g.name).replace(/'/g, "\\'")}')">🗑️ Delete</button></div></div>`;
             }).join('');
         }
         
@@ -441,7 +417,7 @@
             c.innerHTML = students.map(s => { 
                 const g = groups.find(g => g.id === s.groupId); 
                 const rate = s.rateType === 'hourly' ? `$${s.rateAmount}/hour` : `$${s.rateAmount}/session`; 
-                return `<div class="student-item"><div class="student-info"><div class="student-name">${escapeHtml(s.name)}</div><div class="student-rate">👥 ${g?.name || 'No Family'} | 💰 ${rate}</div><div class="student-rate">📚 ${lessons.filter(l => l.studentId === s.id).length} lessons</div></div><div><button class="edit-btn" onclick='window.openEditStudent(${JSON.stringify(s)})'>✏️ Edit</button><button class="delete-btn" onclick="window.deleteStudent('${s.id}','${escapeHtml(s.name).replace(/'/g, "\\'")}')">🗑️ Delete</button></div></div>`; 
+                return `<div class="student-item"><div class="student-info"><div class="student-name">${escapeHtml(s.name)}</div><div class="student-rate">👥 ${g?.name || 'No Family'} | 💰 ${rate}</div><div class="student-rate">📚 ${lessons.filter(l => l.studentId === s.id).length} lessons</div></div><div><button class="edit-btn" onclick='openEditStudent(${JSON.stringify(s)})'>✏️ Edit</button><button class="delete-btn" onclick="deleteStudent('${s.id}','${escapeHtml(s.name).replace(/'/g, "\\'")}')">🗑️ Delete</button></div></div>`; 
             }).join(''); 
         }
         
@@ -578,10 +554,10 @@
             document.getElementById('groupModal').style.display = 'flex'; 
             const btn = document.querySelector('#groupModal .btn-primary'); 
             btn.innerText = '➕ Add Family'; 
-            btn.setAttribute('onclick', 'window.saveNewGroup()'); 
+            btn.setAttribute('onclick', 'saveNewGroup()'); 
         }
         
-        window.saveNewGroup = function() { 
+        function saveNewGroup() { 
             const name = document.getElementById('editGroupName').value.trim(); 
             const status = document.getElementById('editGroupPaymentStatus').value; 
             if (!name) { alert('Enter family name'); return; } 
@@ -592,7 +568,7 @@
             closeGroupModal(); 
             updateBackupStats(); 
             showMessage(`Family "${name}" created`, 'success', 'groupFormMessage'); 
-        };
+        }
         
         function openAddStudentModal() { 
             document.getElementById('editStudentId').value = ''; 
@@ -605,10 +581,10 @@
             document.getElementById('studentModal').style.display = 'flex'; 
             const btn = document.querySelector('#studentModal .btn-primary'); 
             btn.innerText = '➕ Add Student'; 
-            btn.setAttribute('onclick', 'window.saveNewStudent()'); 
+            btn.setAttribute('onclick', 'saveNewStudent()'); 
         }
         
-        window.saveNewStudent = function() { 
+        function saveNewStudent() { 
             const name = document.getElementById('editStudentName').value.trim(); 
             const gid = document.getElementById('editStudentGroup').value; 
             const rt = document.getElementById('editRateType').value; 
@@ -621,7 +597,7 @@
             closeStudentModal(); 
             updateBackupStats(); 
             showMessage(`Student "${name}" added`, 'success', 'studentFormMessage'); 
-        };
+        }
         
         function generateAnalysis() { showMessage('Analysis report generated', 'success', 'analysisFormMessage'); }
         function shareAnalysis() { showMessage('Report shared', 'success', 'analysisFormMessage'); }
@@ -632,6 +608,7 @@
         function exportToFile() { showMessage('Export to file - would download JSON', 'success', 'backupFormMessage'); }
         function importFromFile() { showMessage('Import from file - would restore data', 'success', 'backupFormMessage'); }
         
+        // Start the app
         initSupabase();
     </script>
 </body>
