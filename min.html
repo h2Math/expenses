@@ -1,9 +1,25 @@
-
 <!DOCTYPE html>
 <html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 <body>
-    <h1>Click Test</h1>
-    <button onclick="document.getElementById('out').innerHTML='WORKING!'">Click Me</button>
-    <p id="out">Not clicked yet</p>
+    <h1>Supabase Load Test</h1>
+    <button onclick="testLoad()">Test Supabase</button>
+    <p id="result">Ready</p>
+
+    <script>
+        function testLoad() {
+            const result = document.getElementById('result');
+            
+            if (typeof window.supabase !== 'undefined') {
+                result.innerHTML = '✅ Supabase library loaded!';
+                result.style.color = 'green';
+            } else {
+                result.innerHTML = '❌ Supabase library NOT loaded';
+                result.style.color = 'red';
+            }
+        }
+    </script>
 </body>
 </html>
