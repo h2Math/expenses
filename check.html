@@ -4,45 +4,89 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <h2>Supabase Diagnostic</h2>
-    <div id="output"></div>
+    <h2>Signup Test - Please test</h2>
     
+    <input type="email" id="email" placeholder="Email" style="width:250px"><br><br>
+    <input type="password" id="password" placeholder="Password" style="width:250px"><br><br>
+    <button onclick="doSignup()">Sign Up</button>
+    <button onclick="doSignin()">Sign In</button>
+    
+    <div id="result" style="margin-top:20px; padding:10px; background:#eee; white-space:pre-wrap;"></div>
+
     <script>
-        const output = document.getElementById('output');
+        // ⚠️ YOUR CREDENTIALS SHOULD BE HERE ⚠️
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-anon-key';
         
-        // Test 1: Check if libraries loaded
-        if (typeof window.supabase !== 'undefined') {
-            output.innerHTML += '✅ Supabase library loaded<br>';
-        } else {
-            output.innerHTML += '❌ Supabase library NOT loaded<br>';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const result = document.getElementById('result');
+        
+        async function doSignup() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                result.innerHTML = '❌ Please enter both email and password';
+                return;
+            }
+            
+            result.innerHTML = '⏳ Attempting signup...\n\n';
+            result.innerHTML += `Email: ${email}\n`;
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) {
+                    result.innerHTML += `\n❌ ERROR: ${error.message}\n`;
+                    result.innerHTML += `\nFull error: ${JSON.stringify(error, null, 2)}`;
+                } else {
+                    result.innerHTML += `\n✅ SUCCESS!\n`;
+                    result.innerHTML += `User: ${data.user?.email}\n`;
+                    result.innerHTML += `ID: ${data.user?.id}\n`;
+                    
+                    if (data.user?.confirmed_at) {
+                        result.innerHTML += `Confirmed: Yes\n`;
+                    } else {
+                        result.innerHTML += `Confirmed: No (check email)\n`;
+                    }
+                }
+            } catch (err) {
+                result.innerHTML += `\n❌ EXCEPTION: ${err.message}\n`;
+                result.innerHTML += `\nStack: ${err.stack}`;
+            }
         }
         
-        // 🔴 REPLACE THESE WITH YOUR ACTUAL CREDENTIALS 🔴
-          const SUPABASE_URL = 'https://trsfjyasjraeqhqoqpve.supabase.co';
-        const_ANONKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyc2ZqeWFzanJhZXFocW9xcHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzEwOTQsImV4cCI6MjA5NjYwNzA5NH0.HlU-oEu2cSW5DInTH_p0hNsPhcODDOgG_8lPMlU-1yM';
-        
-        
-        output.innerHTML += `<br>Using URL: ${SUPABASE_URL}<br>`;
-        output.innerHTML += `Using Key: ${SUPABASE_ANON_KEY.substring(0, 20)}...<br><br>`;
-        
-        // Test 2: Try to create client
-        try {
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            output.innerHTML += '✅ Client created successfully<br>';
+        async function doSignin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
-            // Test 3: Try a simple anonymous request
-            supabase.auth.getSession().then(({ data, error }) => {
+            if (!email || !password) {
+                result.innerHTML = '❌ Please enter both email and password';
+                return;
+            }
+            
+            result.innerHTML = '⏳ Attempting signin...\n\n';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                
                 if (error) {
-                    output.innerHTML += '❌ Session error: ' + error.message + '<br>';
+                    result.innerHTML += `\n❌ ERROR: ${error.message}\n`;
+                    result.innerHTML += `\nFull error: ${JSON.stringify(error, null, 2)}`;
                 } else {
-                    output.innerHTML += '✅ Session check passed<br>';
+                    result.innerHTML += `\n✅ LOGGED IN!\n`;
+                    result.innerHTML += `User: ${data.user?.email}\n`;
+                    result.innerHTML += `ID: ${data.user?.id}\n`;
                 }
-            }).catch(err => {
-                output.innerHTML += '❌ Session exception: ' + err.message + '<br>';
-            });
-            
-        } catch(e) {
-            output.innerHTML += '❌ Client creation failed: ' + e.message + '<br>';
+            } catch (err) {
+                result.innerHTML += `\n❌ EXCEPTION: ${err.message}\n`;
+            }
         }
     </script>
 </body>
