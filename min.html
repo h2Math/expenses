@@ -4,27 +4,54 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <h1>Supabase Client Test</h1>
-    <button onclick="testClient()">Create Client</button>
-    <p id="result">Ready</p>
+    <h1>Supabase Signup Test</h1>
+    
+    <input type="email" id="email" placeholder="Email" style="width:250px"><br><br>
+    <input type="password" id="password" placeholder="Password" style="width:250px"><br><br>
+    <button onclick="doSignup()">Sign Up</button>
+    
+    <div id="result" style="margin-top:20px; padding:10px; background:#f0f0f0;"></div>
 
     <script>
         // 🔴 REPLACE WITH YOUR ACTUAL CREDENTIALS 🔴
         const SUPABASE_URL = 'https://your-project.supabase.co';
         const SUPABASE_ANON_KEY = 'your-anon-key';
         
-        function testClient() {
-            const result = document.getElementById('result');
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function doSignup() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '⏳ Attempting signup...<br>';
+            resultDiv.innerHTML += `Email: ${email}<br>`;
+            
+            if (!email || !password) {
+                resultDiv.innerHTML = '❌ Please enter email and password';
+                return;
+            }
             
             try {
-                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                result.innerHTML = '✅ Client created successfully!';
-                result.style.color = 'green';
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    resultDiv.innerHTML = '❌ Error: ' + error.message;
+                    resultDiv.style.color = 'red';
+                } else {
+                    resultDiv.innerHTML = '✅ SUCCESS! User created: ' + data.user?.email;
+                    resultDiv.style.color = 'green';
+                }
             } catch (err) {
-                result.innerHTML = '❌ Error: ' + err.message;
-                result.style.color = 'red';
+                resultDiv.innerHTML = '❌ Exception: ' + err.message;
+                resultDiv.style.color = 'red';
             }
         }
+        
+        document.getElementById('result').innerHTML = 'Page loaded. Ready for signup.';
     </script>
 </body>
 </html>
