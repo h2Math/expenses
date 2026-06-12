@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Library Load Test</h1>
+    <div id="result">Checking...</div>
+    
+    <script>
+        if (typeof window.supabase !== 'undefined') {
+            document.getElementById('result').innerHTML = '✅ Supabase library loaded successfully!';
+        } else {
+            document.getElementById('result').innerHTML = '❌ Supabase library NOT loaded. Check internet connection.';
+        }
+        
+        // Also try to create a client with fake credentials to see if it works
+        try {
+            const testClient = window.supabase.createClient('https://test.com', 'test-key');
+            document.getElementById('result').innerHTML += '<br>✅ createClient() works!';
+        } catch(e) {
+            document.getElementById('result').innerHTML += '<br>❌ createClient() error: ' + e.message;
+        }
+    </script>
+</body>
+</html>
