@@ -4,19 +4,24 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <h1>Supabase Load Test</h1>
-    <button onclick="testLoad()">Test Supabase</button>
+    <h1>Supabase Client Test</h1>
+    <button onclick="testClient()">Create Client</button>
     <p id="result">Ready</p>
 
     <script>
-        function testLoad() {
+        // 🔴 REPLACE WITH YOUR ACTUAL CREDENTIALS 🔴
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-anon-key';
+        
+        function testClient() {
             const result = document.getElementById('result');
             
-            if (typeof window.supabase !== 'undefined') {
-                result.innerHTML = '✅ Supabase library loaded!';
+            try {
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                result.innerHTML = '✅ Client created successfully!';
                 result.style.color = 'green';
-            } else {
-                result.innerHTML = '❌ Supabase library NOT loaded';
+            } catch (err) {
+                result.innerHTML = '❌ Error: ' + err.message;
                 result.style.color = 'red';
             }
         }
