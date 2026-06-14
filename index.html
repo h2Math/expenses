@@ -186,6 +186,8 @@
                         <div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage" class="success-msg"></div><div class="form-group"><label>Select Student *</label><select id="lessonStudent"><option value="">-- Select Student --</option></select></div><div class="form-group"><label>Lesson Date & Time *</label><input type="datetime-local" id="lessonStart"><div class="auto-hint">⏱️ End time auto-sets to 1.5 hours later</div></div><div class="form-group"><label>End Time *</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic Covered</label><input type="text" id="lessonTopic" placeholder="e.g., Algebra"></div><div class="form-group"><label>Notes / Homework</label><textarea id="lessonNotes" rows="2" placeholder="Homework assigned"></textarea></div><button onclick="addLesson()" class="btn-primary" style="width:100%">✨ Add Lesson</button></div>
                         <div class="card"><div class="card-title">📅 Monthly Calendar</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Total Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Total Earnings</div></div></div>
                         <button onclick="exportAllToCalendar()" class="btn-calendar" style="width:100%; margin-bottom:15px;">📅 Export All to iPhone Calendar</button>
+<button onclick="renderCalendar()" style="width:100%; margin-bottom:15px; background:#00d09c;">🔄 Test Calendar</button>
+                            
                         <div id="calendarViewContainer"></div>
                     </div>
                 </div>
