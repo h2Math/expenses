@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Tuition Management | Copy & Paste Calendar</title>
+    <title>Tuition Management | Full Features</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tuition Manager">
@@ -97,13 +97,14 @@
         .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #8892b0; }
         .legend-color { width: 16px; height: 16px; background: rgba(0,208,156,0.15); border-left: 3px solid #00d09c; border-radius: 3px; }
         .paste-banner { background: rgba(0,208,156,0.2); border-left: 4px solid #00d09c; padding: 12px; margin-bottom: 15px; text-align: center; border-radius: 12px; cursor: pointer; font-weight: 600; color: #00d09c; }
-        .invoice-container, .analysis-container { background: white; color: #1a1a2e; padding: 30px; border-radius: 20px; font-family: Arial, sans-serif; max-width: 100%; overflow-x: auto; }
+        .invoice-container, .analysis-container { background: white; color: #1a1a2e; padding: 30px; border-radius: 20px; font-family: Arial, sans-serif; max-width: 100%; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .invoice-header, .analysis-header { text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #00d09c; }
         .invoice-title { font-size: 1.5rem; font-weight: 700; color: #00d09c; }
         .invoice-subtitle { font-size: 0.9rem; color: #666; margin-top: 5px; }
         .invoice-dates, .analysis-dates { font-size: 0.75rem; color: #666; margin-top: 5px; }
         .invoice-table, .analysis-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem; }
         .invoice-table th, .invoice-table td, .analysis-table th, .analysis-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .invoice-table th, .analysis-table th { background: #f5f5f5; font-weight: 600; }
         .invoice-total, .analysis-total { text-align: right; font-size: 1rem; font-weight: 700; margin-top: 15px; padding-top: 10px; border-top: 2px solid #00d09c; }
         .auto-hint { font-size: 0.7rem; color: #00d09c; margin-top: 5px; text-align: right; }
         .summary-card { background: rgba(0,208,156,0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; }
@@ -139,7 +140,7 @@
                 <div class="header">
                     <div class="title-section">
                         <h1>📚 Tuition Manager</h1>
-                        <p>Cloud Sync | Copy & Paste Calendar | Edit Times</p>
+                        <p>Cloud Sync | Copy & Paste Calendar | Reports</p>
                     </div>
                     <div class="controls">
                         <button onclick="toggleTheme()">🌓 Dark/Light</button>
@@ -159,13 +160,13 @@
 
                 <div id="groupsView"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add New Family</div><div id="groupFormMessage" class="success-msg"></div><div class="form-group"><label>Family Name</label><input type="text" id="groupName" placeholder="Smith Family"></div><button onclick="addGroup()" class="btn-primary" style="width:100%">Create Family</button></div><div class="card"><div class="card-title">👥 All Families</div><div id="groupList" class="group-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
                 <div id="studentsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage" class="success-msg"></div><div class="form-group"><label>Student Name</label><input type="text" id="studentName" placeholder="Emma Wong"></div><div class="form-group"><label>Select Family</label><select id="studentGroup"><option value="">-- Select --</option></select></div><div class="form-group"><label>Rate Type</label><div class="rate-group"><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="addStudent()" class="btn-primary" style="width:100%">Add Student</button></div><div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList" class="student-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
-                <div id="lessonsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage" class="success-msg"></div><div class="form-group"><label>Select Student</label><select id="lessonStudent"><option value="">-- Select --</option></select></div><div class="form-group"><label>Date & Time</label><input type="datetime-local" id="lessonStart"><div class="auto-hint">⏱️ End time auto-sets to 1.5 hours later</div></div><div class="form-group"><label>End Time</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic</label><input type="text" id="lessonTopic" placeholder="Algebra"></div><div class="form-group"><label>Notes</label><textarea id="lessonNotes" rows="2"></textarea></div><button onclick="addLesson()" class="btn-primary" style="width:100%">Add Lesson</button></div><div class="card"><div class="card-title">📅 Calendar View <span style="font-size:0.7rem;">(Click 📋 to copy, ✏️ to edit time)</span></div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Earnings</div></div></div><div id="calendarViewContainer"></div></div></div></div>
+                <div id="lessonsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage" class="success-msg"></div><div class="form-group"><label>Select Student</label><select id="lessonStudent"><option value="">-- Select --</option></select></div><div class="form-group"><label>Date & Time</label><input type="datetime-local" id="lessonStart"><div class="auto-hint">⏱️ End time auto-sets to 1.5 hours later</div></div><div class="form-group"><label>End Time</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic</label><input type="text" id="lessonTopic" placeholder="Algebra"></div><div class="form-group"><label>Notes</label><textarea id="lessonNotes" rows="2"></textarea></div><button onclick="addLesson()" class="btn-primary" style="width:100%">Add Lesson</button></div><div class="card"><div class="card-title">📅 Calendar View <span style="font-size:0.7rem;">(Click 📋 to copy, ✏️ to edit)</span></div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Earnings</div></div></div><div id="calendarViewContainer"></div></div></div></div>
                 <div id="paymentView" style="display:none"><div class="card"><div class="card-title">💰 Family Payment Status</div><div id="paymentFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>Select Family</label><select id="paymentGroupFilter" onchange="renderGroupPayment()"><option value="">-- Select --</option></select></div><div class="form-group"><label>Status</label><select id="groupPaymentStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="invoiced">Invoiced</option></select></div></div><button onclick="updateGroupPaymentStatus()" class="btn-primary">Update</button><div id="groupPaymentList" class="lesson-list"><div style="text-align:center;padding:40px;color:#8892b0">Select a family</div></div></div></div>
-                <div id="analysisView" style="display:none"><div class="card"><div class="card-title">📊 Fee Analysis</div><div id="analysisFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>From Date</label><input type="date" id="analysisFromDate"></div><div class="form-group"><label>To Date</label><input type="date" id="analysisToDate"></div></div><button onclick="generateAnalysis()" class="btn-primary">Generate Report</button><div id="analysisPreview"></div></div></div>
-                <div id="invoiceView" style="display:none"><div class="card"><div class="card-title">🧾 Generate Invoice</div><div id="invoiceFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>Select Family</label><select id="invoiceGroup"><option value="">-- Select --</option></select></div><div class="form-group"><label>From Date</label><input type="date" id="invoiceFromDate"></div><div class="form-group"><label>To Date</label><input type="date" id="invoiceToDate"></div></div><button onclick="generateInvoice()" class="btn-primary">Generate Invoice</button><div id="invoicePreview"></div></div></div>
+                <div id="analysisView" style="display:none"><div class="card"><div class="card-title">📊 Fee Analysis Report</div><div id="analysisFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>From Date</label><input type="date" id="analysisFromDate"></div><div class="form-group"><label>To Date</label><input type="date" id="analysisToDate"></div></div><div class="button-group"><button onclick="generateAnalysis()" class="btn-primary" style="flex:1">Generate Report</button><button id="shareAnalysisBtn" onclick="shareAnalysis()" class="btn-share" style="flex:1;display:none">Share Report</button></div><div id="analysisPreview" style="display:none;margin-top:20px"></div></div></div>
+                <div id="invoiceView" style="display:none"><div class="card"><div class="card-title">🧾 Generate Invoice</div><div id="invoiceFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>Select Family</label><select id="invoiceGroup"><option value="">-- Select --</option></select></div><div class="form-group"><label>From Date</label><input type="date" id="invoiceFromDate"></div><div class="form-group"><label>To Date</label><input type="date" id="invoiceToDate"></div></div><div class="button-group"><button onclick="generateInvoice()" class="btn-primary" style="flex:1">Generate Invoice</button><button id="shareInvoiceBtn" onclick="shareInvoice()" class="btn-share" style="flex:1;display:none">Share Invoice</button></div><div id="invoicePreview" style="display:none;margin-top:20px"></div></div></div>
                 <div id="backupView" style="display:none"><div class="card"><div class="card-title">💾 Backup & Restore</div><div id="backupFormMessage" class="success-msg"></div><div class="backup-info"><strong>Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div><div class="button-group"><button onclick="exportToFile()" class="btn-backup">Export to File</button><button onclick="importFromFile()" class="btn-primary">Import from File</button></div></div></div>
 
-                <div class="instructions"><h3>📖 How To Use</h3><div class="success-box"><strong>📋 Copy & Paste:</strong><ul><li>Click 📋 on any lesson to copy</li><li>Click any date to paste (preserves original time)</li><li>Click ✏️ to edit lesson time, date, and details</li></ul></div></div>
+                <div class="instructions"><h3>📖 Features</h3><div class="success-box"><strong>📋 Working Features:</strong><ul><li>📅 Calendar with Copy/Paste (preserves time)</li><li>✏️ Edit lesson time, date, topic, notes</li><li>📊 Analysis Report - by Family and Student</li><li>🧾 Invoice - PDF generation and sharing</li><li>💾 Backup/Restore to JSON file</li><li>☁️ Cloud sync via Supabase</li></ul></div></div>
                 <div class="status-text">Last updated: <span id="timestamp">--</span></div>
             </div>
         </div>
@@ -183,11 +184,12 @@
         let currentCalendarYear = new Date().getFullYear();
         let currentCalendarMonth = new Date().getMonth();
         let copiedTransaction = null;
+        let currentInvoiceContainer = null, currentAnalysisContainer = null;
 
         // Helper functions
         function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m)); }
         function formatTime(dateStr) { let d = new Date(dateStr.replace(' ', 'T')); return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
-        function showMessage(msg, type, id) { const d = document.getElementById(id); if (d) { d.textContent = msg; d.style.display = 'block'; setTimeout(() => d.style.display = 'none', 3000); } }
+        function showMessage(msg, type, id) { const d = document.getElementById(id); if (d) { d.textContent = msg; d.style.display = 'block'; d.style.background = type === 'success' ? 'rgba(0,208,156,0.2)' : 'rgba(255,77,109,0.2)'; d.style.color = type === 'success' ? '#00d09c' : '#ff4d6d'; setTimeout(() => d.style.display = 'none', 4000); } }
         function updateTimestamp() { const ts = document.getElementById('timestamp'); if (ts) ts.innerHTML = new Date().toLocaleTimeString(); }
         function toggleTheme() { document.body.classList.toggle('light'); }
         function getDateTimeLocal(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
@@ -224,18 +226,18 @@
         async function saveLessons() { for (const l of lessons) await supabaseClient.from('lessons').upsert({ ...l, user_id: currentUser.id }); }
 
         // CRUD
-        async function addGroup() { const name = document.getElementById('groupName').value.trim(); if (!name) return; groups.push({ id: Date.now().toString(), name, paymentStatus: 'unpaid', user_id: currentUser.id }); await saveGroups(); renderGroups(); updateSelectors(); document.getElementById('groupName').value = ''; updateBackupStats(); }
-        function renderGroups() { const c = document.getElementById('groupList'); if (!c) return; if (!groups.length) { c.innerHTML = '<div style="text-align:center;padding:40px">No families</div>'; return; } c.innerHTML = groups.map(g => `<div class="group-item"><div class="group-info"><div class="group-name">${escapeHtml(g.name)}</div></div><div><button class="edit-btn" onclick='openEditGroup(${JSON.stringify(g)})'>Edit</button><button class="delete-btn" onclick="deleteGroup(\'${g.id}\')">Delete</button></div></div>`).join(''); }
-        window.deleteGroup = async (id) => { groups = groups.filter(g => g.id !== id); await saveGroups(); renderGroups(); updateSelectors(); updateBackupStats(); };
+        async function addGroup() { const name = document.getElementById('groupName').value.trim(); if (!name) return; groups.push({ id: Date.now().toString(), name, paymentStatus: 'unpaid', user_id: currentUser.id }); await saveGroups(); renderGroups(); updateSelectors(); document.getElementById('groupName').value = ''; updateBackupStats(); showMessage('Family created!', 'success', 'groupFormMessage'); }
+        function renderGroups() { const c = document.getElementById('groupList'); if (!c) return; if (!groups.length) { c.innerHTML = '<div style="text-align:center;padding:40px;color:#8892b0">No families</div>'; return; } c.innerHTML = groups.map(g => `<div class="group-item"><div class="group-info"><div class="group-name">${escapeHtml(g.name)}</div></div><div><button class="edit-btn" onclick='openEditGroup(${JSON.stringify(g)})'>Edit</button><button class="delete-btn" onclick="deleteGroup(\'${g.id}\')">Delete</button></div></div>`).join(''); }
+        window.deleteGroup = async (id) => { groups = groups.filter(g => g.id !== id); await saveGroups(); renderGroups(); updateSelectors(); updateBackupStats(); showMessage('Family deleted', 'success', 'groupFormMessage'); };
         window.openEditGroup = (g) => { document.getElementById('editGroupId').value = g.id; document.getElementById('editGroupName').value = g.name; document.getElementById('editGroupPaymentStatus').value = g.paymentStatus || 'unpaid'; document.getElementById('groupModal').style.display = 'flex'; };
-        function saveGroupEdit() { const id = document.getElementById('editGroupId').value; const idx = groups.findIndex(g => g.id === id); if (idx !== -1) { groups[idx].name = document.getElementById('editGroupName').value.trim(); groups[idx].paymentStatus = document.getElementById('editGroupPaymentStatus').value; saveGroups(); renderGroups(); updateSelectors(); closeGroupModal(); updateBackupStats(); } }
+        function saveGroupEdit() { const id = document.getElementById('editGroupId').value; const idx = groups.findIndex(g => g.id === id); if (idx !== -1) { groups[idx].name = document.getElementById('editGroupName').value.trim(); groups[idx].paymentStatus = document.getElementById('editGroupPaymentStatus').value; saveGroups(); renderGroups(); updateSelectors(); closeGroupModal(); updateBackupStats(); showMessage('Family updated', 'success', 'groupFormMessage'); } }
         function closeGroupModal() { document.getElementById('groupModal').style.display = 'none'; }
         
-        async function addStudent() { const name = document.getElementById('studentName').value.trim(); const gid = document.getElementById('studentGroup').value; const rt = document.getElementById('rateType').value; const amt = parseFloat(document.getElementById('rateAmount').value); if (!name || !gid || isNaN(amt)) return; students.push({ id: Date.now().toString(), name, groupId: gid, rateType: rt, rateAmount: amt, user_id: currentUser.id }); await saveStudents(); renderStudents(); updateSelectors(); document.getElementById('studentName').value = ''; document.getElementById('rateAmount').value = ''; updateBackupStats(); }
-        function renderStudents() { const c = document.getElementById('studentList'); if (!c) return; if (!students.length) { c.innerHTML = '<div style="text-align:center;padding:40px">No students</div>'; return; } c.innerHTML = students.map(s => `<div class="student-item"><div class="student-info"><div class="student-name">${escapeHtml(s.name)}</div><div class="student-rate">${s.rateType === 'hourly' ? `$${s.rateAmount}/hr` : `$${s.rateAmount}/session`}</div></div><div><button class="edit-btn" onclick='openEditStudent(${JSON.stringify(s)})'>Edit</button><button class="delete-btn" onclick="deleteStudent(\'${s.id}\')">Delete</button></div></div>`).join(''); }
-        window.deleteStudent = async (id) => { students = students.filter(s => s.id !== id); lessons = lessons.filter(l => l.studentId !== id); await saveStudents(); await saveLessons(); renderStudents(); renderCalendar(); updateSelectors(); updateLessonStats(); updateBackupStats(); };
+        async function addStudent() { const name = document.getElementById('studentName').value.trim(); const gid = document.getElementById('studentGroup').value; const rt = document.getElementById('rateType').value; const amt = parseFloat(document.getElementById('rateAmount').value); if (!name || !gid || isNaN(amt)) return; students.push({ id: Date.now().toString(), name, groupId: gid, rateType: rt, rateAmount: amt, user_id: currentUser.id }); await saveStudents(); renderStudents(); updateSelectors(); document.getElementById('studentName').value = ''; document.getElementById('rateAmount').value = ''; updateBackupStats(); showMessage('Student added!', 'success', 'studentFormMessage'); }
+        function renderStudents() { const c = document.getElementById('studentList'); if (!c) return; if (!students.length) { c.innerHTML = '<div style="text-align:center;padding:40px;color:#8892b0">No students</div>'; return; } c.innerHTML = students.map(s => `<div class="student-item"><div class="student-info"><div class="student-name">${escapeHtml(s.name)}</div><div class="student-rate">${s.rateType === 'hourly' ? `$${s.rateAmount}/hr` : `$${s.rateAmount}/session`}</div></div><div><button class="edit-btn" onclick='openEditStudent(${JSON.stringify(s)})'>Edit</button><button class="delete-btn" onclick="deleteStudent(\'${s.id}\')">Delete</button></div></div>`).join(''); }
+        window.deleteStudent = async (id) => { students = students.filter(s => s.id !== id); lessons = lessons.filter(l => l.studentId !== id); await saveStudents(); await saveLessons(); renderStudents(); renderCalendar(); updateSelectors(); updateLessonStats(); updateBackupStats(); showMessage('Student deleted', 'success', 'studentFormMessage'); };
         window.openEditStudent = (s) => { document.getElementById('editStudentId').value = s.id; document.getElementById('editStudentName').value = s.name; document.getElementById('editRateType').value = s.rateType; document.getElementById('editRateAmount').value = s.rateAmount; const sel = document.getElementById('editStudentGroup'); sel.innerHTML = '<option value="">-- Select --</option>'; groups.forEach(g => { sel.innerHTML += `<option value="${g.id}" ${g.id === s.groupId ? 'selected' : ''}>${g.name}</option>`; }); document.getElementById('studentModal').style.display = 'flex'; };
-        function saveStudentEdit() { const id = document.getElementById('editStudentId').value; const idx = students.findIndex(s => s.id === id); if (idx !== -1) { students[idx].name = document.getElementById('editStudentName').value.trim(); students[idx].groupId = document.getElementById('editStudentGroup').value; students[idx].rateType = document.getElementById('editRateType').value; students[idx].rateAmount = parseFloat(document.getElementById('editRateAmount').value); saveStudents(); renderStudents(); updateSelectors(); closeStudentModal(); updateBackupStats(); } }
+        function saveStudentEdit() { const id = document.getElementById('editStudentId').value; const idx = students.findIndex(s => s.id === id); if (idx !== -1) { students[idx].name = document.getElementById('editStudentName').value.trim(); students[idx].groupId = document.getElementById('editStudentGroup').value; students[idx].rateType = document.getElementById('editRateType').value; students[idx].rateAmount = parseFloat(document.getElementById('editRateAmount').value); saveStudents(); renderStudents(); updateSelectors(); closeStudentModal(); updateBackupStats(); showMessage('Student updated', 'success', 'studentFormMessage'); } }
         function closeStudentModal() { document.getElementById('studentModal').style.display = 'none'; }
         
         async function addLesson() { const sid = document.getElementById('lessonStudent').value; let start = document.getElementById('lessonStart').value; let end = document.getElementById('lessonEnd').value; const topic = document.getElementById('lessonTopic').value; const notes = document.getElementById('lessonNotes').value; if (!sid || !start || !end) return; const student = students.find(s => s.id === sid); if (!student) return; const startStr = start.replace('T', ' ') + ':00', endStr = end.replace('T', ' ') + ':00'; const hours = (new Date(end) - new Date(start)) / 3600000; const earnings = student.rateType === 'hourly' ? hours * student.rateAmount : student.rateAmount; lessons.push({ id: Date.now().toString(), studentId: sid, studentName: student.name, groupId: student.groupId, start: startStr, end: endStr, topic, notes, earnings, hours, user_id: currentUser.id }); await saveLessons(); renderCalendar(); updateLessonStats(); updateBackupStats(); document.getElementById('lessonTopic').value = ''; document.getElementById('lessonNotes').value = ''; showMessage('Lesson added!', 'success', 'lessonFormMessage'); }
@@ -247,35 +249,100 @@
         function updateLessonStats() { document.getElementById('totalLessons').innerHTML = lessons.length; document.getElementById('totalEarnings').innerHTML = `$${lessons.reduce((s,l)=>s+(l.earnings||0),0).toFixed(2)}`; }
         function updateBackupStats() { document.getElementById('backupGroupCount').innerHTML = groups.length; document.getElementById('backupStudentCount').innerHTML = students.length; document.getElementById('backupLessonCount').innerHTML = lessons.length; }
         function renderAll() { renderGroups(); renderStudents(); renderCalendar(); updateLessonStats(); updateBackupStats(); updateSelectors(); }
-        function setDefaultDates() { const now = new Date(); now.setHours(now.getHours()+1); now.setMinutes(0); if (!document.getElementById('lessonStart').value) { document.getElementById('lessonStart').value = getDateTimeLocal(now); const end = new Date(now.getTime()+90*60*1000); document.getElementById('lessonEnd').value = getDateTimeLocal(end); } }
+        function setDefaultDates() { const now = new Date(); now.setHours(now.getHours()+1); now.setMinutes(0); if (!document.getElementById('lessonStart').value) { document.getElementById('lessonStart').value = getDateTimeLocal(now); const end = new Date(now.getTime()+90*60*1000); document.getElementById('lessonEnd').value = getDateTimeLocal(end); } const today = new Date(); const first = new Date(today.getFullYear(), today.getMonth(), 1); const last = new Date(today.getFullYear(), today.getMonth()+1, 0); if (!document.getElementById('analysisFromDate').value) document.getElementById('analysisFromDate').value = first.toISOString().split('T')[0]; if (!document.getElementById('analysisToDate').value) document.getElementById('analysisToDate').value = last.toISOString().split('T')[0]; if (!document.getElementById('invoiceFromDate').value) document.getElementById('invoiceFromDate').value = first.toISOString().split('T')[0]; if (!document.getElementById('invoiceToDate').value) document.getElementById('invoiceToDate').value = last.toISOString().split('T')[0]; }
         function setupAutoEndTime() { const s = document.getElementById('lessonStart'), e = document.getElementById('lessonEnd'); if (s && e) { s.addEventListener('change', () => { if (s.value) { const d = new Date(s.value); const ed = new Date(d.getTime()+90*60*1000); e.value = getDateTimeLocal(ed); } }); } }
         
-        // EDIT LESSON WITH FULL DETAILS (Time, Date, Topic, Notes)
+        // COPY & PASTE FUNCTIONS
+        function cancelCopyMode() {
+            copiedTransaction = null;
+            document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+                day.style.border = '';
+                day.style.cursor = '';
+                day.style.backgroundColor = '';
+                day.removeEventListener('click', pasteToDate);
+            });
+            const banner = document.getElementById('pasteBanner');
+            if (banner) banner.remove();
+            showMessage('Copy mode cancelled', 'success', 'lessonFormMessage');
+        }
+        
+        async function pasteToDate(event) {
+            if (!copiedTransaction) return;
+            const dayElement = event.currentTarget;
+            const day = dayElement.getAttribute('data-day');
+            if (!day) return;
+            const year = currentCalendarYear, month = currentCalendarMonth;
+            const newStart = new Date(year, month, parseInt(day), copiedTransaction.startHour, copiedTransaction.startMinute);
+            const newEnd = new Date(year, month, parseInt(day), copiedTransaction.endHour, copiedTransaction.endMinute);
+            if (newEnd < newStart) newEnd.setDate(newEnd.getDate() + 1);
+            const startStr = `${newStart.getFullYear()}-${String(newStart.getMonth()+1).padStart(2,'0')}-${String(newStart.getDate()).padStart(2,'0')}T${String(newStart.getHours()).padStart(2,'0')}:${String(newStart.getMinutes()).padStart(2,'0')}`;
+            const endStr = `${newEnd.getFullYear()}-${String(newEnd.getMonth()+1).padStart(2,'0')}-${String(newEnd.getDate()).padStart(2,'0')}T${String(newEnd.getHours()).padStart(2,'0')}:${String(newEnd.getMinutes()).padStart(2,'0')}`;
+            const newLesson = { id: Date.now().toString(), studentId: copiedTransaction.studentId, studentName: copiedTransaction.studentName, groupId: copiedTransaction.groupId, start: startStr.replace('T', ' ') + ':00', end: endStr.replace('T', ' ') + ':00', topic: copiedTransaction.topic || '', notes: copiedTransaction.notes || '', earnings: copiedTransaction.earnings, hours: copiedTransaction.hours, user_id: currentUser.id };
+            lessons.push(newLesson);
+            await saveLessons();
+            renderCalendar();
+            updateLessonStats();
+            updateBackupStats();
+            showMessage(`✅ Pasted "${copiedTransaction.studentName}" to ${day}/${month+1}/${year}`, 'success', 'lessonFormMessage');
+            cancelCopyMode();
+        }
+        
+        window.copyTransaction = function(transactionId, event) {
+            event.stopPropagation();
+            const transaction = lessons.find(l => l.id === transactionId);
+            if (!transaction) return;
+            const startDate = new Date(transaction.start.replace(' ', 'T'));
+            const endDate = new Date(transaction.end.replace(' ', 'T'));
+            copiedTransaction = {
+                studentId: transaction.studentId,
+                studentName: transaction.studentName,
+                groupId: transaction.groupId,
+                earnings: transaction.earnings,
+                hours: transaction.hours,
+                topic: transaction.topic,
+                notes: transaction.notes,
+                startHour: startDate.getHours(),
+                startMinute: startDate.getMinutes(),
+                endHour: endDate.getHours(),
+                endMinute: endDate.getMinutes()
+            };
+            document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+                day.style.border = '2px solid #00d09c';
+                day.style.cursor = 'copy';
+                day.style.backgroundColor = 'rgba(0,208,156,0.1)';
+                day.addEventListener('click', pasteToDate);
+            });
+            let banner = document.getElementById('pasteBanner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'pasteBanner';
+                banner.className = 'paste-banner';
+                banner.onclick = cancelCopyMode;
+                const container = document.querySelector('#calendarViewContainer .calendar-container');
+                if (container) container.parentNode.insertBefore(banner, container);
+            }
+            banner.innerHTML = `📋 Copy mode active - "${transaction.studentName}" at ${formatTime(transaction.start)}. Click any date to paste. <span style="text-decoration:underline;">Click here to cancel.</span>`;
+            banner.style.display = 'block';
+            showMessage(`📋 Copied "${transaction.studentName}"`, 'success', 'lessonFormMessage');
+        };
+        
+        // EDIT LESSON FULL
         window.editLessonFull = async function(lessonId, event) {
             event.stopPropagation();
             const lesson = lessons.find(l => l.id === lessonId);
             if (!lesson) return;
-            
-            // Format datetime-local value from stored start string
             const startDate = new Date(lesson.start.replace(' ', 'T'));
             const endDate = new Date(lesson.end.replace(' ', 'T'));
-            const startLocal = getDateTimeLocal(startDate);
-            const endLocal = getDateTimeLocal(endDate);
-            
             const modalHtml = `
                 <div id="editLessonModal" class="modal" style="display:flex">
                     <div class="modal-content">
                         <h3 style="margin-bottom:20px">✏️ Edit Lesson</h3>
                         <div class="form-group"><label>Student</label><select id="editLessonStudent">${students.map(s => `<option value="${s.id}" ${s.id === lesson.studentId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('')}</select></div>
-                        <div class="form-group"><label>Start Date & Time</label><input type="datetime-local" id="editLessonStart" value="${startLocal}"></div>
-                        <div class="form-group"><label>End Date & Time</label><input type="datetime-local" id="editLessonEnd" value="${endLocal}"></div>
+                        <div class="form-group"><label>Start Date & Time</label><input type="datetime-local" id="editLessonStart" value="${getDateTimeLocal(startDate)}"></div>
+                        <div class="form-group"><label>End Date & Time</label><input type="datetime-local" id="editLessonEnd" value="${getDateTimeLocal(endDate)}"></div>
                         <div class="form-group"><label>Topic</label><input type="text" id="editLessonTopic" value="${escapeHtml(lesson.topic || '')}"></div>
                         <div class="form-group"><label>Notes</label><textarea id="editLessonNotes" rows="3">${escapeHtml(lesson.notes || '')}</textarea></div>
-                        <div class="button-group" style="margin-top:20px">
-                            <button onclick="saveLessonEdit('${lessonId}')" class="btn-primary" style="flex:1">💾 Save Changes</button>
-                            <button onclick="deleteLessonFromEdit('${lessonId}')" class="delete-btn" style="flex:1">🗑️ Delete</button>
-                            <button onclick="closeEditLessonModal()" style="flex:0.5">Cancel</button>
-                        </div>
+                        <div class="button-group"><button onclick="saveLessonEdit('${lessonId}')" class="btn-primary" style="flex:1">Save</button><button onclick="deleteLessonFromEdit('${lessonId}')" class="delete-btn" style="flex:1">Delete</button><button onclick="closeEditLessonModal()" style="flex:0.5">Cancel</button></div>
                     </div>
                 </div>
             `;
@@ -327,90 +394,13 @@
                 showMessage('Lesson deleted', 'success', 'lessonFormMessage');
             }
         };
-        
         function closeEditLessonModal() { const modal = document.getElementById('editLessonModal'); if (modal) modal.remove(); }
         
-        // COPY & PASTE - PRESERVING ORIGINAL TIME
-        function cancelCopyMode() {
-            copiedTransaction = null;
-            document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
-                day.style.border = '';
-                day.style.cursor = '';
-                day.style.backgroundColor = '';
-                day.removeEventListener('click', pasteToDate);
-            });
-            const banner = document.getElementById('pasteBanner');
-            if (banner) banner.remove();
-            showMessage('Copy mode cancelled', 'success', 'lessonFormMessage');
-        }
-        
-        async function pasteToDate(event) {
-            if (!copiedTransaction) return;
-            const dayElement = event.currentTarget;
-            const day = dayElement.getAttribute('data-day');
-            if (!day) return;
-            const year = currentCalendarYear, month = currentCalendarMonth;
-            // PRESERVE original time from copied transaction
-            const newStart = new Date(year, month, parseInt(day), copiedTransaction.startHour, copiedTransaction.startMinute);
-            const newEnd = new Date(year, month, parseInt(day), copiedTransaction.endHour, copiedTransaction.endMinute);
-            // If end time is earlier than start (crosses midnight), add a day
-            if (newEnd < newStart) newEnd.setDate(newEnd.getDate() + 1);
-            const startStr = `${newStart.getFullYear()}-${String(newStart.getMonth()+1).padStart(2,'0')}-${String(newStart.getDate()).padStart(2,'0')}T${String(newStart.getHours()).padStart(2,'0')}:${String(newStart.getMinutes()).padStart(2,'0')}`;
-            const endStr = `${newEnd.getFullYear()}-${String(newEnd.getMonth()+1).padStart(2,'0')}-${String(newEnd.getDate()).padStart(2,'0')}T${String(newEnd.getHours()).padStart(2,'0')}:${String(newEnd.getMinutes()).padStart(2,'0')}`;
-            const newLesson = { id: Date.now().toString(), studentId: copiedTransaction.studentId, studentName: copiedTransaction.studentName, groupId: copiedTransaction.groupId, start: startStr.replace('T', ' ') + ':00', end: endStr.replace('T', ' ') + ':00', topic: copiedTransaction.topic || '', notes: copiedTransaction.notes || '', earnings: copiedTransaction.earnings, hours: copiedTransaction.hours, user_id: currentUser.id };
-            lessons.push(newLesson);
-            await saveLessons();
-            renderCalendar();
-            updateLessonStats();
-            updateBackupStats();
-            const timeStr = `${String(copiedTransaction.startHour).padStart(2,'0')}:${String(copiedTransaction.startMinute).padStart(2,'0')}`;
-            showMessage(`✅ Pasted "${copiedTransaction.studentName}" to ${day}/${month+1}/${year} at ${timeStr}`, 'success', 'lessonFormMessage');
-            cancelCopyMode();
-        }
-        
-        window.copyTransaction = function(transactionId, event) {
-            event.stopPropagation();
-            const transaction = lessons.find(l => l.id === transactionId);
-            if (!transaction) return;
-            const startDate = new Date(transaction.start.replace(' ', 'T'));
-            const endDate = new Date(transaction.end.replace(' ', 'T'));
-            copiedTransaction = {
-                studentId: transaction.studentId,
-                studentName: transaction.studentName,
-                groupId: transaction.groupId,
-                earnings: transaction.earnings,
-                hours: transaction.hours,
-                topic: transaction.topic,
-                notes: transaction.notes,
-                startHour: startDate.getHours(),
-                startMinute: startDate.getMinutes(),
-                endHour: endDate.getHours(),
-                endMinute: endDate.getMinutes()
-            };
-            document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
-                day.style.border = '2px solid #00d09c';
-                day.style.cursor = 'copy';
-                day.style.backgroundColor = 'rgba(0,208,156,0.1)';
-                day.addEventListener('click', pasteToDate);
-            });
-            let banner = document.getElementById('pasteBanner');
-            if (!banner) {
-                banner = document.createElement('div');
-                banner.id = 'pasteBanner';
-                banner.className = 'paste-banner';
-                banner.onclick = cancelCopyMode;
-                const container = document.querySelector('#calendarViewContainer .calendar-container');
-                if (container) container.parentNode.insertBefore(banner, container);
-            }
-            banner.innerHTML = `📋 Copy mode active - "${transaction.studentName}" at ${formatTime(transaction.start)}. Click any date to paste. <span style="text-decoration:underline;">Click here to cancel.</span>`;
-            banner.style.display = 'block';
-            showMessage(`📋 Copied "${transaction.studentName}" - preserves ${formatTime(transaction.start)} time`, 'success', 'lessonFormMessage');
-        };
-        
+        // RENDER CALENDAR
         function renderCalendar() {
             const container = document.getElementById('calendarViewContainer');
             if (!container) return;
-            if (!lessons.length) { container.innerHTML = '<div class="calendar-container" style="text-align:center;padding:40px">📅 No lessons yet. Add your first lesson!</div>'; return; }
+            if (!lessons.length) { container.innerHTML = '<div class="calendar-container" style="text-align:center;padding:40px;color:#8892b0">📅 No lessons yet. Add your first lesson!</div>'; return; }
             const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
             const lastDay = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
             const startDay = firstDay.getDay(), daysInMonth = lastDay.getDate();
@@ -422,47 +412,143 @@
                 dayLessons.sort((a,b) => new Date(a.start.replace(' ', 'T')) - new Date(b.start.replace(' ', 'T')));
                 html += `<div class="calendar-day" data-day="${day}"><div class="day-number">${day}</div>`;
                 for (const l of dayLessons) {
-                    const startTime = formatTime(l.start);
-                    const endTime = formatTime(l.end);
                     html += `<div class="calendar-lesson" style="display:flex; justify-content:space-between; align-items:center;">
                         <div style="flex:1; cursor:pointer;" onclick="editLessonFull('${l.id}', event)">
-                            <span class="lesson-time">${startTime} - ${endTime}</span>
+                            <span class="lesson-time">${formatTime(l.start)} - ${formatTime(l.end)}</span>
                             <span class="lesson-student"> ${escapeHtml(l.studentName)}</span>
                             <div style="font-size:0.6rem">$${(l.earnings||0).toFixed(2)}</div>
                         </div>
-                        <div>
-                            <button class="copy-btn" onclick="copyTransaction('${l.id}', event)" title="Copy lesson">📋</button>
-                            <button class="edit-lesson-btn" onclick="editLessonFull('${l.id}', event)" title="Edit lesson time">✏️</button>
-                        </div>
+                        <div><button class="copy-btn" onclick="copyTransaction('${l.id}', event)" title="Copy">📋</button><button class="edit-lesson-btn" onclick="editLessonFull('${l.id}', event)" title="Edit">✏️</button></div>
                     </div>`;
                 }
                 html += `</div>`;
             }
             const total = startDay + daysInMonth;
             for (let i = 0; i < 42 - total; i++) html += `<div class="calendar-day empty"></div>`;
-            html += `</div><div class="calendar-legend"><div class="legend-item"><div class="legend-color"></div><span>📋 Copy | ✏️ Edit time | Click date to paste</span></div></div></div>`;
+            html += `</div><div class="calendar-legend"><div class="legend-item"><div class="legend-color"></div><span>📋 Copy | ✏️ Edit | Click date to paste</span></div></div></div>`;
             container.innerHTML = html;
         }
         
         function changeMonth(delta) { let nm = currentCalendarMonth + delta, ny = currentCalendarYear; if (nm < 0) { nm = 11; ny--; } if (nm > 11) { nm = 0; ny++; } currentCalendarMonth = nm; currentCalendarYear = ny; renderCalendar(); }
+        
+        // ANALYSIS REPORT - WORKING
+        async function generateAnalysis() {
+            const fromDate = document.getElementById('analysisFromDate').value;
+            const toDate = document.getElementById('analysisToDate').value;
+            if (!fromDate || !toDate) { showMessage('Please select a date range', 'error', 'analysisFormMessage'); return; }
+            const filtered = lessons.filter(l => { if (!l.start) return false; const d = new Date(l.start.replace(' ', 'T')); return d >= new Date(fromDate) && d <= new Date(toDate); });
+            if (filtered.length === 0) { showMessage('No lessons found in this date range', 'error', 'analysisFormMessage'); return; }
+            const groupTotals = {}, studentTotals = {};
+            let overallTotal = 0, totalHours = 0;
+            for (const l of filtered) {
+                const group = groups.find(g => g.id === l.groupId);
+                const groupName = group?.name || 'Unknown';
+                groupTotals[groupName] = (groupTotals[groupName] || 0) + l.earnings;
+                if (!studentTotals[l.studentName]) studentTotals[l.studentName] = { group: groupName, earnings: 0, hours: 0, lessons: 0 };
+                studentTotals[l.studentName].earnings += l.earnings;
+                studentTotals[l.studentName].hours += l.hours || 1.5;
+                studentTotals[l.studentName].lessons += 1;
+                overallTotal += l.earnings;
+                totalHours += l.hours || 1.5;
+            }
+            let html = `<div id="analysisContainer" class="analysis-container"><div class="analysis-header"><div class="analysis-title">FEE ANALYSIS REPORT</div><div class="analysis-dates">${new Date(fromDate).toLocaleDateString()} - ${new Date(toDate).toLocaleDateString()}</div></div><div class="summary-card"><div class="summary-number">$${overallTotal.toFixed(2)}</div><div class="summary-label">Total Fees</div><div>📊 ${totalHours.toFixed(1)} hrs | 📚 ${filtered.length} lessons</div></div><h3>By Family</h3><table class="analysis-table"><thead><tr><th>Family</th><th>Total</th><th>%</th></tr></thead><tbody>`;
+            for (const [gn, amt] of Object.entries(groupTotals).sort((a,b)=>b[1]-a[1])) { html += `<tr><td>${escapeHtml(gn)}</td><td>$${amt.toFixed(2)}</td><td>${(amt/overallTotal*100).toFixed(1)}%</td></tr>`; }
+            html += `</tbody></table><h3>By Student</h3><table class="analysis-table"><thead><tr><th>Student</th><th>Family</th><th>Hours</th><th>Lessons</th><th>Total</th></tr></thead><tbody>`;
+            for (const [sn, d] of Object.entries(studentTotals).sort((a,b)=>b[1].earnings-a[1].earnings)) { html += `<tr><td>${escapeHtml(sn)}</td><td>${escapeHtml(d.group)}</td><td>${d.hours.toFixed(1)}</td><td>${d.lessons}</td><td>$${d.earnings.toFixed(2)}</td></tr>`; }
+            html += `</tbody></table><div class="analysis-total"><strong>GRAND TOTAL: $${overallTotal.toFixed(2)}</strong></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Generated ${new Date().toLocaleDateString()}</div></div>`;
+            document.getElementById('analysisPreview').innerHTML = html;
+            document.getElementById('analysisPreview').style.display = 'block';
+            document.getElementById('shareAnalysisBtn').style.display = 'block';
+            currentAnalysisContainer = document.getElementById('analysisContainer');
+            showMessage('Report generated!', 'success', 'analysisFormMessage');
+        }
+        
+        async function shareAnalysis() {
+            if (!currentAnalysisContainer) { showMessage('Generate a report first', 'error', 'analysisFormMessage'); return; }
+            showMessage('Capturing...', 'success', 'analysisFormMessage');
+            try {
+                const canvas = await html2canvas(currentAnalysisContainer, { scale: 2, backgroundColor: '#ffffff' });
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'analysis.png', { type: 'image/png' });
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({ title: 'Fee Analysis', files: [file] });
+                        showMessage('Report shared!', 'success', 'analysisFormMessage');
+                    } else {
+                        const a = document.createElement('a'); a.download = 'analysis.png'; a.href = canvas.toDataURL(); a.click();
+                        showMessage('Image downloaded', 'success', 'analysisFormMessage');
+                    }
+                });
+            } catch(e) { showMessage('Error capturing report', 'error', 'analysisFormMessage'); }
+        }
+        
+        // INVOICE REPORT - WORKING
+        async function generateInvoice() {
+            const groupId = document.getElementById('invoiceGroup').value;
+            const fromDate = document.getElementById('invoiceFromDate').value;
+            const toDate = document.getElementById('invoiceToDate').value;
+            if (!groupId || !fromDate || !toDate) { showMessage('Select family and date range', 'error', 'invoiceFormMessage'); return; }
+            const group = groups.find(g => g.id === groupId);
+            if (!group) { showMessage('Family not found', 'error', 'invoiceFormMessage'); return; }
+            const filtered = lessons.filter(l => { if (!l.start || l.groupId !== groupId) return false; const d = new Date(l.start.replace(' ', 'T')); return d >= new Date(fromDate) && d <= new Date(toDate); });
+            if (filtered.length === 0) { showMessage('No lessons found', 'error', 'invoiceFormMessage'); return; }
+            filtered.sort((a,b) => new Date(a.start.replace(' ', 'T')) - new Date(b.start.replace(' ', 'T')));
+            const totalEarnings = filtered.reduce((s,l) => s + l.earnings, 0);
+            const totalHours = filtered.reduce((s,l) => s + (l.hours || 1.5), 0);
+            let html = `<div id="invoiceContainer" class="invoice-container"><div class="invoice-header"><div class="invoice-title">TUITION INVOICE</div><div class="invoice-subtitle">Mr Lee Math Tuition</div><div class="invoice-dates">Family: ${escapeHtml(group.name)}</div><div class="invoice-dates">Period: ${new Date(fromDate).toLocaleDateString()} to ${new Date(toDate).toLocaleDateString()}</div></div><table class="invoice-table"><thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Duration</th><th>Amount</th></tr></thead><tbody>`;
+            for (const l of filtered) {
+                const ld = new Date(l.start.replace(' ', 'T'));
+                const ed = new Date(l.end.replace(' ', 'T'));
+                const duration = (ed - ld) / 3600000;
+                html += `<tr><td>${ld.toLocaleDateString()}</td><td>${escapeHtml(l.studentName)}</td><td>${ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} - ${ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td>${duration.toFixed(1)} hr${duration!==1?'s':''}</td><td>$${l.earnings.toFixed(2)}</td></tr>`;
+            }
+            html += `</tbody></table><div class="invoice-total"><p><strong>Total Hours:</strong> ${totalHours.toFixed(1)} hrs</p><p><strong>Total Amount:</strong> $${totalEarnings.toFixed(2)}</p></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Thank you!</div></div>`;
+            document.getElementById('invoicePreview').innerHTML = html;
+            document.getElementById('invoicePreview').style.display = 'block';
+            document.getElementById('shareInvoiceBtn').style.display = 'block';
+            currentInvoiceContainer = document.getElementById('invoiceContainer');
+            showMessage('Invoice generated!', 'success', 'invoiceFormMessage');
+        }
+        
+        async function shareInvoice() {
+            if (!currentInvoiceContainer) { showMessage('Generate an invoice first', 'error', 'invoiceFormMessage'); return; }
+            showMessage('Generating PDF...', 'success', 'invoiceFormMessage');
+            try {
+                const canvas = await html2canvas(currentInvoiceContainer, { scale: 2, backgroundColor: '#ffffff' });
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                const blob = pdf.output('blob');
+                const file = new File([blob], 'invoice.pdf', { type: 'application/pdf' });
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: 'Tuition Invoice', files: [file] });
+                    showMessage('Invoice shared!', 'success', 'invoiceFormMessage');
+                } else {
+                    pdf.save('invoice.pdf');
+                    showMessage('PDF downloaded!', 'success', 'invoiceFormMessage');
+                }
+            } catch(e) { showMessage('Error generating PDF', 'error', 'invoiceFormMessage'); }
+        }
+        
+        // Payment status and other functions
+        function renderGroupPayment() { const gid = document.getElementById('paymentGroupFilter').value; if (!gid) return; const group = groups.find(g => g.id === gid); if (group) document.getElementById('groupPaymentStatus').value = group.paymentStatus || 'unpaid'; }
+        function updateGroupPaymentStatus() { const gid = document.getElementById('paymentGroupFilter').value; const ns = document.getElementById('groupPaymentStatus').value; if (!gid) return; const idx = groups.findIndex(g => g.id === gid); if (idx !== -1) { groups[idx].paymentStatus = ns; saveGroups(); renderGroups(); showMessage('Status updated', 'success', 'paymentFormMessage'); } }
+        function exportToFile() { const data = { groups, students, lessons }; const blob = new Blob([JSON.stringify(data)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${Date.now()}.json`; a.click(); showMessage('Data exported!', 'success', 'backupFormMessage'); }
+        function importFromFile() { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json'; inp.onchange = async e => { const file = e.target.files[0]; const r = new FileReader(); r.onload = async ev => { try { const data = JSON.parse(ev.target.result); if (data.groups && data.students && data.lessons) { if (confirm('Replace ALL current data?')) { groups = data.groups; students = data.students; lessons = data.lessons; await saveGroups(); await saveStudents(); await saveLessons(); renderAll(); showMessage('Data restored!', 'success', 'backupFormMessage'); } } else { showMessage('Invalid backup file', 'error', 'backupFormMessage'); } } catch(err) { showMessage('Error reading file', 'error', 'backupFormMessage'); } }; r.readAsText(file); }; inp.click(); }
         
         function switchMode(mode) {
             ['groupsView','studentsView','lessonsView','paymentView','analysisView','invoiceView','backupView'].forEach(v => { const el = document.getElementById(v); if (el) el.style.display = 'none'; });
             const av = document.getElementById(mode + 'View'); if (av) av.style.display = 'block';
             document.querySelectorAll('.mode-btn').forEach(btn => { btn.classList.remove('active'); if (btn.dataset.mode === mode) btn.classList.add('active'); });
             if (mode === 'lessons') { renderCalendar(); updateLessonStats(); }
+            if (mode === 'analysis') { document.getElementById('analysisPreview').style.display = 'none'; document.getElementById('shareAnalysisBtn').style.display = 'none'; currentAnalysisContainer = null; }
+            if (mode === 'invoice') { document.getElementById('invoicePreview').style.display = 'none'; document.getElementById('shareInvoiceBtn').style.display = 'none'; currentInvoiceContainer = null; }
             if (mode === 'backup') updateBackupStats();
             if (mode === 'groups') renderGroups();
             if (mode === 'students') renderStudents();
         }
-        
-        // Stub functions
-        function renderGroupPayment() { const gid = document.getElementById('paymentGroupFilter').value; if (!gid) return; const group = groups.find(g => g.id === gid); if (group) document.getElementById('groupPaymentStatus').value = group.paymentStatus || 'unpaid'; }
-        function updateGroupPaymentStatus() { const gid = document.getElementById('paymentGroupFilter').value; const ns = document.getElementById('groupPaymentStatus').value; if (!gid) return; const idx = groups.findIndex(g => g.id === gid); if (idx !== -1) { groups[idx].paymentStatus = ns; saveGroups(); renderGroups(); } }
-        function generateAnalysis() { alert('Analysis report feature'); }
-        function generateInvoice() { alert('Invoice feature'); }
-        function exportToFile() { const data = { groups, students, lessons }; const blob = new Blob([JSON.stringify(data)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${Date.now()}.json`; a.click(); alert('Exported'); }
-        function importFromFile() { alert('Import feature'); }
         
         setDefaultDates(); setupAutoEndTime(); initSupabase();
     </script>
