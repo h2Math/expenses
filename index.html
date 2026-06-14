@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Tuition Management</title>
-    
+    <title>Tuition Management | Copy & Paste Calendar</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Tuition Management">
+    <meta name="apple-mobile-web-app-title" content="Tuition Manager">
     <meta name="theme-color" content="#00d09c">
     <meta name="mobile-web-app-capable" content="yes">
     
@@ -21,10 +20,8 @@
         body.light { background: #f0f2f5; }
         body.light .card, body.light .instructions, body.light .modal-content, body.light .login-container { background: white; }
         body.light .calendar-day { background: white; border-color: #e2e8f0; }
-        body.light .calendar-day:hover { background: #f0f2f5; }
         .dashboard { max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.1); }
-        body.light .header { border-bottom-color: #e2e8f0; }
         .title-section h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d09c, #4ecdc4); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .title-section p { color: #8892b0; font-size: 0.85rem; margin-top: 5px; }
         .controls { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -44,27 +41,20 @@
         @media (max-width: 768px) { .grid-2cols { grid-template-columns: 1fr; } .mode-selector { width: 100%; justify-content: center; } }
         .card { background: #141832; border-radius: 20px; padding: 25px; border: 1px solid #1e2342; }
         .card-title { font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 20px; border-left: 4px solid #00d09c; padding-left: 15px; }
-        body.light .card-title { color: #1a1a2e; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; color: #8892b0; font-size: 0.85rem; }
         input, textarea, select { width: 100%; padding: 12px; background: #0a0e27; border: 1px solid #1e2342; border-radius: 12px; color: white; font-size: 0.9rem; }
-        body.light input, body.light textarea, body.light select { background: #f0f2f5; color: #1a1a2e; border-color: #e2e8f0; }
-        .rate-group { display: flex; gap: 10px; align-items: center; }
-        .group-list, .student-list, .lesson-list { max-height: 400px; overflow-y: auto; }
-        .group-item, .student-item, .lesson-item { padding: 15px; border-bottom: 1px solid #1e2342; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .group-info, .student-info, .lesson-info { flex: 1; }
+        .group-list, .student-list { max-height: 400px; overflow-y: auto; }
+        .group-item, .student-item { padding: 15px; border-bottom: 1px solid #1e2342; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .group-name, .student-name { font-weight: 600; color: white; font-size: 1rem; }
-        body.light .group-name, body.light .student-name { color: #1a1a2e; }
-        .group-details, .student-rate, .lesson-details { font-size: 0.75rem; color: #8892b0; margin-top: 5px; }
+        .group-details, .student-rate { font-size: 0.75rem; color: #8892b0; margin-top: 5px; }
         .delete-btn { background: rgba(255,77,109,0.2); border: none; color: #ff4d6d; padding: 8px 16px; border-radius: 30px; cursor: pointer; font-weight: 600; }
         .delete-btn:hover { background: #ff4d6d; color: white; }
         .edit-btn { background: rgba(78,205,196,0.2); border: none; color: #4ecdc4; padding: 8px 16px; border-radius: 30px; cursor: pointer; font-weight: 600; margin-right: 8px; }
         .edit-btn:hover { background: #4ecdc4; color: #0a0e27; }
         .instructions { margin-top: 25px; background: #1a2040; border-radius: 20px; padding: 25px; }
-        body.light .instructions { background: #f8fafc; }
         .instructions h3 { color: #00d09c; margin-bottom: 15px; }
         .success-box { background: rgba(0,208,156,0.1); border-left: 4px solid #00d09c; padding: 15px; border-radius: 12px; margin: 15px 0; }
-        .success-msg { background: rgba(0,208,156,0.2); color: #00d09c; padding: 10px 15px; border-radius: 12px; margin-bottom: 15px; display: none; }
         .status-text { text-align: right; font-size: 0.7rem; color: #8892b0; margin-top: 20px; }
         .stats-bar { display: flex; gap: 20px; margin-bottom: 20px; padding: 15px; background: rgba(0,208,156,0.05); border-radius: 12px; flex-wrap: wrap; }
         .stat { text-align: center; flex: 1; }
@@ -79,44 +69,43 @@
         .login-container input { margin-bottom: 15px; }
         .login-toggle { margin-top: 20px; color: #8892b0; cursor: pointer; }
         .login-toggle span { color: #00d09c; text-decoration: underline; }
+        
+        /* Calendar Styles */
         .calendar-container { background: #141832; border-radius: 20px; padding: 20px; border: 1px solid #1e2342; margin-top: 15px; }
         body.light .calendar-container { background: white; }
         .calendar-header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .calendar-title { font-size: 1.5rem; font-weight: 700; color: white; }
-        body.light .calendar-title { color: #1a1a2e; }
         .calendar-nav-btn { background: #1e2342; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; color: white; }
-        body.light .calendar-nav-btn { background: #e2e8f0; color: #1a1a2e; }
         .calendar-nav-btn:hover { background: #00d09c; color: white; }
         .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; }
         .calendar-weekday { padding: 10px; font-weight: 600; color: #8892b0; font-size: 0.9rem; }
         .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .calendar-day { min-height: 100px; background: #1a2040; border-radius: 12px; padding: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid #1e2342; overflow-y: auto; }
+        .calendar-day { min-height: 100px; background: #1a2040; border-radius: 12px; padding: 8px; border: 1px solid #1e2342; overflow-y: auto; transition: all 0.2s; cursor: pointer; }
         body.light .calendar-day { background: #f8fafc; border-color: #e2e8f0; }
         .calendar-day:hover { background: #252b4a; transform: scale(1.02); }
-        body.light .calendar-day:hover { background: #e2e8f0; }
         .calendar-day.empty { background: transparent; border: 1px dashed #1e2342; cursor: default; }
         .day-number { font-weight: 600; margin-bottom: 8px; color: #8892b0; font-size: 0.85rem; }
-        .calendar-lesson { background: rgba(0,208,156,0.15); border-left: 3px solid #00d09c; padding: 4px 6px; margin-bottom: 4px; border-radius: 6px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; }
+        .calendar-lesson { background: rgba(0,208,156,0.15); border-left: 3px solid #00d09c; padding: 4px 6px; margin-bottom: 4px; border-radius: 6px; font-size: 0.7rem; transition: all 0.2s; margin-bottom: 4px; }
         .calendar-lesson:hover { background: rgba(0,208,156,0.3); transform: translateX(2px); }
         .lesson-time { color: #00d09c; font-weight: 600; }
         .lesson-student { color: white; }
-        body.light .lesson-student { color: #1a1a2e; }
+        .copy-btn { background: transparent; border: none; color: #00d09c; cursor: pointer; font-size: 12px; padding: 0 5px; border-radius: 4px; transition: all 0.2s; }
+        .copy-btn:hover { background: rgba(0,208,156,0.3); transform: scale(1.1); }
         .calendar-legend { display: flex; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #1e2342; flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #8892b0; }
         .legend-color { width: 16px; height: 16px; background: rgba(0,208,156,0.15); border-left: 3px solid #00d09c; border-radius: 3px; }
-        .invoice-container, .analysis-container { background: white; color: #1a1a2e; padding: 30px; border-radius: 20px; font-family: Arial, sans-serif; max-width: 100%; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .paste-banner { background: rgba(0,208,156,0.2); border-left: 4px solid #00d09c; padding: 12px; margin-bottom: 15px; text-align: center; border-radius: 12px; cursor: pointer; font-weight: 600; color: #00d09c; }
+        .invoice-container, .analysis-container { background: white; color: #1a1a2e; padding: 30px; border-radius: 20px; font-family: Arial, sans-serif; max-width: 100%; overflow-x: auto; }
         .invoice-header, .analysis-header { text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #00d09c; }
         .invoice-title { font-size: 1.5rem; font-weight: 700; color: #00d09c; }
         .invoice-subtitle { font-size: 0.9rem; color: #666; margin-top: 5px; }
         .invoice-dates, .analysis-dates { font-size: 0.75rem; color: #666; margin-top: 5px; }
         .invoice-table, .analysis-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem; }
         .invoice-table th, .invoice-table td, .analysis-table th, .analysis-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .invoice-table th, .analysis-table th { background: #f5f5f5; font-weight: 600; }
         .invoice-total, .analysis-total { text-align: right; font-size: 1rem; font-weight: 700; margin-top: 15px; padding-top: 10px; border-top: 2px solid #00d09c; }
         .auto-hint { font-size: 0.7rem; color: #00d09c; margin-top: 5px; text-align: right; }
         .summary-card { background: rgba(0,208,156,0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; }
         .summary-number { font-size: 2rem; font-weight: 800; color: #00d09c; }
-        .summary-label { font-size: 0.8rem; color: #666; }
         .payment-status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
         .status-paid { background: rgba(0,208,156,0.2); color: #00d09c; }
         .status-unpaid { background: rgba(255,77,109,0.2); color: #ff4d6d; }
@@ -124,22 +113,21 @@
         .backup-info { background: rgba(0,208,156,0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
         @media (max-width: 768px) {
             .header { flex-direction: column; align-items: stretch; }
-            .delete-btn, .edit-btn { width: 100%; text-align: center; margin-top: 5px; }
-            .stats-bar { flex-direction: column; gap: 10px; }
-            .calendar-day { min-height: 60px; font-size: 0.7rem; }
+            .calendar-day { min-height: 60px; }
             .calendar-lesson { font-size: 0.6rem; }
             .calendar-title { font-size: 1.2rem; }
+            .copy-btn { font-size: 10px; }
         }
     </style>
 </head>
 <body>
     <div id="app">
         <div id="loginScreen" class="login-container">
-            <h2>📚 Tuition Management</h2>
+            <h2>📚 Tuition Manager</h2>
             <p>Sign in to access your data across all devices</p>
             <div id="loginMessage" class="success-msg" style="display:none; margin-bottom:15px;"></div>
-            <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
-            <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+            <input type="email" id="loginEmail" placeholder="Email">
+            <input type="password" id="loginPassword" placeholder="Password">
             <button onclick="handleLogin()" class="btn-primary" style="width:100%">Sign In</button>
             <div class="login-toggle">Don't have an account? <span onclick="showSignup()">Create one</span></div>
         </div>
@@ -148,8 +136,8 @@
             <div class="dashboard">
                 <div class="header">
                     <div class="title-section">
-                        <h1>📚 Tuition Management</h1>
-                        <p>Cloud Sync | Multi-User | Export/Import Backup</p>
+                        <h1>📚 Tuition Manager</h1>
+                        <p>Cloud Sync | Copy & Paste Calendar</p>
                     </div>
                     <div class="controls">
                         <button onclick="toggleTheme()">🌓 Dark/Light</button>
@@ -161,54 +149,28 @@
                     <div class="mode-btn active" data-mode="groups" onclick="switchMode('groups')">👥 Family</div>
                     <div class="mode-btn" data-mode="students" onclick="switchMode('students')">👨‍🎓 Students</div>
                     <div class="mode-btn" data-mode="lessons" onclick="switchMode('lessons')">📅 Calendar</div>
-                    <div class="mode-btn" data-mode="payment" onclick="switchMode('payment')">💰 Payment Status</div>
+                    <div class="mode-btn" data-mode="payment" onclick="switchMode('payment')">💰 Payment</div>
                     <div class="mode-btn" data-mode="analysis" onclick="switchMode('analysis')">📊 Analysis</div>
                     <div class="mode-btn" data-mode="invoice" onclick="switchMode('invoice')">🧾 Invoice</div>
                     <div class="mode-btn" data-mode="backup" onclick="switchMode('backup')">💾 Backup</div>
                 </div>
 
-                <div id="groupsView">
-                    <div class="grid-2cols">
-                        <div class="card"><div class="card-title">➕ Add New Family</div><div id="groupFormMessage" class="success-msg"></div><div class="form-group"><label>Family Name *</label><input type="text" id="groupName" placeholder="e.g., Smith Family"></div><button onclick="addGroup()" class="btn-primary" style="width:100%">✨ Create Family</button></div>
-                        <div class="card"><div class="card-title">👥 All Families</div><div id="groupList" class="group-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div>
-                    </div>
-                </div>
+                <div id="groupsView"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add New Family</div><div id="groupFormMessage" class="success-msg"></div><div class="form-group"><label>Family Name</label><input type="text" id="groupName" placeholder="Smith Family"></div><button onclick="addGroup()" class="btn-primary" style="width:100%">Create Family</button></div><div class="card"><div class="card-title">👥 All Families</div><div id="groupList" class="group-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
+                <div id="studentsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage" class="success-msg"></div><div class="form-group"><label>Student Name</label><input type="text" id="studentName" placeholder="Emma Wong"></div><div class="form-group"><label>Select Family</label><select id="studentGroup"><option value="">-- Select --</option></select></div><div class="form-group"><label>Rate Type</label><div class="rate-group"><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="addStudent()" class="btn-primary" style="width:100%">Add Student</button></div><div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList" class="student-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div></div></div>
+                <div id="lessonsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage" class="success-msg"></div><div class="form-group"><label>Select Student</label><select id="lessonStudent"><option value="">-- Select --</option></select></div><div class="form-group"><label>Date & Time</label><input type="datetime-local" id="lessonStart"><div class="auto-hint">⏱️ End time auto-sets to 1.5 hours later</div></div><div class="form-group"><label>End Time</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic</label><input type="text" id="lessonTopic" placeholder="Algebra"></div><div class="form-group"><label>Notes</label><textarea id="lessonNotes" rows="2"></textarea></div><button onclick="addLesson()" class="btn-primary" style="width:100%">Add Lesson</button></div><div class="card"><div class="card-title">📅 Calendar View <span style="font-size:0.7rem;">(Click 📋 to copy)</span></div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Earnings</div></div></div><div id="calendarViewContainer"></div></div></div></div>
+                <div id="paymentView" style="display:none"><div class="card"><div class="card-title">💰 Family Payment Status</div><div id="paymentFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>Select Family</label><select id="paymentGroupFilter" onchange="renderGroupPayment()"><option value="">-- Select --</option></select></div><div class="form-group"><label>Status</label><select id="groupPaymentStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="invoiced">Invoiced</option></select></div></div><button onclick="updateGroupPaymentStatus()" class="btn-primary">Update</button><div id="groupPaymentList" class="lesson-list"><div style="text-align:center;padding:40px;color:#8892b0">Select a family</div></div></div></div>
+                <div id="analysisView" style="display:none"><div class="card"><div class="card-title">📊 Fee Analysis</div><div id="analysisFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>From Date</label><input type="date" id="analysisFromDate"></div><div class="form-group"><label>To Date</label><input type="date" id="analysisToDate"></div></div><button onclick="generateAnalysis()" class="btn-primary">Generate Report</button><div id="analysisPreview"></div></div></div>
+                <div id="invoiceView" style="display:none"><div class="card"><div class="card-title">🧾 Generate Invoice</div><div id="invoiceFormMessage" class="success-msg"></div><div class="grid-2cols"><div class="form-group"><label>Select Family</label><select id="invoiceGroup"><option value="">-- Select --</option></select></div><div class="form-group"><label>From Date</label><input type="date" id="invoiceFromDate"></div><div class="form-group"><label>To Date</label><input type="date" id="invoiceToDate"></div></div><button onclick="generateInvoice()" class="btn-primary">Generate Invoice</button><div id="invoicePreview"></div></div></div>
+                <div id="backupView" style="display:none"><div class="card"><div class="card-title">💾 Backup & Restore</div><div id="backupFormMessage" class="success-msg"></div><div class="backup-info"><strong>Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div><div class="button-group"><button onclick="exportToFile()" class="btn-backup">Export to File</button><button onclick="importFromFile()" class="btn-primary">Import from File</button></div></div></div>
 
-                <div id="studentsView" style="display:none">
-                    <div class="grid-2cols">
-                        <div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage" class="success-msg"></div><div class="form-group"><label>Student Name *</label><input type="text" id="studentName" placeholder="e.g., Emma Wong"></div><div class="form-group"><label>Select Family *</label><select id="studentGroup"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>Rate Type *</label><div class="rate-group"><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="addStudent()" class="btn-primary" style="width:100%">✨ Add Student</button></div>
-                        <div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList" class="student-list"><div style="text-align:center;padding:40px;color:#8892b0">Loading...</div></div></div>
-                    </div>
-                </div>
-
-                <div id="lessonsView" style="display:none">
-                    <div class="grid-2cols">
-                        <div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage" class="success-msg"></div><div class="form-group"><label>Select Student *</label><select id="lessonStudent"><option value="">-- Select Student --</option></select></div><div class="form-group"><label>Lesson Date & Time *</label><input type="datetime-local" id="lessonStart"><div class="auto-hint">⏱️ End time auto-sets to 1.5 hours later</div></div><div class="form-group"><label>End Time *</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic Covered</label><input type="text" id="lessonTopic" placeholder="e.g., Algebra"></div><div class="form-group"><label>Notes / Homework</label><textarea id="lessonNotes" rows="2" placeholder="Homework assigned"></textarea></div><button onclick="addLesson()" class="btn-primary" style="width:100%">✨ Add Lesson</button></div>
-                        <div class="card"><div class="card-title">📅 Monthly Calendar</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Total Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Total Earnings</div></div></div>
-                        <button onclick="exportAllToCalendar()" class="btn-calendar" style="width:100%; margin-bottom:15px;">📅 Export All to iPhone Calendar</button>
-<button onclick="renderCalendar()" style="width:100%; margin-bottom:15px; background:#00d09c;">🔄 Test Calendar</button>
-                            
-                        <div id="calendarViewContainer"></div>
-                    </div>
-                </div>
-
-                <div id="paymentView" style="display:none">
-                    <div class="card"><div class="card-title">💰 Family Payment Status</div><div id="paymentFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>Select Family</label><select id="paymentGroupFilter" onchange="renderGroupPayment()"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>Payment Status</label><select id="groupPaymentStatus"><option value="unpaid">⚠️ Unpaid</option><option value="paid">✅ Paid</option><option value="invoiced">📄 Invoiced</option></select></div></div><button onclick="updateGroupPaymentStatus()" class="btn-primary" style="width:100%;margin-bottom:20px">💾 Update Payment Status</button><div id="groupPaymentInfo" style="display:none"><div class="stats-bar"><div class="stat"><div class="stat-number" id="groupTotalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="groupTotalAmount">$0</div><div class="stat-label">Total Amount</div></div><div class="stat"><div class="stat-number" id="groupPaymentBadge"></div><div class="stat-label">Current Status</div></div></div></div><div id="groupPaymentList" class="lesson-list"><div style="text-align:center;padding:40px;color:#8892b0">Select a family to view payment status</div></div></div></div>
-
-                <div id="analysisView" style="display:none"><div class="card"><div class="card-title">📊 Fee Analysis & Payment Report</div><div id="analysisFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>From Date *</label><input type="date" id="analysisFromDate"></div><div class="form-group"><label>To Date *</label><input type="date" id="analysisToDate"></div></div><div class="button-group"><button onclick="generateAnalysis()" class="btn-primary" style="flex:1">📊 Generate Report</button><button id="shareAnalysisBtn" onclick="shareAnalysis()" class="btn-share" style="flex:1;display:none">📤 Share Report</button></div><div id="analysisPreview" style="display:none;margin-top:20px"></div></div></div>
-
-                <div id="invoiceView" style="display:none"><div class="card"><div class="card-title">🧾 Generate Invoice</div><div id="invoiceFormMessage" class="success-msg"></div><div class="grid-2cols" style="margin-bottom:20px"><div class="form-group"><label>Select Family *</label><select id="invoiceGroup"><option value="">-- Select Family --</option></select></div><div class="form-group"><label>From Date *</label><input type="date" id="invoiceFromDate"></div><div class="form-group"><label>To Date *</label><input type="date" id="invoiceToDate"></div></div><div class="button-group"><button onclick="generateInvoice()" class="btn-primary" style="flex:1">📄 Generate Invoice</button><button id="shareBtn" onclick="shareInvoice()" class="btn-share" style="flex:1;display:none">📤 Share Invoice</button></div><div id="invoicePreview" style="display:none;margin-top:20px"></div></div></div>
-
-                <div id="backupView" style="display:none"><div class="card"><div class="card-title">💾 Backup & Restore Data</div><div id="backupFormMessage" class="success-msg"></div><div class="backup-info"><strong>📊 Current Data Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div><div class="success-box" style="margin-bottom:20px"><strong>💾 How to Backup:</strong><ul><li>Click <strong>"Export to File"</strong> to save your data as a JSON file</li></ul></div><div class="success-box" style="margin-bottom:20px"><strong>🔄 How to Restore:</strong><ul><li>Click <strong>"Import from File"</strong> to select a previously saved backup file</li><li><strong>⚠️ Warning:</strong> This will replace ALL current data</li></ul></div><div class="button-group"><button onclick="exportToFile()" class="btn-backup" style="flex:1">📁 Export to File</button><button onclick="importFromFile()" class="btn-primary" style="flex:1">📂 Import from File</button></div></div></div>
-
-                <div class="instructions"><h3>📖 How It Works</h3><div class="success-box"><strong>✅ Features:</strong><ul><li>☁️ Cloud Sync - Your data is saved to Supabase</li><li>👥 Multi-User - Each user has private data</li><li>💾 Export/Import Backup</li><li>📅 Calendar View - Click any lesson to edit</li></ul></div></div>
+                <div class="instructions"><h3>📖 How To Use Copy & Paste</h3><div class="success-box"><strong>📋 Copy & Paste Transactions:</strong><ul style="margin-top:10px;margin-left:20px"><li>📌 <strong>Copy</strong> - Click the 📋 button on any lesson in the calendar</li><li>📌 <strong>Paste</strong> - Click any date on the calendar (green border appears)</li><li>📌 <strong>Cancel</strong> - Click the banner at the top to exit paste mode</li><li>📌 The copied lesson will be pasted at 4:00 PM on the selected date</li></ul></div></div>
                 <div class="status-text">Last updated: <span id="timestamp">--</span></div>
             </div>
         </div>
     </div>
 
-    <div id="groupModal" class="modal"><div class="modal-content"><h3>Edit Family</h3><input type="hidden" id="editGroupId"><div class="form-group"><label>Family Name</label><input type="text" id="editGroupName"></div><div class="form-group"><label>Payment Status</label><select id="editGroupPaymentStatus"><option value="unpaid">⚠️ Unpaid</option><option value="paid">✅ Paid</option><option value="invoiced">📄 Invoiced</option></select></div><button onclick="saveGroupEdit()" class="btn-primary">💾 Save</button><button onclick="closeGroupModal()">Cancel</button></div></div>
-    <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><div class="form-group"><label>Student Name</label><input type="text" id="editStudentName"></div><div class="form-group"><label>Family</label><select id="editStudentGroup"></select></div><div class="form-group"><label>Rate Type</label><div class="rate-group"><select id="editRateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="editRateAmount" placeholder="Amount ($)" step="0.01"></div></div><button onclick="saveStudentEdit()" class="btn-primary">💾 Save</button><button onclick="closeStudentModal()">Cancel</button></div></div>
+    <div id="groupModal" class="modal"><div class="modal-content"><h3>Edit Family</h3><input type="hidden" id="editGroupId"><input type="text" id="editGroupName"><select id="editGroupPaymentStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="invoiced">Invoiced</option></select><button onclick="saveGroupEdit()" class="btn-primary">Save</button><button onclick="closeGroupModal()">Cancel</button></div></div>
+    <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><input type="text" id="editStudentName"><select id="editStudentGroup"></select><select id="editRateType"><option value="hourly">Per Hour</option><option value="session">Per Session</option></select><input type="number" id="editRateAmount" step="0.01"><button onclick="saveStudentEdit()" class="btn-primary">Save</button><button onclick="closeStudentModal()">Cancel</button></div></div>
 
     <script>
         const SUPABASE_URL = 'https://trsfjyasjraeqhqoqpve.supabase.co';
@@ -218,6 +180,7 @@
         let groups = [], students = [], lessons = [];
         let currentCalendarYear = new Date().getFullYear();
         let currentCalendarMonth = new Date().getMonth();
+        let copiedTransaction = null;
 
         // Helper functions
         function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m)); }
@@ -226,7 +189,7 @@
         function toggleTheme() { document.body.classList.toggle('light'); }
         function getDateTimeLocal(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
 
-        // Supabase auth
+        // Supabase
         async function initSupabase() {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -241,25 +204,9 @@
                 setInterval(updateTimestamp, 1000);
             }
         }
-        
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) alert(error.message);
-            else location.reload();
-        }
-        
-        async function showSignup() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const { error } = await supabaseClient.auth.signUp({ email, password });
-            if (error) alert(error.message);
-            else alert('Account created! You can now sign in.');
-        }
-        
+        async function handleLogin() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pwd }); if (error) alert(error.message); else location.reload(); }
+        async function showSignup() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; const { error } = await supabaseClient.auth.signUp({ email, password: pwd }); if (error) alert(error.message); else alert('Account created! Please sign in.'); }
         async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
-        
         async function loadAllData() {
             if (!currentUser) return;
             const { data: g } = await supabaseClient.from('groups').select('*').eq('user_id', currentUser.id);
@@ -268,201 +215,168 @@
             if (s) students = s;
             const { data: l } = await supabaseClient.from('lessons').select('*').eq('user_id', currentUser.id);
             if (l) lessons = l;
-            console.log('Loaded lessons:', lessons.length);
         }
-        
         async function saveGroups() { for (const g of groups) await supabaseClient.from('groups').upsert({ ...g, user_id: currentUser.id }); }
         async function saveStudents() { for (const s of students) await supabaseClient.from('students').upsert({ ...s, user_id: currentUser.id }); }
         async function saveLessons() { for (const l of lessons) await supabaseClient.from('lessons').upsert({ ...l, user_id: currentUser.id }); }
-        
+
         // CRUD
-        async function addGroup() {
-            const name = document.getElementById('groupName').value.trim();
-            if (!name) { alert('Enter family name'); return; }
-            groups.push({ id: Date.now().toString(), name: name, paymentStatus: 'unpaid', user_id: currentUser.id });
-            await saveGroups();
-            renderGroups();
-            updateSelectors();
-            document.getElementById('groupName').value = '';
-            updateBackupStats();
-            alert('Family created!');
-        }
-        
-        function renderGroups() {
-            const c = document.getElementById('groupList');
-            if (!c) return;
-            if (!groups.length) { c.innerHTML = '<div style="text-align:center;padding:40px">No families yet</div>'; return; }
-            c.innerHTML = groups.map(g => `<div class="group-item"><div class="group-info"><div class="group-name">${escapeHtml(g.name)}</div></div><div><button class="edit-btn" onclick='openEditGroup(${JSON.stringify(g)})'>✏️ Edit</button><button class="delete-btn" onclick="deleteGroup(\'${g.id}\')">🗑️ Delete</button></div></div>`).join('');
-        }
-        
+        async function addGroup() { const name = document.getElementById('groupName').value.trim(); if (!name) return; groups.push({ id: Date.now().toString(), name, paymentStatus: 'unpaid', user_id: currentUser.id }); await saveGroups(); renderGroups(); updateSelectors(); document.getElementById('groupName').value = ''; updateBackupStats(); }
+        function renderGroups() { const c = document.getElementById('groupList'); if (!c) return; if (!groups.length) { c.innerHTML = '<div style="text-align:center;padding:40px">No families</div>'; return; } c.innerHTML = groups.map(g => `<div class="group-item"><div class="group-info"><div class="group-name">${escapeHtml(g.name)}</div></div><div><button class="edit-btn" onclick='openEditGroup(${JSON.stringify(g)})'>Edit</button><button class="delete-btn" onclick="deleteGroup(\'${g.id}\')">Delete</button></div></div>`).join(''); }
         window.deleteGroup = async (id) => { groups = groups.filter(g => g.id !== id); await saveGroups(); renderGroups(); updateSelectors(); updateBackupStats(); };
-        window.openEditGroup = (g) => { document.getElementById('editGroupId').value = g.id; document.getElementById('editGroupName').value = g.name; document.getElementById('groupModal').style.display = 'flex'; };
-        function saveGroupEdit() { const id = document.getElementById('editGroupId').value; const idx = groups.findIndex(g => g.id === id); if (idx !== -1) { groups[idx].name = document.getElementById('editGroupName').value.trim(); saveGroups(); renderGroups(); updateSelectors(); closeGroupModal(); updateBackupStats(); alert('Updated'); } }
+        window.openEditGroup = (g) => { document.getElementById('editGroupId').value = g.id; document.getElementById('editGroupName').value = g.name; document.getElementById('editGroupPaymentStatus').value = g.paymentStatus || 'unpaid'; document.getElementById('groupModal').style.display = 'flex'; };
+        function saveGroupEdit() { const id = document.getElementById('editGroupId').value; const idx = groups.findIndex(g => g.id === id); if (idx !== -1) { groups[idx].name = document.getElementById('editGroupName').value.trim(); groups[idx].paymentStatus = document.getElementById('editGroupPaymentStatus').value; saveGroups(); renderGroups(); updateSelectors(); closeGroupModal(); updateBackupStats(); } }
         function closeGroupModal() { document.getElementById('groupModal').style.display = 'none'; }
         
-        async function addStudent() {
-            const name = document.getElementById('studentName').value.trim();
-            const gid = document.getElementById('studentGroup').value;
-            const rt = document.getElementById('rateType').value;
-            const amt = parseFloat(document.getElementById('rateAmount').value);
-            if (!name || !gid || isNaN(amt)) { alert('Enter valid info'); return; }
-            students.push({ id: Date.now().toString(), name: name, groupId: gid, rateType: rt, rateAmount: amt, user_id: currentUser.id });
-            await saveStudents();
-            renderStudents();
-            updateSelectors();
-            document.getElementById('studentName').value = '';
-            document.getElementById('rateAmount').value = '';
-            updateBackupStats();
-            alert('Student added!');
-        }
-        
-        function renderStudents() {
-            const c = document.getElementById('studentList');
-            if (!c) return;
-            if (!students.length) { c.innerHTML = '<div style="text-align:center;padding:40px">No students yet</div>'; return; }
-            c.innerHTML = students.map(s => `<div class="student-item"><div class="student-info"><div class="student-name">${escapeHtml(s.name)}</div><div class="student-rate">💰 $${s.rateAmount}/${s.rateType === 'hourly' ? 'hr' : 'session'}</div></div><div><button class="edit-btn" onclick='openEditStudent(${JSON.stringify(s)})'>✏️ Edit</button><button class="delete-btn" onclick="deleteStudent(\'${s.id}\')">🗑️ Delete</button></div></div>`).join('');
-        }
-        
+        async function addStudent() { const name = document.getElementById('studentName').value.trim(); const gid = document.getElementById('studentGroup').value; const rt = document.getElementById('rateType').value; const amt = parseFloat(document.getElementById('rateAmount').value); if (!name || !gid || isNaN(amt)) return; students.push({ id: Date.now().toString(), name, groupId: gid, rateType: rt, rateAmount: amt, user_id: currentUser.id }); await saveStudents(); renderStudents(); updateSelectors(); document.getElementById('studentName').value = ''; document.getElementById('rateAmount').value = ''; updateBackupStats(); }
+        function renderStudents() { const c = document.getElementById('studentList'); if (!c) return; if (!students.length) { c.innerHTML = '<div style="text-align:center;padding:40px">No students</div>'; return; } c.innerHTML = students.map(s => `<div class="student-item"><div class="student-info"><div class="student-name">${escapeHtml(s.name)}</div><div class="student-rate">${s.rateType === 'hourly' ? `$${s.rateAmount}/hr` : `$${s.rateAmount}/session`}</div></div><div><button class="edit-btn" onclick='openEditStudent(${JSON.stringify(s)})'>Edit</button><button class="delete-btn" onclick="deleteStudent(\'${s.id}\')">Delete</button></div></div>`).join(''); }
         window.deleteStudent = async (id) => { students = students.filter(s => s.id !== id); lessons = lessons.filter(l => l.studentId !== id); await saveStudents(); await saveLessons(); renderStudents(); renderCalendar(); updateSelectors(); updateLessonStats(); updateBackupStats(); };
-        window.openEditStudent = (s) => { document.getElementById('editStudentId').value = s.id; document.getElementById('editStudentName').value = s.name; document.getElementById('editRateType').value = s.rateType; document.getElementById('editRateAmount').value = s.rateAmount; document.getElementById('studentModal').style.display = 'flex'; };
-        function saveStudentEdit() { const id = document.getElementById('editStudentId').value; const idx = students.findIndex(s => s.id === id); if (idx !== -1) { students[idx].name = document.getElementById('editStudentName').value.trim(); students[idx].rateType = document.getElementById('editRateType').value; students[idx].rateAmount = parseFloat(document.getElementById('editRateAmount').value); saveStudents(); renderStudents(); updateSelectors(); closeStudentModal(); updateBackupStats(); alert('Updated'); } }
+        window.openEditStudent = (s) => { document.getElementById('editStudentId').value = s.id; document.getElementById('editStudentName').value = s.name; document.getElementById('editRateType').value = s.rateType; document.getElementById('editRateAmount').value = s.rateAmount; const sel = document.getElementById('editStudentGroup'); sel.innerHTML = '<option value="">-- Select --</option>'; groups.forEach(g => { sel.innerHTML += `<option value="${g.id}" ${g.id === s.groupId ? 'selected' : ''}>${g.name}</option>`; }); document.getElementById('studentModal').style.display = 'flex'; };
+        function saveStudentEdit() { const id = document.getElementById('editStudentId').value; const idx = students.findIndex(s => s.id === id); if (idx !== -1) { students[idx].name = document.getElementById('editStudentName').value.trim(); students[idx].groupId = document.getElementById('editStudentGroup').value; students[idx].rateType = document.getElementById('editRateType').value; students[idx].rateAmount = parseFloat(document.getElementById('editRateAmount').value); saveStudents(); renderStudents(); updateSelectors(); closeStudentModal(); updateBackupStats(); } }
         function closeStudentModal() { document.getElementById('studentModal').style.display = 'none'; }
         
-        async function addLesson() {
-            const sid = document.getElementById('lessonStudent').value;
-            let start = document.getElementById('lessonStart').value;
-            let end = document.getElementById('lessonEnd').value;
-            const topic = document.getElementById('lessonTopic').value;
-            const notes = document.getElementById('lessonNotes').value;
-            if (!sid || !start || !end) { alert('Select student and times'); return; }
-            const expense = students.find(s => s.id === sid);
-            if (!expense) return;
-            const startStr = start.replace('T', ' ') + ':00';
-            const endStr = end.replace('T', ' ') + ':00';
-            const newLesson = { id: Date.now().toString(), studentId: sid, studentName: expense.name, groupId: expense.groupId, start: startStr, end: endStr, topic, notes, earnings: expense.rateAmount, hours: 1.5, user_id: currentUser.id };
-            lessons.push(newLesson);
-            await saveLessons();
-            renderCalendar();
-            updateLessonStats();
-            updateBackupStats();
-            document.getElementById('lessonTopic').value = '';
-            document.getElementById('lessonNotes').value = '';
-            alert('Lesson added!');
-        }
+        async function addLesson() { const sid = document.getElementById('lessonStudent').value; let start = document.getElementById('lessonStart').value; let end = document.getElementById('lessonEnd').value; const topic = document.getElementById('lessonTopic').value; const notes = document.getElementById('lessonNotes').value; if (!sid || !start || !end) return; const student = students.find(s => s.id === sid); if (!student) return; const startStr = start.replace('T', ' ') + ':00', endStr = end.replace('T', ' ') + ':00'; const hours = (new Date(end) - new Date(start)) / 3600000; const earnings = student.rateType === 'hourly' ? hours * student.rateAmount : student.rateAmount; lessons.push({ id: Date.now().toString(), studentId: sid, studentName: student.name, groupId: student.groupId, start: startStr, end: endStr, topic, notes, earnings, hours, user_id: currentUser.id }); await saveLessons(); renderCalendar(); updateLessonStats(); updateBackupStats(); document.getElementById('lessonTopic').value = ''; document.getElementById('lessonNotes').value = ''; showMessage('Lesson added!', 'success', 'lessonFormMessage'); }
         
         function updateSelectors() {
-            ['studentGroup', 'editStudentGroup', 'paymentGroupFilter', 'invoiceGroup'].forEach(id => {
-                const sel = document.getElementById(id);
-                if (sel) { sel.innerHTML = '<option value="">-- Select --</option>'; groups.forEach(g => { sel.innerHTML += `<option value="${g.id}">${escapeHtml(g.name)}</option>`; }); }
-            });
-            const ss = document.getElementById('lessonStudent');
-            if (ss) { ss.innerHTML = '<option value="">-- Select --</option>'; students.forEach(s => { ss.innerHTML += `<option value="${s.id}">${escapeHtml(s.name)} - $${s.rateAmount}/${s.rateType === 'hourly' ? 'hr' : 'session'}</option>`; }); }
+            ['studentGroup', 'editStudentGroup', 'paymentGroupFilter', 'invoiceGroup'].forEach(id => { const sel = document.getElementById(id); if (sel) { sel.innerHTML = '<option value="">-- Select --</option>'; groups.forEach(g => { sel.innerHTML += `<option value="${g.id}">${escapeHtml(g.name)}</option>`; }); } });
+            const ss = document.getElementById('lessonStudent'); if (ss) { ss.innerHTML = '<option value="">-- Select --</option>'; students.forEach(s => { ss.innerHTML += `<option value="${s.id}">${escapeHtml(s.name)} - ${s.rateType === 'hourly' ? `$${s.rateAmount}/hr` : `$${s.rateAmount}/session`}</option>`; }); }
         }
-        
         function updateLessonStats() { document.getElementById('totalLessons').innerHTML = lessons.length; document.getElementById('totalEarnings').innerHTML = `$${lessons.reduce((s,l)=>s+(l.earnings||0),0).toFixed(2)}`; }
         function updateBackupStats() { document.getElementById('backupGroupCount').innerHTML = groups.length; document.getElementById('backupStudentCount').innerHTML = students.length; document.getElementById('backupLessonCount').innerHTML = lessons.length; }
         function renderAll() { renderGroups(); renderStudents(); renderCalendar(); updateLessonStats(); updateBackupStats(); updateSelectors(); }
         function setDefaultDates() { const now = new Date(); now.setHours(now.getHours()+1); now.setMinutes(0); if (!document.getElementById('lessonStart').value) { document.getElementById('lessonStart').value = getDateTimeLocal(now); const end = new Date(now.getTime()+90*60*1000); document.getElementById('lessonEnd').value = getDateTimeLocal(end); } }
         function setupAutoEndTime() { const s = document.getElementById('lessonStart'), e = document.getElementById('lessonEnd'); if (s && e) { s.addEventListener('change', () => { if (s.value) { const d = new Date(s.value); const ed = new Date(d.getTime()+90*60*1000); e.value = getDateTimeLocal(ed); } }); } }
         
-        // CALENDAR - WORKING VERSION
+        // COPY & PASTE FUNCTIONALITY
+        function cancelCopyMode() {
+            copiedTransaction = null;
+            document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+                day.style.border = '';
+                day.style.cursor = '';
+                day.style.backgroundColor = '';
+                day.removeEventListener('click', pasteToDate);
+            });
+            const banner = document.getElementById('pasteBanner');
+            if (banner) banner.remove();
+            showMessage('Copy mode cancelled', 'success', 'lessonFormMessage');
+        }
+        
+        async function pasteToDate(event) {
+            if (!copiedTransaction) return;
+            const dayElement = event.currentTarget;
+            const day = dayElement.getAttribute('data-day');
+            if (!day) return;
+            const year = currentCalendarYear, month = currentCalendarMonth;
+            const newStart = new Date(year, month, parseInt(day), 16, 0);
+            const newEnd = new Date(year, month, parseInt(day), 17, 30);
+            const startStr = `${newStart.getFullYear()}-${String(newStart.getMonth()+1).padStart(2,'0')}-${String(newStart.getDate()).padStart(2,'0')}T${String(newStart.getHours()).padStart(2,'0')}:${String(newStart.getMinutes()).padStart(2,'0')}`;
+            const endStr = `${newEnd.getFullYear()}-${String(newEnd.getMonth()+1).padStart(2,'0')}-${String(newEnd.getDate()).padStart(2,'0')}T${String(newEnd.getHours()).padStart(2,'0')}:${String(newEnd.getMinutes()).padStart(2,'0')}`;
+            const newLesson = { id: Date.now().toString(), studentId: copiedTransaction.studentId, studentName: copiedTransaction.studentName, groupId: copiedTransaction.groupId, start: startStr.replace('T', ' ') + ':00', end: endStr.replace('T', ' ') + ':00', topic: copiedTransaction.topic || '', notes: copiedTransaction.notes || '', earnings: copiedTransaction.earnings, hours: copiedTransaction.hours || 1.5, user_id: currentUser.id };
+            lessons.push(newLesson);
+            await saveLessons();
+            renderCalendar();
+            updateLessonStats();
+            updateBackupStats();
+            showMessage(`✅ Pasted "${copiedTransaction.studentName}" to ${day}/${month+1}/${year} at 4:00 PM`, 'success', 'lessonFormMessage');
+            cancelCopyMode();
+        }
+        
+        window.copyTransaction = function(transactionId, event) {
+            event.stopPropagation();
+            const transaction = lessons.find(l => l.id === transactionId);
+            if (!transaction) return;
+            copiedTransaction = {
+                studentId: transaction.studentId,
+                studentName: transaction.studentName,
+                groupId: transaction.groupId,
+                earnings: transaction.earnings,
+                hours: transaction.hours,
+                topic: transaction.topic,
+                notes: transaction.notes
+            };
+            document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+                day.style.border = '2px solid #00d09c';
+                day.style.cursor = 'copy';
+                day.style.backgroundColor = 'rgba(0,208,156,0.1)';
+                day.addEventListener('click', pasteToDate);
+            });
+            let banner = document.getElementById('pasteBanner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'pasteBanner';
+                banner.className = 'paste-banner';
+                banner.onclick = cancelCopyMode;
+                const container = document.querySelector('#calendarViewContainer .calendar-container');
+                if (container) container.parentNode.insertBefore(banner, container);
+            }
+            banner.innerHTML = '📋 Copy mode active - Click any date to paste. <span style="text-decoration:underline;">Click here to cancel.</span>';
+            banner.style.display = 'block';
+            showMessage(`📋 Copied "${transaction.studentName}" - $${transaction.earnings}`, 'success', 'lessonFormMessage');
+        };
+        
+        window.editLesson = async (id, event) => {
+            event.stopPropagation();
+            const l = lessons.find(l => l.id === id);
+            if (!l) return;
+            const newNotes = prompt('Edit lesson notes:', l.notes || '');
+            if (newNotes !== null) { l.notes = newNotes; await saveLessons(); renderCalendar(); showMessage('Notes updated', 'success', 'lessonFormMessage'); }
+        };
+        
         function renderCalendar() {
             const container = document.getElementById('calendarViewContainer');
             if (!container) return;
-            
-            if (!lessons || lessons.length === 0) {
-                container.innerHTML = '<div class="calendar-container" style="text-align:center;padding:40px;color:#8892b0">📅 No lessons yet. Add your first lesson!</div>';
-                return;
-            }
-            
-            const firstDayOfMonth = new Date(currentCalendarYear, currentCalendarMonth, 1);
-            const lastDayOfMonth = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
-            const startDay = firstDayOfMonth.getDay();
-            const daysInMonth = lastDayOfMonth.getDate();
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            
-            let html = `<div class="calendar-container">
-                <div class="calendar-header-nav">
-                    <button class="calendar-nav-btn" onclick="changeMonth(-1)">◀ Previous</button>
-                    <div class="calendar-title">${monthNames[currentCalendarMonth]} ${currentCalendarYear}</div>
-                    <button class="calendar-nav-btn" onclick="changeMonth(1)">Next ▶</button>
-                </div>
-                <div class="calendar-weekdays">
-                    <div class="calendar-weekday">Sun</div><div class="calendar-weekday">Mon</div><div class="calendar-weekday">Tue</div>
-                    <div class="calendar-weekday">Wed</div><div class="calendar-weekday">Thu</div><div class="calendar-weekday">Fri</div>
-                    <div class="calendar-weekday">Sat</div>
-                </div>
-                <div class="calendar-days">`;
-            
+            if (!lessons.length) { container.innerHTML = '<div class="calendar-container" style="text-align:center;padding:40px">📅 No lessons yet. Add your first lesson!</div>'; return; }
+            const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
+            const lastDay = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
+            const startDay = firstDay.getDay(), daysInMonth = lastDay.getDate();
+            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            let html = `<div class="calendar-container"><div class="calendar-header-nav"><button class="calendar-nav-btn" onclick="changeMonth(-1)">◀ Previous</button><div class="calendar-title">${monthNames[currentCalendarMonth]} ${currentCalendarYear}</div><button class="calendar-nav-btn" onclick="changeMonth(1)">Next ▶</button></div><div class="calendar-weekdays"><div class="calendar-weekday">Sun</div><div class="calendar-weekday">Mon</div><div class="calendar-weekday">Tue</div><div class="calendar-weekday">Wed</div><div class="calendar-weekday">Thu</div><div class="calendar-weekday">Fri</div><div class="calendar-weekday">Sat</div></div><div class="calendar-days">`;
             for (let i = 0; i < startDay; i++) html += `<div class="calendar-day empty"></div>`;
-            
             for (let day = 1; day <= daysInMonth; day++) {
-                const dayLessons = lessons.filter(l => {
-                    if (!l.start) return false;
-                    let d = new Date(l.start.replace(' ', 'T'));
-                    return d.getFullYear() === currentCalendarYear && d.getMonth() === currentCalendarMonth && d.getDate() === day;
-                });
+                const dayLessons = lessons.filter(l => { if (!l.start) return false; let d = new Date(l.start.replace(' ', 'T')); return d.getFullYear() === currentCalendarYear && d.getMonth() === currentCalendarMonth && d.getDate() === day; });
                 dayLessons.sort((a,b) => new Date(a.start.replace(' ', 'T')) - new Date(b.start.replace(' ', 'T')));
-                
                 html += `<div class="calendar-day" data-day="${day}"><div class="day-number">${day}</div>`;
                 for (const l of dayLessons) {
                     let d = new Date(l.start.replace(' ', 'T'));
                     let time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    html += `<div class="calendar-lesson" onclick="editLesson('${l.id}', event)">
-                        <span class="lesson-time">${time}</span>
-                        <span class="lesson-student"> ${escapeHtml(l.studentName)}</span>
-                        <div style="font-size:0.6rem">$${(l.earnings||0).toFixed(2)}</div>
+                    html += `<div class="calendar-lesson" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div onclick="editLesson('${l.id}', event)" style="flex:1; cursor:pointer;">
+                            <span class="lesson-time">${time}</span>
+                            <span class="lesson-student"> ${escapeHtml(l.studentName)}</span>
+                            <div style="font-size:0.6rem">$${(l.earnings||0).toFixed(2)}</div>
+                        </div>
+                        <button class="copy-btn" onclick="copyTransaction('${l.id}', event)" title="Copy lesson">📋</button>
                     </div>`;
                 }
                 html += `</div>`;
             }
-            
             const total = startDay + daysInMonth;
             for (let i = 0; i < 42 - total; i++) html += `<div class="calendar-day empty"></div>`;
-            html += `</div><div class="calendar-legend"><div class="legend-item"><div class="legend-color"></div><span>Click lesson to edit notes</span></div></div></div>`;
+            html += `</div><div class="calendar-legend"><div class="legend-item"><div class="legend-color"></div><span>Click 📋 to copy, click lesson to edit, click date to paste</span></div></div></div>`;
             container.innerHTML = html;
         }
         
-        function changeMonth(delta) {
-            let nm = currentCalendarMonth + delta, ny = currentCalendarYear;
-            if (nm < 0) { nm = 11; ny--; }
-            if (nm > 11) { nm = 0; ny++; }
-            currentCalendarMonth = nm;
-            currentCalendarYear = ny;
-            renderCalendar();
-        }
-        
-        window.editLesson = async (id, e) => {
-            e.stopPropagation();
-            const l = lessons.find(l => l.id === id);
-            if (!l) return;
-            const newNotes = prompt('Edit lesson notes:', l.notes || '');
-            if (newNotes !== null) { l.notes = newNotes; await saveLessons(); renderCalendar(); alert('Notes updated'); }
-        };
+        function changeMonth(delta) { let nm = currentCalendarMonth + delta, ny = currentCalendarYear; if (nm < 0) { nm = 11; ny--; } if (nm > 11) { nm = 0; ny++; } currentCalendarMonth = nm; currentCalendarYear = ny; renderCalendar(); }
         
         function switchMode(mode) {
             ['groupsView','studentsView','lessonsView','paymentView','analysisView','invoiceView','backupView'].forEach(v => { const el = document.getElementById(v); if (el) el.style.display = 'none'; });
-            const av = document.getElementById(mode + 'View');
-            if (av) av.style.display = 'block';
+            const av = document.getElementById(mode + 'View'); if (av) av.style.display = 'block';
             document.querySelectorAll('.mode-btn').forEach(btn => { btn.classList.remove('active'); if (btn.dataset.mode === mode) btn.classList.add('active'); });
             if (mode === 'lessons') { renderCalendar(); updateLessonStats(); }
             if (mode === 'backup') updateBackupStats();
+            if (mode === 'groups') renderGroups();
+            if (mode === 'students') renderStudents();
         }
         
-        // Stub functions for other features
-        function renderGroupPayment() {}
-        function updateGroupPaymentStatus() {}
-        function generateAnalysis() { alert('Analysis report'); }
-        function shareAnalysis() { alert('Share report'); }
-        function generateInvoice() { alert('Generate invoice'); }
-        function shareInvoice() { alert('Share invoice'); }
-        function exportAllToCalendar() { alert('Export to Calendar'); }
+        // Stub functions
+        function renderGroupPayment() { const gid = document.getElementById('paymentGroupFilter').value; if (!gid) return; const group = groups.find(g => g.id === gid); if (group) document.getElementById('groupPaymentStatus').value = group.paymentStatus || 'unpaid'; }
+        function updateGroupPaymentStatus() { const gid = document.getElementById('paymentGroupFilter').value; const ns = document.getElementById('groupPaymentStatus').value; if (!gid) return; const idx = groups.findIndex(g => g.id === gid); if (idx !== -1) { groups[idx].paymentStatus = ns; saveGroups(); renderGroups(); } }
+        function generateAnalysis() { alert('Analysis report feature - would generate PDF'); }
+        function generateInvoice() { alert('Invoice feature - would generate PDF'); }
         function exportToFile() { const data = { groups, students, lessons }; const blob = new Blob([JSON.stringify(data)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${Date.now()}.json`; a.click(); alert('Exported'); }
-        function importFromFile() { alert('Import from file - click Backup tab to use'); }
+        function importFromFile() { alert('Import feature - click Backup tab to use'); }
         
-        setDefaultDates();
-        setupAutoEndTime();
-        initSupabase();
+        setDefaultDates(); setupAutoEndTime(); initSupabase();
     </script>
 </body>
 </html>
