@@ -629,33 +629,33 @@
         }
         
         // INVOICE REPORT
-        function generateInvoice() {
-            const groupId = document.getElementById('invoiceGroup').value;
-            const fromDate = document.getElementById('invoiceFromDate').value;
-            const toDate = document.getElementById('invoiceToDate').value;
-            if (!groupId || !fromDate || !toDate) { showMessage('Select family and date range', 'error', 'invoiceFormMessage'); return; }
-            const group = groups.find(g => g.id === groupId);
-            if (!group) { showMessage('Family not found', 'error', 'invoiceFormMessage'); return; }
-            const filtered = lessons.filter(l => { if (!l.start || l.groupId !== groupId) return false; const d = new Date(l.start.replace(' ', 'T')); return d >= new Date(fromDate) && d <= new Date(toDate); });
-            if (filtered.length === 0) { showMessage('No lessons found', 'error', 'invoiceFormMessage'); return; }
-            filtered.sort((a,b) => new Date(a.start.replace(' ', 'T')) - new Date(b.start.replace(' ', 'T')));
-            const totalEarnings = filtered.reduce((s,l) => s + l.earnings, 0);
-            const totalHours = filtered.reduce((s,l) => s + (l.hours || 1.5), 0);
-            let html = `<div id="invoiceContainer" class="invoice-container"><div class="invoice-header"><div class="invoice-title">TUITION INVOICE</div><div class="invoice-subtitle">Mr Lee Math Tuition</div><div class="invoice-dates">Family: ${escapeHtml(group.name)}</div><div class="invoice-dates">Period: ${formatDateDM(fromDate)} to ${formatDateDM(toDate)}</div></div><table class="invoice-table"><thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Duration</th><th>Amount</th></tr></thead><tbody>`;
-            for (const l of filtered) {
-                const ld = new Date(l.start.replace(' ', 'T'));
-                const ed = new Date(l.end.replace(' ', 'T'));
-                const duration = (ed - ld) / 3600000;
-                const formattedDate = `${String(ld.getDate()).padStart(2, '0')}/${String(ld.getMonth() + 1).padStart(2, '0')}/${ld.getFullYear()}`;
-                html += `<tr><td style="padding:8px">${formattedDate}</td><td style="padding:8px">${escapeHtml(l.studentName)}</td><td style="padding:8px">${ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} - ${ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td style="padding:8px">${duration.toFixed(1)} hr${duration!==1?'s':''}</td><td style="padding:8px">$${l.earnings.toFixed(2)}</td></td>`;
-            }
-            html += `</tbody>\\n<div class="invoice-total"><p><strong>Total Hours:</strong> ${totalHours.toFixed(1)} hrs</p><p><strong>Total Amount:</strong> $${totalEarnings.toFixed(2)}</p></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Thank you!</div></div>`;
-            document.getElementById('invoicePreview').innerHTML = html;
-            document.getElementById('invoicePreview').style.display = 'block';
-            document.getElementById('shareInvoiceBtn').style.display = 'block';
-            currentInvoiceContainer = document.getElementById('invoiceContainer');
-            showMessage('Invoice generated!', 'success', 'invoiceFormMessage');
-        }
+      function generateInvoice() {
+    const groupId = document.getElementById('invoiceGroup').value;
+    const fromDate = document.getElementById('invoiceFromDate').value;
+    const toDate = document.getElementById('invoiceToDate').value;
+    if (!groupId || !fromDate || !toDate) { showMessage('Select family and date range', 'error', 'invoiceFormMessage'); return; }
+    const group = groups.find(g => g.id === groupId);
+    if (!group) { showMessage('Family not found', 'error', 'invoiceFormMessage'); return; }
+    const filtered = lessons.filter(l => { if (!l.start || l.groupId !== groupId) return false; const d = new Date(l.start.replace(' ', 'T')); return d >= new Date(fromDate) && d <= new Date(toDate); });
+    if (filtered.length === 0) { showMessage('No lessons found', 'error', 'invoiceFormMessage'); return; }
+    filtered.sort((a,b) => new Date(a.start.replace(' ', 'T')) - new Date(b.start.replace(' ', 'T')));
+    const totalEarnings = filtered.reduce((s,l) => s + l.earnings, 0);
+    const totalHours = filtered.reduce((s,l) => s + (l.hours || 1.5), 0);
+    let html = `<div id="invoiceContainer" class="invoice-container"><div class="invoice-header"><div class="invoice-title">TUITION INVOICE</div><div class="invoice-subtitle">Mr Lee Math Tuition</div><div class="invoice-dates">Family: ${escapeHtml(group.name)}</div><div class="invoice-dates">Period: ${formatDateDM(fromDate)} to ${formatDateDM(toDate)}</div></div><table class="invoice-table"><thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Duration</th><th>Amount</th></tr></thead><tbody>`;
+    for (const l of filtered) {
+        const ld = new Date(l.start.replace(' ', 'T'));
+        const ed = new Date(l.end.replace(' ', 'T'));
+        const duration = (ed - ld) / 3600000;
+        const formattedDate = `${String(ld.getDate()).padStart(2, '0')}/${String(ld.getMonth() + 1).padStart(2, '0')}/${ld.getFullYear()}`;
+        html += `<tr><td style="padding:8px">${formattedDate}</td><td style="padding:8px">${escapeHtml(l.studentName)}</td><td style="padding:8px">${ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} - ${ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td style="padding:8px">${duration.toFixed(1)} hr${duration!==1?'s':''}</td><td style="padding:8px">$${l.earnings.toFixed(2)}</td></tr>`;
+    }
+    html += `</tbody></table><div class="invoice-total"><p><strong>Total Hours:</strong> ${totalHours.toFixed(1)} hrs</p><p><strong>Total Amount:</strong> $${totalEarnings.toFixed(2)}</p></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Thank you!</div></div>`;
+    document.getElementById('invoicePreview').innerHTML = html;
+    document.getElementById('invoicePreview').style.display = 'block';
+    document.getElementById('shareInvoiceBtn').style.display = 'block';
+    currentInvoiceContainer = document.getElementById('invoiceContainer');
+    showMessage('Invoice generated!', 'success', 'invoiceFormMessage');
+}
         
         // SHARE INVOICE WITH CUSTOM MESSAGE - "Hi Smith" (no extra "Family" word)
         function shareInvoice() {
