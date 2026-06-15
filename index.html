@@ -697,82 +697,44 @@
             currentInvoiceContainer = document.getElementById('invoiceContainer');
             showMessage('Invoice generated!', 'success', 'invoiceFormMessage');
         }
-        
-        async function shareInvoice() {
-            if (!currentInvoiceContainer) { 
-                showMessage('Generate an invoice first', 'error', 'invoiceFormMessage'); 
-                return; 
-            }
-            
-            const groupId = document.getElementById('invoiceGroup').value;
-            const family = groups.find(g => g.id === groupId);
-            const fromDate = document.getElementById('invoiceFromDate').value;
-            const toDate = document.getElementById('invoiceToDate').value;
-            
-            const totalElement = document.querySelector('#invoiceContainer .invoice-total p:last-child');
-            let totalAmount = '0.00';
-            if (totalElement) {
-                const match = totalElement.innerText.match(/\$([\d.]+)/);
-                if (match) totalAmount = match[1];
-            }
-            
-            const familyName = family?.name || 'Parent';
-            const dateRange = `${formatDateDM(fromDate)} - ${formatDateDM(toDate)}`;
-            const messageText = `Hi ${familyName}, $${totalAmount} for ${dateRange}. Thank you.`;
-            
-            showMessage('Generating PDF...', 'success', 'invoiceFormMessage');
-            
-            try {
-                // TEMPORARILY EXPAND TO SHOW FULL CONTENT
-                const originalStyle = {
-                    height: currentInvoiceContainer.style.height,
-                    maxHeight: currentInvoiceContainer.style.maxHeight,
-                    overflow: currentInvoiceContainer.style.overflow
-                };
-                
-                currentInvoiceContainer.style.height = 'auto';
-                currentInvoiceContainer.style.maxHeight = 'none';
-                currentInvoiceContainer.style.overflow = 'visible';
-                
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                const canvas = await html2canvas(currentInvoiceContainer, { 
-                    scale: 2,
-                    backgroundColor: '#ffffff'
-                });
-                
-                // Restore original styles
-                currentInvoiceContainer.style.height = originalStyle.height;
-                currentInvoiceContainer.style.maxHeight = originalStyle.maxHeight;
-                currentInvoiceContainer.style.overflow = originalStyle.overflow;
-                
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = 210;
-                const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-                
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-                
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
-                
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        title: 'Tuition Invoice',
-                        text: messageText,
-                        files: [file]
-                    });
-                    showMessage('Invoice shared successfully!', 'success', 'invoiceFormMessage');
-                } else {
-                    pdf.save('Tuition_Invoice.pdf');
-                    showMessage('PDF downloaded!', 'success', 'invoiceFormMessage');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showMessage('Error generating PDF', 'error', 'invoiceFormMessage');
-            }
-        }
+        function generateInvoice() {
+    const groupId = document.getElementById('invoiceGroup').value;
+    const fromDate = document.getElementById('invoiceFromDate').value;
+    const toDate = document.getElementById('invoiceToDate').value;
+    
+    if (!groupId || !fromDate || !toDate) { 
+        showMessage('Select family and date range', 'error', 'invoiceFormMessage'); 
+        return; 
+    }
+    
+    const group = groups.find(g => g.id === groupId);
+    if (!group) { 
+        showMessage('Family not found', 'error', 'invoiceFormMessage'); 
+        return; 
+    }
+    
+    // SIMPLIFIED FILTERING - Get ALL lessons for this family first
+    let filtered = lessons.filter(l => l.groupId === groupId);
+    
+    // Then filter by date (more robust method)
+    filtered = filtered.filter(l => {
+        if (!l.start) return false;
+        const lessonDateStr = l.start.split(' ')[0]; // Get YYYY-MM-DD
+        return lessonDateStr >= fromDate && lessonDateStr <= toDate;
+    });
+    
+    if (filtered.length === 0) { 
+        showMessage(`No lessons found for ${group.name} from ${fromDate} to ${toDate}`, 'error', 'invoiceFormMessage'); 
+        return; 
+    }
+    
+    // Rest of the function remains the same...
+    filtered.sort((a,b) => a.start.localeCompare(b.start));
+    const totalEarnings = filtered.reduce((s,l) => s + l.earnings, 0);
+    const totalHours = filtered.reduce((s,l) => s + (l.hours || 1.5), 0);
+    
+    // ... rest of HTML generation
+}
         
         // ============ BACKUP ============
         function exportToFile() {
