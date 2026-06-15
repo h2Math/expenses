@@ -99,38 +99,38 @@
                     <p>Local Storage | Offline | Export/Import Backup</p>
                 </div>
                 <div class="controls">
-                    <button onclick="window.toggleTheme()">🌓 Dark/Light</button>
-                    <button onclick="window.resetAllData()" style="background:linear-gradient(135deg,#ff4d6d,#c9184a); color:white;">🗑️ Reset All Data</button>
+                    <button id="themeBtn">🌓 Dark/Light</button>
+                    <button id="resetBtn" style="background:linear-gradient(135deg,#ff4d6d,#c9184a); color:white;">🗑️ Reset All Data</button>
                 </div>
             </div>
 
             <div class="mode-selector">
-                <div class="mode-btn active" data-mode="groups" onclick="window.switchMode('groups')">👥 Family</div>
-                <div class="mode-btn" data-mode="students" onclick="window.switchMode('students')">👨‍🎓 Students</div>
-                <div class="mode-btn" data-mode="lessons" onclick="window.switchMode('lessons')">📅 Calendar</div>
-                <div class="mode-btn" data-mode="payment" onclick="window.switchMode('payment')">💰 Payment</div>
-                <div class="mode-btn" data-mode="analysis" onclick="window.switchMode('analysis')">📊 Analysis</div>
-                <div class="mode-btn" data-mode="invoice" onclick="window.switchMode('invoice')">🧾 Invoice</div>
-                <div class="mode-btn" data-mode="backup" onclick="window.switchMode('backup')">💾 Backup</div>
+                <div class="mode-btn active" data-mode="groups">👥 Family</div>
+                <div class="mode-btn" data-mode="students">👨‍🎓 Students</div>
+                <div class="mode-btn" data-mode="lessons">📅 Calendar</div>
+                <div class="mode-btn" data-mode="payment">💰 Payment</div>
+                <div class="mode-btn" data-mode="analysis">📊 Analysis</div>
+                <div class="mode-btn" data-mode="invoice">🧾 Invoice</div>
+                <div class="mode-btn" data-mode="backup">💾 Backup</div>
             </div>
 
             <div id="groupsView">
                 <div class="grid-2cols">
-                    <div class="card"><div class="card-title">➕ Add New Family</div><div id="groupFormMessage"></div><div class="form-group"><label>Family Name</label><input type="text" id="groupName" placeholder="Smith"></div><button onclick="window.addGroup()" class="btn-primary" style="width:100%">Create Family</button></div>
+                    <div class="card"><div class="card-title">➕ Add New Family</div><div id="groupFormMessage"></div><div class="form-group"><label>Family Name</label><input type="text" id="groupName" placeholder="Smith"></div><button id="addGroupBtn" class="btn-primary" style="width:100%">Create Family</button></div>
                     <div class="card"><div class="card-title">👥 All Families</div><div id="groupList" class="group-list"></div></div>
                 </div>
             </div>
 
             <div id="studentsView" style="display:none">
                 <div class="grid-2cols">
-                    <div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage"></div><div class="form-group"><label>Student Name</label><input type="text" id="studentName" placeholder="Emma Wong"></div><div class="form-group"><label>Select Family</label><select id="studentGroup"></select></div><div class="form-group"><label>Rate Type</label><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)" step="0.01"></div><button onclick="window.addStudent()" class="btn-primary" style="width:100%">Add Student</button></div>
+                    <div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage"></div><div class="form-group"><label>Student Name</label><input type="text" id="studentName" placeholder="Emma Wong"></div><div class="form-group"><label>Select Family</label><select id="studentGroup"></select></div><div class="form-group"><label>Rate Type</label><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)" step="0.01"></div><button id="addStudentBtn" class="btn-primary" style="width:100%">Add Student</button></div>
                     <div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList" class="student-list"></div></div>
                 </div>
             </div>
 
             <div id="lessonsView" style="display:none">
                 <div class="grid-2cols">
-                    <div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage"></div><div class="form-group"><label>Select Student</label><select id="lessonStudent"></select></div><div class="form-group"><label>Date & Time</label><input type="datetime-local" id="lessonStart"></div><div class="form-group"><label>End Time</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic</label><input type="text" id="lessonTopic" placeholder="Algebra"></div><div class="form-group"><label>Notes</label><textarea id="lessonNotes" rows="2"></textarea></div><button onclick="window.addLesson()" class="btn-primary" style="width:100%">Add Lesson</button></div>
+                    <div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage"></div><div class="form-group"><label>Select Student</label><select id="lessonStudent"></select></div><div class="form-group"><label>Date & Time</label><input type="datetime-local" id="lessonStart"></div><div class="form-group"><label>End Time</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic</label><input type="text" id="lessonTopic" placeholder="Algebra"></div><div class="form-group"><label>Notes</label><textarea id="lessonNotes" rows="2"></textarea></div><button id="addLessonBtn" class="btn-primary" style="width:100%">Add Lesson</button></div>
                     <div class="card"><div class="card-title">📅 Calendar View</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Earnings</div></div></div><div id="calendarViewContainer"></div></div>
                 </div>
             </div>
@@ -138,10 +138,10 @@
             <div id="paymentView" style="display:none">
                 <div class="card"><div class="card-title">💰 Family Payment Status</div><div id="paymentFormMessage"></div>
                     <div class="grid-2cols">
-                        <div class="form-group"><label>Select Family</label><select id="paymentGroupFilter" onchange="window.renderGroupPayment()"></select></div>
+                        <div class="form-group"><label>Select Family</label><select id="paymentGroupFilter"></select></div>
                         <div class="form-group"><label>Status</label><select id="groupPaymentStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="invoiced">Invoiced</option></select></div>
                     </div>
-                    <button onclick="window.updateGroupPaymentStatus()" class="btn-primary">Update Status</button>
+                    <button id="updatePaymentBtn" class="btn-primary">Update Status</button>
                     <div id="groupPaymentInfo" style="margin-top: 15px; padding: 10px; background: rgba(0,208,156,0.1); border-radius: 12px;">
                         <strong>Total Lessons: <span id="groupTotalLessons">0</span></strong> | 
                         <strong>Total Amount: <span id="groupTotalAmount">$0</span></strong>
@@ -157,8 +157,8 @@
                         <div class="form-group"><label>To Date</label><input type="date" id="analysisToDate"></div>
                     </div>
                     <div class="button-group">
-                        <button onclick="window.generateAnalysis()" class="btn-primary" style="flex:1">Generate Report</button>
-                        <button id="shareAnalysisBtn" onclick="window.shareAnalysis()" class="btn-share" style="flex:1;display:none">Share Report</button>
+                        <button id="generateAnalysisBtn" class="btn-primary" style="flex:1">Generate Report</button>
+                        <button id="shareAnalysisBtn" class="btn-share" style="flex:1;display:none">Share Report</button>
                     </div>
                     <div id="analysisPreview" style="display:none;margin-top:20px"></div>
                 </div>
@@ -172,8 +172,8 @@
                         <div class="form-group"><label>To Date</label><input type="date" id="invoiceToDate"></div>
                     </div>
                     <div class="button-group">
-                        <button onclick="window.generateInvoice()" class="btn-primary" style="flex:1">Generate Invoice</button>
-                        <button id="shareInvoiceBtn" onclick="window.shareInvoice()" class="btn-share" style="flex:1;display:none">Share Invoice</button>
+                        <button id="generateInvoiceBtn" class="btn-primary" style="flex:1">Generate Invoice</button>
+                        <button id="shareInvoiceBtn" class="btn-share" style="flex:1;display:none">Share Invoice</button>
                     </div>
                     <div id="invoicePreview" style="display:none;margin-top:20px"></div>
                 </div>
@@ -182,7 +182,7 @@
             <div id="backupView" style="display:none">
                 <div class="card"><div class="card-title">💾 Backup & Restore</div><div id="backupFormMessage"></div>
                     <div class="backup-info"><strong>📊 Current Data Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div>
-                    <div class="button-group"><button onclick="window.exportToFile()" class="btn-backup">Export to File</button><button onclick="window.importFromFile()" class="btn-primary">Import from File</button></div>
+                    <div class="button-group"><button id="exportBtn" class="btn-backup">Export to File</button><button id="importBtn" class="btn-primary">Import from File</button></div>
                     <div class="success-box"><strong>💾 Data Location:</strong> All data is stored locally on this device only.</div>
                 </div>
             </div>
@@ -197,11 +197,11 @@
         </div>
     </div>
 
-    <div id="groupModal" class="modal"><div class="modal-content"><h3>Edit Family</h3><input type="hidden" id="editGroupId"><input type="text" id="editGroupName" placeholder="Family Name"><select id="editGroupPaymentStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="invoiced">Invoiced</option></select><div class="button-group"><button onclick="window.saveGroupEdit()" class="btn-primary">Save</button><button onclick="window.closeGroupModal()">Cancel</button></div></div></div>
-    <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><input type="text" id="editStudentName" placeholder="Student Name"><select id="editStudentGroup"></select><select id="editRateType"><option value="hourly">Per Hour</option><option value="session">Per Session</option></select><input type="number" id="editRateAmount" step="0.01" placeholder="Amount"><div class="button-group"><button onclick="window.saveStudentEdit()" class="btn-primary">Save</button><button onclick="window.closeStudentModal()">Cancel</button></div></div></div>
+    <div id="groupModal" class="modal"><div class="modal-content"><h3>Edit Family</h3><input type="hidden" id="editGroupId"><input type="text" id="editGroupName" placeholder="Family Name"><select id="editGroupPaymentStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="invoiced">Invoiced</option></select><div class="button-group"><button id="saveGroupBtn" class="btn-primary">Save</button><button id="cancelGroupBtn">Cancel</button></div></div></div>
+    <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><input type="text" id="editStudentName" placeholder="Student Name"><select id="editStudentGroup"></select><select id="editRateType"><option value="hourly">Per Hour</option><option value="session">Per Session</option></select><input type="number" id="editRateAmount" step="0.01" placeholder="Amount"><div class="button-group"><button id="saveStudentBtn" class="btn-primary">Save</button><button id="cancelStudentBtn">Cancel</button></div></div></div>
 
     <script>
-        // Data storage
+        // ============ DATA STORAGE ============
         let groups = [];
         let students = [];
         let lessons = [];
@@ -301,8 +301,16 @@
                 const totalEarnings = lessons.filter(function(l) { return l.groupId === g.id; }).reduce(function(s,l) { return s + l.earnings; }, 0);
                 const cls = g.paymentStatus === 'paid' ? 'status-paid' : 'status-unpaid';
                 const txt = g.paymentStatus === 'paid' ? 'Paid' : 'Unpaid';
-                return '<div class="group-item"><div><div class="group-name">' + escapeHtml(g.name) + '</div><div class="group-details">Students: ' + studentCount + ' | Lessons: ' + lessonCount + ' | $' + totalEarnings.toFixed(2) + '</div><div><span class="payment-status-badge ' + cls + '">' + txt + '</span></div></div><div><button class="edit-btn" onclick="window.openEditGroup(\'' + g.id + '\')">Edit</button><button class="delete-btn" onclick="window.deleteGroup(\'' + g.id + '\')">Delete</button></div></div>';
+                return '<div class="group-item"><div><div class="group-name">' + escapeHtml(g.name) + '</div><div class="group-details">Students: ' + studentCount + ' | Lessons: ' + lessonCount + ' | $' + totalEarnings.toFixed(2) + '</div><div><span class="payment-status-badge ' + cls + '">' + txt + '</span></div></div><div><button class="edit-btn" data-id="' + g.id + '" data-type="group">Edit</button><button class="delete-btn" data-id="' + g.id + '" data-type="group">Delete</button></div></div>';
             }).join('');
+            
+            // Attach event listeners to edit/delete buttons
+            document.querySelectorAll('#groupList .edit-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() { openEditGroup(btn.getAttribute('data-id')); });
+            });
+            document.querySelectorAll('#groupList .delete-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() { deleteGroup(btn.getAttribute('data-id')); });
+            });
         }
         
         function deleteGroup(id) { 
@@ -364,8 +372,15 @@
             c.innerHTML = students.map(function(s) {
                 const g = groups.find(function(g) { return g.id === s.groupId; });
                 const rate = s.rateType === 'hourly' ? '$' + s.rateAmount + '/hour' : '$' + s.rateAmount + '/session';
-                return '<div class="student-item"><div><div class="student-name">' + escapeHtml(s.name) + '</div><div class="student-rate">Family: ' + (g?.name || 'No Family') + ' | Rate: ' + rate + '</div><div class="student-rate">Lessons: ' + lessons.filter(function(l) { return l.studentId === s.id; }).length + '</div></div><div><button class="edit-btn" onclick="window.openEditStudent(\'' + s.id + '\')">Edit</button><button class="delete-btn" onclick="window.deleteStudent(\'' + s.id + '\')">Delete</button></div></div>';
+                return '<div class="student-item"><div><div class="student-name">' + escapeHtml(s.name) + '</div><div class="student-rate">Family: ' + (g?.name || 'No Family') + ' | Rate: ' + rate + '</div><div class="student-rate">Lessons: ' + lessons.filter(function(l) { return l.studentId === s.id; }).length + '</div></div><div><button class="edit-btn" data-id="' + s.id + '" data-type="student">Edit</button><button class="delete-btn" data-id="' + s.id + '" data-type="student">Delete</button></div></div>';
             }).join('');
+            
+            document.querySelectorAll('#studentList .edit-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() { openEditStudent(btn.getAttribute('data-id')); });
+            });
+            document.querySelectorAll('#studentList .delete-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() { deleteStudent(btn.getAttribute('data-id')); });
+            });
         }
         
         function deleteStudent(id) { 
@@ -522,7 +537,7 @@
             var startDay = firstDay.getDay();
             var daysInMonth = lastDay.getDate();
             var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-            var html = '<div class="calendar-container"><div class="calendar-header-nav"><button class="calendar-nav-btn" onclick="window.changeMonth(-1)">◀ Previous</button><div class="calendar-title">' + monthNames[currentCalendarMonth] + ' ' + currentCalendarYear + '</div><button class="calendar-nav-btn" onclick="window.changeMonth(1)">Next ▶</button></div><div class="calendar-weekdays"><div class="calendar-weekday">Sun</div><div class="calendar-weekday">Mon</div><div class="calendar-weekday">Tue</div><div class="calendar-weekday">Wed</div><div class="calendar-weekday">Thu</div><div class="calendar-weekday">Fri</div><div class="calendar-weekday">Sat</div></div><div class="calendar-days">';
+            var html = '<div class="calendar-container"><div class="calendar-header-nav"><button class="calendar-nav-btn" data-delta="-1">◀ Previous</button><div class="calendar-title">' + monthNames[currentCalendarMonth] + ' ' + currentCalendarYear + '</div><button class="calendar-nav-btn" data-delta="1">Next ▶</button></div><div class="calendar-weekdays"><div class="calendar-weekday">Sun</div><div class="calendar-weekday">Mon</div><div class="calendar-weekday">Tue</div><div class="calendar-weekday">Wed</div><div class="calendar-weekday">Thu</div><div class="calendar-weekday">Fri</div><div class="calendar-weekday">Sat</div></div><div class="calendar-days">';
             for (var i = 0; i < startDay; i++) html += '<div class="calendar-day empty"></div>';
             for (var day = 1; day <= daysInMonth; day++) {
                 var dayLessons = [];
@@ -538,7 +553,7 @@
                 html += '<div class="calendar-day" data-day="' + day + '"><div class="day-number">' + day + '</div>';
                 for (var k = 0; k < dayLessons.length; k++) {
                     var l = dayLessons[k];
-                    html += '<div class="calendar-lesson" style="display:flex; justify-content:space-between; align-items:center;"><div style="flex:1; cursor:pointer;" onclick="window.editLessonFull(\'' + l.id + '\', event)"><span class="lesson-time">' + formatTime(l.start) + ' - ' + formatTime(l.end) + '</span> <span>' + escapeHtml(l.studentName) + '</span><div style="font-size:0.6rem">$' + (l.earnings||0).toFixed(2) + '</div></div><div><button class="copy-btn" onclick="window.copyTransaction(\'' + l.id + '\', event)" title="Copy">📋</button></div></div>';
+                    html += '<div class="calendar-lesson" style="display:flex; justify-content:space-between; align-items:center;"><div style="flex:1;"><span class="lesson-time">' + formatTime(l.start) + ' - ' + formatTime(l.end) + '</span> <span>' + escapeHtml(l.studentName) + '</span><div style="font-size:0.6rem">$' + (l.earnings||0).toFixed(2) + '</div></div><div><button class="copy-btn" data-id="' + l.id + '" title="Copy">📋</button></div></div>';
                 }
                 html += '</div>';
             }
@@ -546,6 +561,22 @@
             for (var m = 0; m < 42 - total; m++) html += '<div class="calendar-day empty"></div>';
             html += '</div></div>';
             container.innerHTML = html;
+            
+            // Attach event listeners
+            container.querySelectorAll('.calendar-nav-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() { changeMonth(parseInt(btn.getAttribute('data-delta'))); });
+            });
+            container.querySelectorAll('.copy-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) { 
+                    e.stopPropagation();
+                    copyTransaction(btn.getAttribute('data-id')); 
+                });
+            });
+            container.querySelectorAll('.calendar-day:not(.empty)').forEach(function(day) {
+                day.addEventListener('click', function() { 
+                    if (copiedTransaction) pasteToDate(day); 
+                });
+            });
         }
         
         function changeMonth(delta) { 
@@ -558,8 +589,7 @@
             renderCalendar(); 
         }
         
-        function copyTransaction(transactionId, event) {
-            event.stopPropagation();
+        function copyTransaction(transactionId) {
             var transaction = lessons.find(function(l) { return l.id === transactionId; });
             if (!transaction) return;
             var startDate = new Date(transaction.start.replace(' ', 'T'));
@@ -577,19 +607,16 @@
                 endHour: endDate.getHours(),
                 endMinute: endDate.getMinutes()
             };
-            var days = document.querySelectorAll('.calendar-day:not(.empty)');
-            for (var i = 0; i < days.length; i++) {
-                days[i].style.border = '2px solid #00d09c';
-                days[i].style.cursor = 'copy';
-                days[i].style.backgroundColor = 'rgba(0,208,156,0.1)';
-                days[i].addEventListener('click', pasteToDate);
-            }
+            document.querySelectorAll('.calendar-day:not(.empty)').forEach(function(day) {
+                day.style.border = '2px solid #00d09c';
+                day.style.cursor = 'copy';
+                day.style.backgroundColor = 'rgba(0,208,156,0.1)';
+            });
             showMessage('Copied "' + transaction.studentName + '". Click a date to paste.', 'success', 'lessonFormMessage');
         }
         
-        function pasteToDate(event) {
+        function pasteToDate(dayElement) {
             if (!copiedTransaction) return;
-            var dayElement = event.currentTarget;
             var day = dayElement.getAttribute('data-day');
             if (!day) return;
             var year = currentCalendarYear, month = currentCalendarMonth;
@@ -605,30 +632,12 @@
             updateLessonStats();
             updateBackupStats();
             showMessage('Pasted lesson to ' + day + '/' + (month+1) + '/' + year, 'success', 'lessonFormMessage');
-            var days = document.querySelectorAll('.calendar-day:not(.empty)');
-            for (var i = 0; i < days.length; i++) {
-                days[i].style.border = '';
-                days[i].style.cursor = '';
-                days[i].style.backgroundColor = '';
-                days[i].removeEventListener('click', pasteToDate);
-            }
+            document.querySelectorAll('.calendar-day:not(.empty)').forEach(function(day) {
+                day.style.border = '';
+                day.style.cursor = '';
+                day.style.backgroundColor = '';
+            });
             copiedTransaction = null;
-        }
-        
-        function editLessonFull(lessonId, event) {
-            event.stopPropagation();
-            var lesson = lessons.find(function(l) { return l.id === lessonId; });
-            if (!lesson) return;
-            var startDate = new Date(lesson.start.replace(' ', 'T'));
-            var endDate = new Date(lesson.end.replace(' ', 'T'));
-            var newStartStr = getDateTimeLocal(startDate);
-            var newEndStr = getDateTimeLocal(endDate);
-            var msg = 'Edit Lesson: ' + lesson.studentName + '\n';
-            msg += 'Start: ' + newStartStr + '\n';
-            msg += 'End: ' + newEndStr + '\n';
-            msg += 'Topic: ' + (lesson.topic || '') + '\n';
-            msg += 'Notes: ' + (lesson.notes || '');
-            alert('Edit feature: Update the lesson in the Add Lesson tab with new values, then delete this one.\n\nCurrent values:\n' + msg);
         }
         
         // Payment
@@ -652,9 +661,13 @@
             var listHtml = '';
             for (var j = 0; j < sorted.length; j++) {
                 var l = sorted[j];
-                listHtml += '<div class="lesson-item" style="padding:10px;border-bottom:1px solid #1e2342;display:flex;justify-content:space-between"><div><strong>' + escapeHtml(l.studentName) + '</strong><br>' + formatDateDM(l.start.split(' ')[0]) + ' - $' + l.earnings.toFixed(2) + '</div><button class="delete-btn" onclick="window.deleteLesson(\'' + l.id + '\')">Delete</button></div>';
+                listHtml += '<div class="lesson-item" style="padding:10px;border-bottom:1px solid #1e2342;display:flex;justify-content:space-between"><div><strong>' + escapeHtml(l.studentName) + '</strong><br>' + formatDateDM(l.start.split(' ')[0]) + ' - $' + l.earnings.toFixed(2) + '</div><button class="delete-lesson-btn" data-id="' + l.id + '">Delete</button></div>';
             }
             document.getElementById('groupPaymentList').innerHTML = listHtml;
+            
+            document.querySelectorAll('#groupPaymentList .delete-lesson-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() { deleteLesson(btn.getAttribute('data-id')); });
+            });
         }
         
         function updateGroupPaymentStatus() {
@@ -707,7 +720,7 @@
             for (var k = 0; k < groupEntries.length; k++) {
                 var gn = groupEntries[k][0];
                 var amt = groupEntries[k][1];
-                html += '<tr><td>' + escapeHtml(gn) + '</td><td>$' + amt.toFixed(2) + '</td><td>' + (amt/overallTotal*100).toFixed(1) + '%</td></tr>';
+                html += 'tr<td>' + escapeHtml(gn) + '</td><td>$' + amt.toFixed(2) + '</td><td>' + (amt/overallTotal*100).toFixed(1) + '%</td></tr>';
             }
             html += '</tbody></table><div class="invoice-total"><strong>GRAND TOTAL: $' + overallTotal.toFixed(2) + '</strong></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Generated ' + new Date().toLocaleDateString() + '</div></div>';
             document.getElementById('analysisPreview').innerHTML = html;
@@ -732,7 +745,7 @@
                     }
                 });
             } catch(e) {
-                showMessage('Error capturing report', 'error', 'analysisFormMessage);
+                showMessage('Error capturing report', 'error', 'analysisFormMessage');
             }
         }
         
@@ -748,7 +761,6 @@
             var group = groups.find(function(g) { return g.id === groupId; });
             if (!group) { showMessage('Family not found', 'error', 'invoiceFormMessage'); return; }
             
-            // Filter lessons
             var filtered = [];
             for (var i = 0; i < lessons.length; i++) {
                 var l = lessons[i];
@@ -827,7 +839,7 @@
             var toDate = document.getElementById('invoiceToDate').value;
             
             if (!groupId || !fromDate || !toDate) {
-                showMessage('Select family and date range first', 'error', 'invoiceFormMessage');
+                showMessage('Generate an invoice first', 'error', 'invoiceFormMessage');
                 return;
             }
             
@@ -837,7 +849,6 @@
                 return;
             }
             
-            // Filter lessons from data directly
             var filtered = [];
             for (var i = 0; i < lessons.length; i++) {
                 var l = lessons[i];
@@ -863,7 +874,7 @@
                 totalHours += filtered[i].hours || 1.5;
             }
             
-            showMessage('Generating PDF from data...', 'success', 'invoiceFormMessage');
+            showMessage('Generating PDF...', 'success', 'invoiceFormMessage');
             
             try {
                 var { jsPDF } = window.jspdf;
@@ -966,7 +977,6 @@
                 pdf.setTextColor(150, 150, 150);
                 pdf.text("Thank you for your business!", pageWidth / 2, pageHeight - margin, { align: "center" });
                 
-                // Share PDF
                 var pdfBlob = pdf.output('blob');
                 var file = new File([pdfBlob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
                 var messageText = 'Hi ' + group.name + ', $' + totalEarnings.toFixed(2) + ' for ' + formatDateDM(fromDate) + ' - ' + formatDateDM(toDate) + '. Thank you.';
@@ -1050,39 +1060,38 @@
             if (mode === 'payment') renderGroupPayment();
         }
         
-        // Attach to window
-        window.toggleTheme = toggleTheme;
-        window.addGroup = addGroup;
-        window.addStudent = addStudent;
-        window.addLesson = addLesson;
-        window.resetAllData = resetAllData;
-        window.switchMode = switchMode;
-        window.renderGroupPayment = renderGroupPayment;
-        window.updateGroupPaymentStatus = updateGroupPaymentStatus;
-        window.generateAnalysis = generateAnalysis;
-        window.shareAnalysis = shareAnalysis;
-        window.generateInvoice = generateInvoice;
-        window.shareInvoice = shareInvoice;
-        window.exportToFile = exportToFile;
-        window.importFromFile = importFromFile;
-        window.deleteGroup = deleteGroup;
-        window.openEditGroup = openEditGroup;
-        window.saveGroupEdit = saveGroupEdit;
-        window.closeGroupModal = closeGroupModal;
-        window.deleteStudent = deleteStudent;
-        window.openEditStudent = openEditStudent;
-        window.saveStudentEdit = saveStudentEdit;
-        window.closeStudentModal = closeStudentModal;
-        window.deleteLesson = deleteLesson;
-        window.changeMonth = changeMonth;
-        window.copyTransaction = copyTransaction;
-        window.editLessonFull = editLessonFull;
+        // Event Listeners
+        function initEventListeners() {
+            document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+            document.getElementById('resetBtn').addEventListener('click', resetAllData);
+            document.getElementById('addGroupBtn').addEventListener('click', addGroup);
+            document.getElementById('addStudentBtn').addEventListener('click', addStudent);
+            document.getElementById('addLessonBtn').addEventListener('click', addLesson);
+            document.getElementById('updatePaymentBtn').addEventListener('click', updateGroupPaymentStatus);
+            document.getElementById('generateAnalysisBtn').addEventListener('click', generateAnalysis);
+            document.getElementById('shareAnalysisBtn').addEventListener('click', shareAnalysis);
+            document.getElementById('generateInvoiceBtn').addEventListener('click', generateInvoice);
+            document.getElementById('shareInvoiceBtn').addEventListener('click', shareInvoice);
+            document.getElementById('exportBtn').addEventListener('click', exportToFile);
+            document.getElementById('importBtn').addEventListener('click', importFromFile);
+            document.getElementById('saveGroupBtn').addEventListener('click', saveGroupEdit);
+            document.getElementById('cancelGroupBtn').addEventListener('click', closeGroupModal);
+            document.getElementById('saveStudentBtn').addEventListener('click', saveStudentEdit);
+            document.getElementById('cancelStudentBtn').addEventListener('click', closeStudentModal);
+            
+            document.querySelectorAll('.mode-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() { switchMode(btn.getAttribute('data-mode')); });
+            });
+            
+            document.getElementById('paymentGroupFilter').addEventListener('change', renderGroupPayment);
+        }
         
         // Initialize
         loadAllData();
         setDefaultDates();
         setupAutoEndTime();
         renderAll();
+        initEventListeners();
         setInterval(updateTimestamp, 1000);
     </script>
 </body>
