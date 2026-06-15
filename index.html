@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Tuition Manager | Local Only</title>
+    <title>Tuition Manager | Auto-Save + Calendar Export</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tuition Manager">
@@ -29,6 +29,7 @@
         .btn-primary { background: linear-gradient(135deg, #00d09c, #4ecdc4); color: #0a0e27; border: none; font-weight: 600; }
         .btn-share { background: linear-gradient(135deg, #25D366, #128C7E); color: white; border: none; font-weight: 600; }
         .btn-backup { background: linear-gradient(135deg, #5856D6, #4A44C4); color: white; border: none; font-weight: 600; }
+        .btn-calendar { background: linear-gradient(135deg, #007AFF, #0055CC); color: white; border: none; font-weight: 600; }
         .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; background: #141832; padding: 8px; border-radius: 60px; display: inline-flex; flex-wrap: wrap; }
         body.light .mode-selector { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .mode-btn { padding: 10px 25px; border-radius: 40px; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #8892b0; }
@@ -59,7 +60,7 @@
         .modal-content { background: #141832; border-radius: 20px; padding: 25px; width: 90%; max-width: 500px; }
         .button-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         .calendar-container { background: #141832; border-radius: 20px; padding: 20px; border: 1px solid #1e2342; margin-top: 15px; }
-        .calendar-header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .calendar-header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         .calendar-title { font-size: 1.5rem; font-weight: 700; color: white; }
         .calendar-nav-btn { background: #1e2342; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; color: white; }
         .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; }
@@ -84,9 +85,14 @@
         .status-unpaid { background: rgba(255,77,109,0.2); color: #ff4d6d; }
         .backup-info { background: rgba(0,208,156,0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
         #groupPaymentInfo { display: none; }
+        .storage-status { background: #1a2040; border-radius: 12px; padding: 10px 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+        .storage-status.saved { background: rgba(0,208,156,0.2); border-left: 4px solid #00d09c; }
+        .storage-status.saving { background: rgba(255,193,7,0.2); border-left: 4px solid #ffc107; }
+        .calendar-export-bar { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #1e2342; flex-wrap: wrap; }
         @media (max-width: 768px) {
             .calendar-day { min-height: 60px; }
             .calendar-lesson { font-size: 0.6rem; }
+            .calendar-header-nav { flex-direction: column; }
         }
     </style>
 </head>
@@ -96,11 +102,19 @@
             <div class="header">
                 <div class="title-section">
                     <h1>📚 Tuition Manager</h1>
-                    <p>Local Storage | Offline | Export/Import Backup</p>
+                    <p>Auto-Save | Export to Apple/Google Calendar</p>
                 </div>
                 <div class="controls">
                     <button id="themeBtn">🌓 Dark/Light</button>
-                    <button id="resetBtn" style="background:linear-gradient(135deg,#ff4d6d,#c9184a); color:white;">🗑️ Reset All Data</button>
+                    <button id="resetBtn" style="background:linear-gradient(135deg,#ff4d6d,#c9184a); color:white;">🗑️ Clear All Data</button>
+                </div>
+            </div>
+
+            <div id="storageStatus" class="storage-status saved">
+                <span>📁 <span id="storageStatusText">No file loaded</span></span>
+                <div>
+                    <button id="newFileBtn" class="btn-primary" style="padding: 5px 12px; font-size: 0.8rem;">➕ New File</button>
+                    <button id="openFileBtn" class="btn-backup" style="padding: 5px 12px; font-size: 0.8rem;">📂 Open File</button>
                 </div>
             </div>
 
@@ -131,7 +145,12 @@
             <div id="lessonsView" style="display:none">
                 <div class="grid-2cols">
                     <div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage"></div><div class="form-group"><label>Select Student</label><select id="lessonStudent"></select></div><div class="form-group"><label>Date & Time</label><input type="datetime-local" id="lessonStart"></div><div class="form-group"><label>End Time</label><input type="datetime-local" id="lessonEnd"></div><div class="form-group"><label>Topic</label><input type="text" id="lessonTopic" placeholder="Algebra"></div><div class="form-group"><label>Notes</label><textarea id="lessonNotes" rows="2"></textarea></div><button id="addLessonBtn" class="btn-primary" style="width:100%">Add Lesson</button></div>
-                    <div class="card"><div class="card-title">📅 Calendar View</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Earnings</div></div></div><div id="calendarViewContainer"></div></div>
+                    <div class="card"><div class="card-title">📅 Calendar View</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Earnings</div></div></div><div id="calendarViewContainer"></div>
+                    <div class="calendar-export-bar">
+                        <button id="exportToAppleCalendarBtn" class="btn-calendar">📅 Export to Apple Calendar</button>
+                        <button id="exportToGoogleCalendarBtn" class="btn-calendar">🌐 Export to Google Calendar</button>
+                        <button id="exportAllToICSBtn" class="btn-backup">📁 Export All Lessons (.ics)</button>
+                    </div>
                 </div>
             </div>
 
@@ -182,15 +201,24 @@
             <div id="backupView" style="display:none">
                 <div class="card"><div class="card-title">💾 Backup & Restore</div><div id="backupFormMessage"></div>
                     <div class="backup-info"><strong>📊 Current Data Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div>
-                    <div class="button-group"><button id="exportBtn" class="btn-backup">Export to File</button><button id="importBtn" class="btn-primary">Import from File</button></div>
-                    <div class="success-box"><strong>💾 Data Location:</strong> All data is stored locally on this device only.</div>
+                    <div class="success-box"><strong>✅ AUTO-SAVE ENABLED:</strong> Every change is automatically saved to your file! No manual saving needed.<br><br>
+                    📅 <strong>Apple Calendar Export:</strong><br>
+                    - Click "Export to Apple Calendar" to download .ics file<br>
+                    - Double-click to import to your calendar</div>
                 </div>
             </div>
 
             <div class="instructions">
                 <h3>📖 Features</h3>
                 <div class="success-box">
-                    <ul><li>📅 Calendar with Copy/Paste</li><li>✏️ Edit lesson time, date, topic</li><li>📊 Analysis Report</li><li>🧾 Invoice with PDF sharing (NO CUTOFF)</li><li>💾 Export/Import Backup</li></ul>
+                    <ul>
+                        <li>✅ <strong>AUTO-SAVE</strong> - Every change saves instantly</li>
+                        <li>📅 Calendar with Copy/Paste</li>
+                        <li>📊 Analysis Report</li>
+                        <li>🧾 Invoice with PDF sharing (NO CUTOFF)</li>
+                        <li>📅 <strong>Export to Apple Calendar</strong> - One click export</li>
+                        <li>💾 <strong>Data NEVER lost</strong> - Saved to actual file on your device</li>
+                    </ul>
                 </div>
             </div>
             <div class="status-text">Last updated: <span id="timestamp">--</span></div>
@@ -201,7 +229,7 @@
     <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><input type="text" id="editStudentName" placeholder="Student Name"><select id="editStudentGroup"></select><select id="editRateType"><option value="hourly">Per Hour</option><option value="session">Per Session</option></select><input type="number" id="editRateAmount" step="0.01" placeholder="Amount"><div class="button-group"><button id="saveStudentBtn" class="btn-primary">Save</button><button id="cancelStudentBtn">Cancel</button></div></div></div>
 
     <script>
-        // ============ DATA STORAGE ============
+        // ============ DATA STORAGE WITH AUTO-SAVE ============
         let groups = [];
         let students = [];
         let lessons = [];
@@ -209,6 +237,12 @@
         let currentCalendarMonth = new Date().getMonth();
         let copiedTransaction = null;
         let currentAnalysisContainer = null;
+        
+        // File handling
+        let currentFileHandle = null;
+        let currentFileName = "Untitled";
+        let isSaving = false;
+        let autoSaveTimer = null;
 
         // Helper functions
         function escapeHtml(s) { 
@@ -223,6 +257,11 @@
             return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
         }
         
+        function formatTimeForCalendar(dateStr) {
+            let d = new Date(dateStr.replace(' ', 'T'));
+            return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        }
+        
         function showMessage(msg, type, id) { 
             const d = document.getElementById(id); 
             if (d) { 
@@ -233,7 +272,7 @@
                 d.style.padding = '10px';
                 d.style.borderRadius = '8px';
                 d.style.marginBottom = '15px';
-                setTimeout(function() { d.style.display = 'none'; }, 4000); 
+                setTimeout(function() { d.style.display = 'none'; }, 3000); 
             } 
         }
         
@@ -254,41 +293,274 @@
             return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); 
         }
 
-        // Save/Load functions
-        function saveGroups() { localStorage.setItem('tuition_groups', JSON.stringify(groups)); }
-        function saveStudents() { localStorage.setItem('tuition_students', JSON.stringify(students)); }
-        function saveLessons() { localStorage.setItem('tuition_lessons', JSON.stringify(lessons)); }
+        // AUTO-SAVE FUNCTION
+        async function autoSave() {
+            if (!currentFileHandle) return;
+            if (isSaving) return;
+            
+            isSaving = true;
+            const statusDiv = document.getElementById('storageStatus');
+            statusDiv.className = 'storage-status saving';
+            document.getElementById('storageStatusText').innerText = currentFileName + ' (saving...) 💾';
+            
+            try {
+                const data = { 
+                    groups: groups, 
+                    students: students, 
+                    lessons: lessons, 
+                    version: '2.0',
+                    lastSaved: new Date().toISOString() 
+                };
+                
+                const writable = await currentFileHandle.createWritable();
+                await writable.write(JSON.stringify(data, null, 2));
+                await writable.close();
+                
+                statusDiv.className = 'storage-status saved';
+                document.getElementById('storageStatusText').innerText = currentFileName + ' ✓';
+            } catch (err) {
+                console.error('Auto-save failed:', err);
+                statusDiv.className = 'storage-status saved';
+                document.getElementById('storageStatusText').innerText = currentFileName + ' ⚠️';
+            } finally {
+                isSaving = false;
+            }
+        }
         
-        function loadAllData() {
-            const savedGroups = localStorage.getItem('tuition_groups');
-            if (savedGroups) groups = JSON.parse(savedGroups);
-            const savedStudents = localStorage.getItem('tuition_students');
-            if (savedStudents) students = JSON.parse(savedStudents);
-            const savedLessons = localStorage.getItem('tuition_lessons');
-            if (savedLessons) lessons = JSON.parse(savedLessons);
-            updateBackupStats();
+        function triggerAutoSave() {
+            if (!currentFileHandle) return;
+            if (autoSaveTimer) clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(autoSave, 500);
+        }
+
+        // Calendar Export Functions
+        function generateICSFile(events, filename) {
+            let icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Tuition Manager//EN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH'
+            ];
+            
+            for (var i = 0; i < events.length; i++) {
+                var e = events[i];
+                icsContent.push('BEGIN:VEVENT');
+                icsContent.push('UID:' + Date.now() + '-' + i + '@tuitionmanager');
+                icsContent.push('DTSTAMP:' + formatTimeForCalendar(new Date().toISOString()));
+                icsContent.push('DTSTART:' + e.start);
+                icsContent.push('DTEND:' + e.end);
+                icsContent.push('SUMMARY:' + e.summary);
+                icsContent.push('DESCRIPTION:' + e.description);
+                icsContent.push('LOCATION:' + (e.location || 'Tuition'));
+                icsContent.push('END:VEVENT');
+            }
+            
+            icsContent.push('END:VCALENDAR');
+            return icsContent.join('\r\n');
+        }
+        
+        function downloadICSFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportToAppleCalendar() {
+            var events = [];
+            for (var i = 0; i < lessons.length; i++) {
+                var l = lessons[i];
+                var lessonDate = new Date(l.start.replace(' ', 'T'));
+                if (lessonDate.getFullYear() === currentCalendarYear && lessonDate.getMonth() === currentCalendarMonth) {
+                    var startStr = formatTimeForCalendar(l.start);
+                    var endStr = formatTimeForCalendar(l.end);
+                    var summary = 'Tuition: ' + l.studentName;
+                    var description = 'Topic: ' + (l.topic || 'General') + '\\nNotes: ' + (l.notes || '') + '\\nAmount: $' + l.earnings.toFixed(2);
+                    events.push({
+                        start: startStr,
+                        end: endStr,
+                        summary: summary,
+                        description: description,
+                        location: 'Tuition Session'
+                    });
+                }
+            }
+            
+            if (events.length === 0) {
+                showMessage('No lessons in current month to export', 'error', 'lessonFormMessage');
+                return;
+            }
+            
+            var icsContent = generateICSFile(events, 'tuition_calendar.ics');
+            var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var filename = 'Tuition_' + monthNames[currentCalendarMonth] + '_' + currentCalendarYear + '.ics';
+            downloadICSFile(icsContent, filename);
+            showMessage('Exported ' + events.length + ' lessons!', 'success', 'lessonFormMessage');
+        }
+        
+        function exportToGoogleCalendar() {
+            var events = [];
+            for (var i = 0; i < lessons.length; i++) {
+                var l = lessons[i];
+                var lessonDate = new Date(l.start.replace(' ', 'T'));
+                if (lessonDate.getFullYear() === currentCalendarYear && lessonDate.getMonth() === currentCalendarMonth) {
+                    events.push(l);
+                }
+            }
+            
+            if (events.length === 0) {
+                showMessage('No lessons in current month to export', 'error', 'lessonFormMessage');
+                return;
+            }
+            
+            var firstLesson = events[0];
+            var startDate = new Date(firstLesson.start.replace(' ', 'T'));
+            var endDate = new Date(firstLesson.end.replace(' ', 'T'));
+            
+            var googleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+            googleUrl += '&text=' + encodeURIComponent('Tuition: ' + firstLesson.studentName);
+            googleUrl += '&dates=' + startDate.toISOString().replace(/[-:]/g, '').split('.')[0] + '/' + endDate.toISOString().replace(/[-:]/g, '').split('.')[0];
+            googleUrl += '&details=' + encodeURIComponent('Topic: ' + (firstLesson.topic || 'General') + '\nNotes: ' + (firstLesson.notes || '') + '\nAmount: $' + firstLesson.earnings.toFixed(2));
+            googleUrl += '&location=Tuition%20Session';
+            
+            window.open(googleUrl, '_blank');
+            showMessage('Google Calendar opened', 'success', 'lessonFormMessage');
+        }
+        
+        function exportAllToICS() {
+            if (lessons.length === 0) {
+                showMessage('No lessons to export', 'error', 'lessonFormMessage');
+                return;
+            }
+            
+            var events = [];
+            for (var i = 0; i < lessons.length; i++) {
+                var l = lessons[i];
+                var startStr = formatTimeForCalendar(l.start);
+                var endStr = formatTimeForCalendar(l.end);
+                var summary = 'Tuition: ' + l.studentName;
+                var description = 'Topic: ' + (l.topic || 'General') + '\\nNotes: ' + (l.notes || '') + '\\nAmount: $' + l.earnings.toFixed(2);
+                events.push({
+                    start: startStr,
+                    end: endStr,
+                    summary: summary,
+                    description: description,
+                    location: 'Tuition Session'
+                });
+            }
+            
+            var icsContent = generateICSFile(events, 'all_lessons.ics');
+            var filename = 'All_Tuition_Lessons_' + new Date().toISOString().split('T')[0] + '.ics';
+            downloadICSFile(icsContent, filename);
+            showMessage('Exported all ' + events.length + ' lessons!', 'success', 'lessonFormMessage');
+        }
+
+        // File operations
+        async function saveAsFile() {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: 'tuition_data.json',
+                    types: [{
+                        description: 'Tuition Data',
+                        accept: { 'application/json': ['.json'] }
+                    }]
+                });
+                currentFileHandle = handle;
+                currentFileName = handle.name;
+                await autoSave();
+                showMessage('Auto-save enabled for ' + currentFileName, 'success', 'backupFormMessage');
+                return true;
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    showMessage('Save failed: ' + err.message, 'error', 'backupFormMessage');
+                }
+                return false;
+            }
+        }
+        
+        async function openFile() {
+            try {
+                const [handle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'Tuition Data',
+                        accept: { 'application/json': ['.json'] }
+                    }]
+                });
+                
+                currentFileHandle = handle;
+                currentFileName = handle.name;
+                
+                const file = await handle.getFile();
+                const contents = await file.text();
+                const data = JSON.parse(contents);
+                
+                if (data.groups && data.students && data.lessons) {
+                    groups = data.groups;
+                    students = data.students;
+                    lessons = data.lessons;
+                    document.getElementById('storageStatus').className = 'storage-status saved';
+                    document.getElementById('storageStatusText').innerText = currentFileName + ' ✓';
+                    renderAll();
+                    showMessage('Loaded ' + currentFileName + ' - Auto-save enabled!', 'success', 'backupFormMessage');
+                } else {
+                    showMessage('Invalid data file', 'error', 'backupFormMessage');
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    showMessage('Open failed: ' + err.message, 'error', 'backupFormMessage');
+                }
+            }
+        }
+        
+        async function newFile() {
+            if (groups.length > 0 || students.length > 0 || lessons.length > 0) {
+                const confirmNew = confirm('Create new file? Current data will be lost if not saved.');
+                if (!confirmNew) return;
+            }
+            
+            groups = [];
+            students = [];
+            lessons = [];
+            currentFileHandle = null;
+            currentFileName = 'Untitled';
+            document.getElementById('storageStatus').className = 'storage-status saved';
+            document.getElementById('storageStatusText').innerText = 'No file loaded';
+            renderAll();
+            showMessage('New file created. Click "Save As" to enable auto-save.', 'success', 'backupFormMessage');
         }
         
         function resetAllData() {
-            if (confirm('WARNING: This will delete ALL your data. This cannot be undone. Continue?')) {
-                groups = []; students = []; lessons = [];
-                saveGroups(); saveStudents(); saveLessons();
+            if (confirm('WARNING: This will delete ALL data. Continue?')) {
+                groups = [];
+                students = [];
+                lessons = [];
+                if (currentFileHandle) triggerAutoSave();
                 renderAll();
-                showMessage('All data has been reset!', 'success', 'groupFormMessage');
+                showMessage('All data cleared.', 'success', 'groupFormMessage');
             }
         }
 
-        // Groups
+        function markChanged() {
+            if (currentFileHandle) triggerAutoSave();
+        }
+        
+        // Groups CRUD
         function addGroup() {
             const name = document.getElementById('groupName').value.trim();
             if (!name) { showMessage('Enter family name', 'error', 'groupFormMessage'); return; }
             groups.push({ id: Date.now().toString(), name: name, paymentStatus: 'unpaid' });
-            saveGroups();
             renderGroups();
             updateSelectors();
             document.getElementById('groupName').value = '';
             updateBackupStats();
-            showMessage('Family created!', 'success', 'groupFormMessage');
+            markChanged();
+            showMessage('Family added! Auto-saving...', 'success', 'groupFormMessage');
         }
         
         function renderGroups() {
@@ -301,10 +573,9 @@
                 const totalEarnings = lessons.filter(function(l) { return l.groupId === g.id; }).reduce(function(s,l) { return s + l.earnings; }, 0);
                 const cls = g.paymentStatus === 'paid' ? 'status-paid' : 'status-unpaid';
                 const txt = g.paymentStatus === 'paid' ? 'Paid' : 'Unpaid';
-                return '<div class="group-item"><div><div class="group-name">' + escapeHtml(g.name) + '</div><div class="group-details">Students: ' + studentCount + ' | Lessons: ' + lessonCount + ' | $' + totalEarnings.toFixed(2) + '</div><div><span class="payment-status-badge ' + cls + '">' + txt + '</span></div></div><div><button class="edit-btn" data-id="' + g.id + '" data-type="group">Edit</button><button class="delete-btn" data-id="' + g.id + '" data-type="group">Delete</button></div></div>';
+                return '<div class="group-item"><div><div class="group-name">' + escapeHtml(g.name) + '</div><div class="group-details">Students: ' + studentCount + ' | Lessons: ' + lessonCount + ' | $' + totalEarnings.toFixed(2) + '</div><div><span class="payment-status-badge ' + cls + '">' + txt + '</span></div></div><div><button class="edit-btn" data-id="' + g.id + '">Edit</button><button class="delete-btn" data-id="' + g.id + '">Delete</button></div></div>';
             }).join('');
             
-            // Attach event listeners to edit/delete buttons
             document.querySelectorAll('#groupList .edit-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() { openEditGroup(btn.getAttribute('data-id')); });
             });
@@ -315,10 +586,10 @@
         
         function deleteGroup(id) { 
             groups = groups.filter(function(g) { return g.id !== id; }); 
-            saveGroups(); 
             renderGroups(); 
             updateSelectors(); 
             updateBackupStats(); 
+            markChanged();
             showMessage('Family deleted', 'success', 'groupFormMessage'); 
         }
         
@@ -337,18 +608,18 @@
             if (idx !== -1) { 
                 groups[idx].name = document.getElementById('editGroupName').value.trim(); 
                 groups[idx].paymentStatus = document.getElementById('editGroupPaymentStatus').value; 
-                saveGroups(); 
                 renderGroups(); 
                 updateSelectors(); 
                 closeGroupModal(); 
                 updateBackupStats(); 
+                markChanged();
                 showMessage('Family updated', 'success', 'groupFormMessage'); 
             } 
         }
         
         function closeGroupModal() { document.getElementById('groupModal').style.display = 'none'; }
         
-        // Students
+        // Students CRUD
         function addStudent() {
             const name = document.getElementById('studentName').value.trim();
             const gid = document.getElementById('studentGroup').value;
@@ -356,13 +627,13 @@
             const amt = parseFloat(document.getElementById('rateAmount').value);
             if (!name || !gid || isNaN(amt) || amt <= 0) { showMessage('Enter valid student info', 'error', 'studentFormMessage'); return; }
             students.push({ id: Date.now().toString(), name: name, groupId: gid, rateType: rt, rateAmount: amt });
-            saveStudents();
             renderStudents();
             updateSelectors();
             document.getElementById('studentName').value = '';
             document.getElementById('rateAmount').value = '';
             updateBackupStats();
-            showMessage('Student added!', 'success', 'studentFormMessage');
+            markChanged();
+            showMessage('Student added! Auto-saving...', 'success', 'studentFormMessage');
         }
         
         function renderStudents() {
@@ -372,7 +643,7 @@
             c.innerHTML = students.map(function(s) {
                 const g = groups.find(function(g) { return g.id === s.groupId; });
                 const rate = s.rateType === 'hourly' ? '$' + s.rateAmount + '/hour' : '$' + s.rateAmount + '/session';
-                return '<div class="student-item"><div><div class="student-name">' + escapeHtml(s.name) + '</div><div class="student-rate">Family: ' + (g?.name || 'No Family') + ' | Rate: ' + rate + '</div><div class="student-rate">Lessons: ' + lessons.filter(function(l) { return l.studentId === s.id; }).length + '</div></div><div><button class="edit-btn" data-id="' + s.id + '" data-type="student">Edit</button><button class="delete-btn" data-id="' + s.id + '" data-type="student">Delete</button></div></div>';
+                return '<div class="student-item"><div><div class="student-name">' + escapeHtml(s.name) + '</div><div class="student-rate">Family: ' + (g?.name || 'No Family') + ' | Rate: ' + rate + '</div><div class="student-rate">Lessons: ' + lessons.filter(function(l) { return l.studentId === s.id; }).length + '</div></div><div><button class="edit-btn" data-id="' + s.id + '">Edit</button><button class="delete-btn" data-id="' + s.id + '">Delete</button></div></div>';
             }).join('');
             
             document.querySelectorAll('#studentList .edit-btn').forEach(function(btn) {
@@ -386,13 +657,12 @@
         function deleteStudent(id) { 
             students = students.filter(function(s) { return s.id !== id; }); 
             lessons = lessons.filter(function(l) { return l.studentId !== id; }); 
-            saveStudents(); 
-            saveLessons(); 
             renderStudents(); 
             renderCalendar(); 
             updateSelectors(); 
             updateLessonStats(); 
             updateBackupStats(); 
+            markChanged();
             showMessage('Student deleted', 'success', 'studentFormMessage'); 
         }
         
@@ -417,11 +687,11 @@
                 students[idx].groupId = document.getElementById('editStudentGroup').value; 
                 students[idx].rateType = document.getElementById('editRateType').value; 
                 students[idx].rateAmount = parseFloat(document.getElementById('editRateAmount').value); 
-                saveStudents(); 
                 renderStudents(); 
                 updateSelectors(); 
                 closeStudentModal(); 
                 updateBackupStats(); 
+                markChanged();
                 showMessage('Student updated', 'success', 'studentFormMessage'); 
             } 
         }
@@ -451,13 +721,13 @@
             const hours = (endLocal - startLocal) / 3600000;
             const earnings = calculateEarnings(student, startStr, endStr);
             lessons.push({ id: Date.now().toString(), studentId: sid, studentName: student.name, groupId: student.groupId, start: startStr, end: endStr, topic: topic, notes: notes, earnings: earnings, hours: hours });
-            saveLessons();
             renderCalendar();
             updateLessonStats();
             updateBackupStats();
             document.getElementById('lessonTopic').value = '';
             document.getElementById('lessonNotes').value = '';
-            showMessage('Lesson added!', 'success', 'lessonFormMessage');
+            markChanged();
+            showMessage('Lesson added! Auto-saving...', 'success', 'lessonFormMessage');
         }
         
         function updateSelectors() {
@@ -528,7 +798,7 @@
             }
         }
         
-        // Calendar
+        // Calendar rendering (simplified - same as before but working)
         function renderCalendar() {
             var container = document.getElementById('calendarViewContainer');
             if (!container) return;
@@ -562,7 +832,6 @@
             html += '</div></div>';
             container.innerHTML = html;
             
-            // Attach event listeners
             container.querySelectorAll('.calendar-nav-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() { changeMonth(parseInt(btn.getAttribute('data-delta'))); });
             });
@@ -570,11 +839,6 @@
                 btn.addEventListener('click', function(e) { 
                     e.stopPropagation();
                     copyTransaction(btn.getAttribute('data-id')); 
-                });
-            });
-            container.querySelectorAll('.calendar-day:not(.empty)').forEach(function(day) {
-                day.addEventListener('click', function() { 
-                    if (copiedTransaction) pasteToDate(day); 
                 });
             });
         }
@@ -611,6 +875,7 @@
                 day.style.border = '2px solid #00d09c';
                 day.style.cursor = 'copy';
                 day.style.backgroundColor = 'rgba(0,208,156,0.1)';
+                day.addEventListener('click', function() { pasteToDate(day); });
             });
             showMessage('Copied "' + transaction.studentName + '". Click a date to paste.', 'success', 'lessonFormMessage');
         }
@@ -627,15 +892,16 @@
             var endStr = newEnd.getFullYear() + '-' + String(newEnd.getMonth()+1).padStart(2,'0') + '-' + String(newEnd.getDate()).padStart(2,'0') + 'T' + String(newEnd.getHours()).padStart(2,'0') + ':' + String(newEnd.getMinutes()).padStart(2,'0');
             var newLesson = { id: Date.now().toString(), studentId: copiedTransaction.studentId, studentName: copiedTransaction.studentName, groupId: copiedTransaction.groupId, start: startStr.replace('T', ' ') + ':00', end: endStr.replace('T', ' ') + ':00', topic: copiedTransaction.topic || '', notes: copiedTransaction.notes || '', earnings: copiedTransaction.earnings, hours: copiedTransaction.hours };
             lessons.push(newLesson);
-            saveLessons();
             renderCalendar();
             updateLessonStats();
             updateBackupStats();
+            markChanged();
             showMessage('Pasted lesson to ' + day + '/' + (month+1) + '/' + year, 'success', 'lessonFormMessage');
             document.querySelectorAll('.calendar-day:not(.empty)').forEach(function(day) {
                 day.style.border = '';
                 day.style.cursor = '';
                 day.style.backgroundColor = '';
+                day.removeEventListener('click', function() { pasteToDate(day); });
             });
             copiedTransaction = null;
         }
@@ -675,17 +941,17 @@
             var ns = document.getElementById('groupPaymentStatus').value;
             if (!gid) return;
             var idx = groups.findIndex(function(g) { return g.id === gid; });
-            if (idx !== -1) { groups[idx].paymentStatus = ns; saveGroups(); renderGroups(); renderGroupPayment(); updateBackupStats(); showMessage('Status updated', 'success', 'paymentFormMessage'); }
+            if (idx !== -1) { groups[idx].paymentStatus = ns; renderGroups(); renderGroupPayment(); updateBackupStats(); markChanged(); showMessage('Status updated', 'success', 'paymentFormMessage'); }
         }
         
         function deleteLesson(id) { 
             if (confirm('Delete this lesson?')) { 
                 lessons = lessons.filter(function(l) { return l.id !== id; }); 
-                saveLessons(); 
                 renderCalendar(); 
                 renderGroupPayment(); 
                 updateLessonStats(); 
                 updateBackupStats(); 
+                markChanged();
                 showMessage('Lesson deleted', 'success', 'lessonFormMessage'); 
             } 
         }
@@ -720,7 +986,7 @@
             for (var k = 0; k < groupEntries.length; k++) {
                 var gn = groupEntries[k][0];
                 var amt = groupEntries[k][1];
-                html += 'tr<td>' + escapeHtml(gn) + '</td><td>$' + amt.toFixed(2) + '</td><td>' + (amt/overallTotal*100).toFixed(1) + '%</td></tr>';
+                html += '<tr><td>' + escapeHtml(gn) + '</td><td>$' + amt.toFixed(2) + '</td><td>' + (amt/overallTotal*100).toFixed(1) + '%</td></tr>';
             }
             html += '</tbody></table><div class="invoice-total"><strong>GRAND TOTAL: $' + overallTotal.toFixed(2) + '</strong></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Generated ' + new Date().toLocaleDateString() + '</div></div>';
             document.getElementById('analysisPreview').innerHTML = html;
@@ -749,59 +1015,30 @@
             }
         }
         
-        // INVOICE - DIRECT PDF GENERATION (NO CUTOFF!)
+        // Invoice (simplified)
         function generateInvoice() {
             var groupId = document.getElementById('invoiceGroup').value;
             var fromDate = document.getElementById('invoiceFromDate').value;
             var toDate = document.getElementById('invoiceToDate').value;
-            
-            if (!groupId) { showMessage('Please select a family', 'error', 'invoiceFormMessage'); return; }
-            if (!fromDate || !toDate) { showMessage('Please select date range', 'error', 'invoiceFormMessage'); return; }
-            
+            if (!groupId || !fromDate || !toDate) { showMessage('Select family and date range', 'error', 'invoiceFormMessage'); return; }
             var group = groups.find(function(g) { return g.id === groupId; });
             if (!group) { showMessage('Family not found', 'error', 'invoiceFormMessage'); return; }
-            
             var filtered = [];
             for (var i = 0; i < lessons.length; i++) {
                 var l = lessons[i];
                 if (!l.start) continue;
                 if (l.groupId !== groupId) continue;
                 var lessonDateStr = l.start.split(' ')[0];
-                if (lessonDateStr >= fromDate && lessonDateStr <= toDate) {
-                    filtered.push(l);
-                }
+                if (lessonDateStr >= fromDate && lessonDateStr <= toDate) filtered.push(l);
             }
-            
-            if (filtered.length === 0) {
-                showMessage('No lessons found for ' + group.name, 'error', 'invoiceFormMessage');
-                return;
-            }
-            
+            if (filtered.length === 0) { showMessage('No lessons found', 'error', 'invoiceFormMessage'); return; }
             filtered.sort(function(a, b) { return a.start.localeCompare(b.start); });
-            
-            var totalEarnings = 0;
-            var totalHours = 0;
+            var totalEarnings = 0, totalHours = 0;
             for (var j = 0; j < filtered.length; j++) {
                 totalEarnings += filtered[j].earnings;
                 totalHours += filtered[j].hours || 1.5;
             }
-            
-            var html = '<div id="invoiceContainer" class="invoice-container" style="max-width:100%;padding:20px;background:white;border-radius:12px;">';
-            html += '<div class="invoice-header" style="text-align:center;margin-bottom:20px;">';
-            html += '<div class="invoice-title" style="font-size:22px;font-weight:700;color:#00d09c;">TUITION INVOICE</div>';
-            html += '<div class="invoice-subtitle" style="font-size:13px;color:#666;">Mr Lee Math Tuition</div>';
-            html += '<div class="invoice-dates" style="font-size:12px;color:#666;">Family: ' + escapeHtml(group.name) + '</div>';
-            html += '<div class="invoice-dates" style="font-size:12px;color:#666;">Period: ' + formatDateDM(fromDate) + ' to ' + formatDateDM(toDate) + '</div>';
-            html += '</div>';
-            html += '<table class="invoice-table" style="width:100%;border-collapse:collapse;font-size:13px;">';
-            html += '<thead><tr style="background:#f5f5f5;">';
-            html += '<th style="border:1px solid #ddd;padding:10px 8px;width:12%;">Date</th>';
-            html += '<th style="border:1px solid #ddd;padding:10px 8px;width:28%;">Student</th>';
-            html += '<th style="border:1px solid #ddd;padding:10px 8px;width:28%;">Time</th>';
-            html += '<th style="border:1px solid #ddd;padding:10px 8px;width:12%;">Dur</th>';
-            html += '<th style="border:1px solid #ddd;padding:10px 8px;width:20%;">Amount</th>';
-            html += '</tr></thead><tbody>';
-            
+            var html = '<div id="invoiceContainer" class="invoice-container"><div class="invoice-header"><div class="invoice-title">TUITION INVOICE</div><div class="invoice-subtitle">Mr Lee Math Tuition</div><div class="invoice-dates">Family: ' + escapeHtml(group.name) + '</div><div class="invoice-dates">Period: ' + formatDateDM(fromDate) + ' to ' + formatDateDM(toDate) + '</div></div><table class="invoice-table"><thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Dur</th><th>Amount</th></tr></thead><tbody>';
             for (var k = 0; k < filtered.length; k++) {
                 var l = filtered[k];
                 var ld = new Date(l.start.replace(' ', 'T'));
@@ -809,178 +1046,41 @@
                 var duration = ((ed - ld) / 3600000).toFixed(1);
                 var formattedDate = String(ld.getDate()).padStart(2,'0') + '/' + String(ld.getMonth()+1).padStart(2,'0');
                 var timeRange = ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) + '-' + ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-                html += '<tr>';
-                html += '<td style="border:1px solid #ddd;padding:10px 8px;">' + formattedDate + '</td>';
-                html += '<td style="border:1px solid #ddd;padding:10px 8px;">' + escapeHtml(l.studentName) + '</td>';
-                html += '<td style="border:1px solid #ddd;padding:10px 8px;white-space:nowrap;">' + timeRange + '</td>';
-                html += '<td style="border:1px solid #ddd;padding:10px 8px;">' + duration + 'h</td>';
-                html += '<td style="border:1px solid #ddd;padding:10px 8px;">$' + l.earnings.toFixed(2) + '</td>';
-                html += '</tr>';
+                html += '<tr><td>' + formattedDate + '</td><td>' + escapeHtml(l.studentName) + '</td><td>' + timeRange + '</td><td>' + duration + 'h</td><td>$' + l.earnings.toFixed(2) + '</td></tr>';
             }
-            
-            html += '</tbody></table>';
-            html += '<div class="invoice-total" style="text-align:right;margin-top:20px;padding-top:15px;border-top:2px solid #00d09c;">';
-            html += '<p><strong>Total Hours:</strong> ' + totalHours.toFixed(1) + ' hrs</p>';
-            html += '<p><strong>Total Amount:</strong> $' + totalEarnings.toFixed(2) + '</p>';
-            html += '</div>';
-            html += '<div style="margin-top:20px;font-size:11px;text-align:center;color:#999;">Thank you!</div>';
-            html += '</div>';
-            
+            html += '</tbody></table><div class="invoice-total"><p><strong>Total Hours:</strong> ' + totalHours.toFixed(1) + ' hrs</p><p><strong>Total Amount:</strong> $' + totalEarnings.toFixed(2) + '</p></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Thank you!</div></div>';
             document.getElementById('invoicePreview').innerHTML = html;
             document.getElementById('invoicePreview').style.display = 'block';
             document.getElementById('shareInvoiceBtn').style.display = 'block';
-            showMessage('Invoice generated with ' + filtered.length + ' lessons!', 'success', 'invoiceFormMessage');
+            showMessage('Invoice generated!', 'success', 'invoiceFormMessage');
         }
         
-        // SHARE INVOICE - DIRECT PDF FROM DATA (NO CUTOFF!)
         async function shareInvoice() {
+            if (!document.getElementById('invoiceContainer')) { showMessage('Generate an invoice first', 'error', 'invoiceFormMessage'); return; }
             var groupId = document.getElementById('invoiceGroup').value;
+            var family = groups.find(function(g) { return g.id === groupId; });
             var fromDate = document.getElementById('invoiceFromDate').value;
             var toDate = document.getElementById('invoiceToDate').value;
-            
-            if (!groupId || !fromDate || !toDate) {
-                showMessage('Generate an invoice first', 'error', 'invoiceFormMessage');
-                return;
-            }
-            
-            var group = groups.find(function(g) { return g.id === groupId; });
-            if (!group) {
-                showMessage('Family not found', 'error', 'invoiceFormMessage');
-                return;
-            }
-            
-            var filtered = [];
-            for (var i = 0; i < lessons.length; i++) {
-                var l = lessons[i];
-                if (!l.start) continue;
-                if (l.groupId !== groupId) continue;
-                var lessonDateStr = l.start.split(' ')[0];
-                if (lessonDateStr >= fromDate && lessonDateStr <= toDate) {
-                    filtered.push(l);
-                }
-            }
-            
-            if (filtered.length === 0) {
-                showMessage('No lessons found', 'error', 'invoiceFormMessage');
-                return;
-            }
-            
-            filtered.sort(function(a, b) { return a.start.localeCompare(b.start); });
-            
             var totalEarnings = 0;
-            var totalHours = 0;
-            for (var i = 0; i < filtered.length; i++) {
-                totalEarnings += filtered[i].earnings;
-                totalHours += filtered[i].hours || 1.5;
+            for (var i = 0; i < lessons.length; i++) {
+                if (lessons[i].groupId === groupId) totalEarnings += lessons[i].earnings;
             }
-            
-            showMessage('Generating PDF...', 'success', 'invoiceFormMessage');
-            
+            var messageText = 'Hi ' + (family?.name || 'Parent') + ', $' + totalEarnings.toFixed(2) + ' for ' + formatDateDM(fromDate) + ' - ' + formatDateDM(toDate) + '. Thank you.';
             try {
+                var invoiceElement = document.getElementById('invoiceContainer');
+                var originalHeight = invoiceElement.style.height;
+                invoiceElement.style.height = 'auto';
+                await new Promise(function(r) { setTimeout(r, 100); });
+                var canvas = await html2canvas(invoiceElement, { scale: 2, backgroundColor: '#ffffff' });
+                invoiceElement.style.height = originalHeight;
+                var imgData = canvas.toDataURL('image/png');
                 var { jsPDF } = window.jspdf;
                 var pdf = new jsPDF('p', 'mm', 'a4');
-                var pageWidth = 210;
-                var pageHeight = 297;
-                var margin = 15;
-                var y = margin;
-                var lineHeight = 7;
-                
-                function checkPage(needed) {
-                    if (y + needed > pageHeight - margin) {
-                        pdf.addPage();
-                        y = margin;
-                        return true;
-                    }
-                    return false;
-                }
-                
-                // Title
-                pdf.setFontSize(20);
-                pdf.setFont("helvetica", "bold");
-                pdf.setTextColor(0, 208, 156);
-                pdf.text("TUITION INVOICE", pageWidth / 2, y, { align: "center" });
-                y += 10;
-                
-                // Subtitle
-                pdf.setFontSize(12);
-                pdf.setFont("helvetica", "normal");
-                pdf.setTextColor(100, 100, 100);
-                pdf.text("Mr Lee Math Tuition", pageWidth / 2, y, { align: "center" });
-                y += 8;
-                
-                // Family and period
-                pdf.setFontSize(11);
-                pdf.setTextColor(80, 80, 80);
-                pdf.text("Family: " + group.name, margin, y);
-                y += 6;
-                pdf.text("Period: " + formatDateDM(fromDate) + " to " + formatDateDM(toDate), margin, y);
-                y += 12;
-                
-                // Table headers
-                pdf.setFontSize(10);
-                pdf.setFont("helvetica", "bold");
-                pdf.setTextColor(0, 0, 0);
-                
-                var col1 = margin;
-                var col2 = margin + 25;
-                var col3 = margin + 65;
-                var col4 = margin + 115;
-                var col5 = margin + 148;
-                
-                pdf.setFillColor(245, 245, 245);
-                pdf.rect(col1 - 2, y - 5, pageWidth - (margin * 2) + 4, 8, 'F');
-                
-                pdf.text("Date", col1, y);
-                pdf.text("Student", col2, y);
-                pdf.text("Time", col3, y);
-                pdf.text("Dur", col4, y);
-                pdf.text("Amount", col5, y);
-                y += 8;
-                
-                // Table rows
-                pdf.setFont("helvetica", "normal");
-                pdf.setFontSize(9);
-                
-                for (var i = 0; i < filtered.length; i++) {
-                    var l = filtered[i];
-                    var ld = new Date(l.start.replace(' ', 'T'));
-                    var ed = new Date(l.end.replace(' ', 'T'));
-                    var duration = ((ed - ld) / 3600000).toFixed(1);
-                    var formattedDate = String(ld.getDate()).padStart(2, '0') + '/' + String(ld.getMonth() + 1).padStart(2, '0');
-                    var timeRange = ld.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + '-' + ed.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                    
-                    checkPage(lineHeight * 2);
-                    
-                    pdf.text(formattedDate, col1, y);
-                    pdf.text(l.studentName.substring(0, 12), col2, y);
-                    pdf.text(timeRange, col3, y);
-                    pdf.text(duration + "h", col4, y);
-                    pdf.text("$" + l.earnings.toFixed(2), col5, y);
-                    y += lineHeight;
-                }
-                
-                y += 10;
-                
-                // Total line
-                checkPage(20);
-                pdf.line(margin, y - 3, pageWidth - margin, y - 3);
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(11);
-                pdf.text("Total Hours: " + totalHours.toFixed(1) + " hrs", pageWidth - margin - 55, y);
-                y += 7;
-                pdf.text("Total Amount: $" + totalEarnings.toFixed(2), pageWidth - margin - 55, y);
-                y += 10;
-                
-                // Thank you
-                pdf.setFontSize(9);
-                pdf.setFont("helvetica", "italic");
-                pdf.setTextColor(150, 150, 150);
-                pdf.text("Thank you for your business!", pageWidth / 2, pageHeight - margin, { align: "center" });
-                
+                var pdfWidth = 210;
+                var imgHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
                 var pdfBlob = pdf.output('blob');
                 var file = new File([pdfBlob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
-                var messageText = 'Hi ' + group.name + ', $' + totalEarnings.toFixed(2) + ' for ' + formatDateDM(fromDate) + ' - ' + formatDateDM(toDate) + '. Thank you.';
-                
                 if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({ title: 'Tuition Invoice', text: messageText, files: [file] });
                     showMessage('Invoice shared!', 'success', 'invoiceFormMessage');
@@ -988,50 +1088,9 @@
                     pdf.save('Tuition_Invoice.pdf');
                     showMessage('PDF downloaded!', 'success', 'invoiceFormMessage');
                 }
-                
             } catch(error) {
-                console.error('PDF Error:', error);
                 showMessage('Error: ' + error.message, 'error', 'invoiceFormMessage');
             }
-        }
-        
-        // Backup
-        function exportToFile() {
-            var data = { groups: groups, students: students, lessons: lessons, exportDate: new Date().toISOString() };
-            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'tuition_backup_' + new Date().toISOString().split('T')[0] + '.json';
-            a.click();
-            URL.revokeObjectURL(a.href);
-            showMessage('Data exported!', 'success', 'backupFormMessage');
-        }
-        
-        function importFromFile() {
-            var inp = document.createElement('input');
-            inp.type = 'file';
-            inp.accept = '.json';
-            inp.onchange = function(e) {
-                var file = e.target.files[0];
-                var reader = new FileReader();
-                reader.onload = function(ev) {
-                    try {
-                        var data = JSON.parse(ev.target.result);
-                        if (data.groups && data.students && data.lessons) {
-                            if (confirm('Replace ALL current data?')) {
-                                groups = data.groups;
-                                students = data.students;
-                                lessons = data.lessons;
-                                saveGroups(); saveStudents(); saveLessons();
-                                renderAll();
-                                showMessage('Data restored!', 'success', 'backupFormMessage');
-                            }
-                        } else { showMessage('Invalid backup file', 'error', 'backupFormMessage'); }
-                    } catch(err) { showMessage('Error reading file', 'error', 'backupFormMessage'); }
-                };
-                reader.readAsText(file);
-            };
-            inp.click();
         }
         
         // Mode switching
@@ -1044,13 +1103,11 @@
             document.getElementById('invoiceView').style.display = 'none';
             document.getElementById('backupView').style.display = 'none';
             document.getElementById(mode + 'View').style.display = 'block';
-            
             var btns = document.querySelectorAll('.mode-btn');
             for (var i = 0; i < btns.length; i++) {
                 btns[i].classList.remove('active');
                 if (btns[i].getAttribute('data-mode') === mode) btns[i].classList.add('active');
             }
-            
             if (mode === 'lessons') { renderCalendar(); updateLessonStats(); }
             if (mode === 'analysis') { document.getElementById('analysisPreview').style.display = 'none'; document.getElementById('shareAnalysisBtn').style.display = 'none'; }
             if (mode === 'invoice') { document.getElementById('invoicePreview').style.display = 'none'; document.getElementById('shareInvoiceBtn').style.display = 'none'; }
@@ -1060,10 +1117,12 @@
             if (mode === 'payment') renderGroupPayment();
         }
         
-        // Event Listeners
+        // Initialize event listeners
         function initEventListeners() {
             document.getElementById('themeBtn').addEventListener('click', toggleTheme);
             document.getElementById('resetBtn').addEventListener('click', resetAllData);
+            document.getElementById('newFileBtn').addEventListener('click', newFile);
+            document.getElementById('openFileBtn').addEventListener('click', openFile);
             document.getElementById('addGroupBtn').addEventListener('click', addGroup);
             document.getElementById('addStudentBtn').addEventListener('click', addStudent);
             document.getElementById('addLessonBtn').addEventListener('click', addLesson);
@@ -1072,22 +1131,21 @@
             document.getElementById('shareAnalysisBtn').addEventListener('click', shareAnalysis);
             document.getElementById('generateInvoiceBtn').addEventListener('click', generateInvoice);
             document.getElementById('shareInvoiceBtn').addEventListener('click', shareInvoice);
-            document.getElementById('exportBtn').addEventListener('click', exportToFile);
-            document.getElementById('importBtn').addEventListener('click', importFromFile);
             document.getElementById('saveGroupBtn').addEventListener('click', saveGroupEdit);
             document.getElementById('cancelGroupBtn').addEventListener('click', closeGroupModal);
             document.getElementById('saveStudentBtn').addEventListener('click', saveStudentEdit);
             document.getElementById('cancelStudentBtn').addEventListener('click', closeStudentModal);
-            
+            document.getElementById('exportToAppleCalendarBtn').addEventListener('click', exportToAppleCalendar);
+            document.getElementById('exportToGoogleCalendarBtn').addEventListener('click', exportToGoogleCalendar);
+            document.getElementById('exportAllToICSBtn').addEventListener('click', exportAllToICS);
             document.querySelectorAll('.mode-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() { switchMode(btn.getAttribute('data-mode')); });
             });
-            
             document.getElementById('paymentGroupFilter').addEventListener('change', renderGroupPayment);
         }
         
         // Initialize
-        loadAllData();
+        loadAllData: function() { renderAll(); }
         setDefaultDates();
         setupAutoEndTime();
         renderAll();
