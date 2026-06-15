@@ -100,8 +100,6 @@
                 </div>
                 <div class="controls">
                     <button onclick="window.toggleTheme()">🌓 Dark/Light</button>
-                    <button onclick="window.openAddGroupModal()" class="btn-primary">➕ Add Family</button>
-                    <button onclick="window.openAddStudentModal()" class="btn-primary">👨‍🎓 Add Student</button>
                     <button onclick="window.resetAllData()" style="background:linear-gradient(135deg,#ff4d6d,#c9184a); color:white;">🗑️ Reset All Data</button>
                 </div>
             </div>
@@ -192,7 +190,7 @@
             <div class="instructions">
                 <h3>📖 Features</h3>
                 <div class="success-box">
-                    <ul><li>📅 Calendar with Copy/Paste</li><li>✏️ Edit lesson time, date, topic</li><li>📊 Analysis Report</li><li>🧾 Invoice with PDF sharing</li><li>💾 Export/Import Backup</li></ul>
+                    <ul><li>📅 Calendar with Copy/Paste</li><li>✏️ Edit lesson time, date, topic</li><li>📊 Analysis Report</li><li>🧾 Invoice with PDF sharing (NO CUTOFF)</li><li>💾 Export/Import Backup</li></ul>
                 </div>
             </div>
             <div class="status-text">Last updated: <span id="timestamp">--</span></div>
@@ -203,9 +201,6 @@
     <div id="studentModal" class="modal"><div class="modal-content"><h3>Edit Student</h3><input type="hidden" id="editStudentId"><input type="text" id="editStudentName" placeholder="Student Name"><select id="editStudentGroup"></select><select id="editRateType"><option value="hourly">Per Hour</option><option value="session">Per Session</option></select><input type="number" id="editRateAmount" step="0.01" placeholder="Amount"><div class="button-group"><button onclick="window.saveStudentEdit()" class="btn-primary">Save</button><button onclick="window.closeStudentModal()">Cancel</button></div></div></div>
 
     <script>
-        // Make all functions available globally
-        window.tuitionApp = {};
-        
         // Data storage
         let groups = [];
         let students = [];
@@ -213,7 +208,6 @@
         let currentCalendarYear = new Date().getFullYear();
         let currentCalendarMonth = new Date().getMonth();
         let copiedTransaction = null;
-        let currentInvoiceContainer = null;
         let currentAnalysisContainer = null;
 
         // Helper functions
@@ -305,8 +299,8 @@
                 const studentCount = students.filter(function(s) { return s.groupId === g.id; }).length;
                 const lessonCount = lessons.filter(function(l) { return l.groupId === g.id; }).length;
                 const totalEarnings = lessons.filter(function(l) { return l.groupId === g.id; }).reduce(function(s,l) { return s + l.earnings; }, 0);
-                const cls = g.paymentStatus === 'paid' ? 'status-paid' : (g.paymentStatus === 'invoiced' ? 'status-invoiced' : 'status-unpaid');
-                const txt = g.paymentStatus === 'paid' ? 'Paid' : (g.paymentStatus === 'invoiced' ? 'Invoiced' : 'Unpaid');
+                const cls = g.paymentStatus === 'paid' ? 'status-paid' : 'status-unpaid';
+                const txt = g.paymentStatus === 'paid' ? 'Paid' : 'Unpaid';
                 return '<div class="group-item"><div><div class="group-name">' + escapeHtml(g.name) + '</div><div class="group-details">Students: ' + studentCount + ' | Lessons: ' + lessonCount + ' | $' + totalEarnings.toFixed(2) + '</div><div><span class="payment-status-badge ' + cls + '">' + txt + '</span></div></div><div><button class="edit-btn" onclick="window.openEditGroup(\'' + g.id + '\')">Edit</button><button class="delete-btn" onclick="window.deleteGroup(\'' + g.id + '\')">Delete</button></div></div>';
             }).join('');
         }
@@ -738,13 +732,12 @@
                     }
                 });
             } catch(e) {
-                showMessage('Error capturing report', 'error', 'analysisFormMessage');
+                showMessage('Error capturing report', 'error', 'analysisFormMessage);
             }
         }
         
-        // INVOICE
+        // INVOICE - DIRECT PDF GENERATION (NO CUTOFF!)
         function generateInvoice() {
-            console.log("generateInvoice called");
             var groupId = document.getElementById('invoiceGroup').value;
             var fromDate = document.getElementById('invoiceFromDate').value;
             var toDate = document.getElementById('invoiceToDate').value;
@@ -803,7 +796,7 @@
                 var ed = new Date(l.end.replace(' ', 'T'));
                 var duration = ((ed - ld) / 3600000).toFixed(1);
                 var formattedDate = String(ld.getDate()).padStart(2,'0') + '/' + String(ld.getMonth()+1).padStart(2,'0');
-                var timeRange = ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) + ' - ' + ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+                var timeRange = ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) + '-' + ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
                 html += '<tr>';
                 html += '<td style="border:1px solid #ddd;padding:10px 8px;">' + formattedDate + '</td>';
                 html += '<td style="border:1px solid #ddd;padding:10px 8px;">' + escapeHtml(l.studentName) + '</td>';
@@ -824,179 +817,174 @@
             document.getElementById('invoicePreview').innerHTML = html;
             document.getElementById('invoicePreview').style.display = 'block';
             document.getElementById('shareInvoiceBtn').style.display = 'block';
-            currentInvoiceContainer = document.getElementById('invoiceContainer');
             showMessage('Invoice generated with ' + filtered.length + ' lessons!', 'success', 'invoiceFormMessage');
         }
         
-     async function shareInvoice() {
-    var groupId = document.getElementById('invoiceGroup').value;
-    var fromDate = document.getElementById('invoiceFromDate').value;
-    var toDate = document.getElementById('invoiceToDate').value;
-    
-    if (!groupId || !fromDate || !toDate) {
-        showMessage('Select family and date range', 'error', 'invoiceFormMessage');
-        return;
-    }
-    
-    var group = groups.find(function(g) { return g.id === groupId; });
-    if (!group) {
-        showMessage('Family not found', 'error', 'invoiceFormMessage');
-        return;
-    }
-    
-    // Filter lessons
-    var filtered = [];
-    for (var i = 0; i < lessons.length; i++) {
-        var l = lessons[i];
-        if (!l.start) continue;
-        if (l.groupId !== groupId) continue;
-        var lessonDateStr = l.start.split(' ')[0];
-        if (lessonDateStr >= fromDate && lessonDateStr <= toDate) {
-            filtered.push(l);
-        }
-    }
-    
-    if (filtered.length === 0) {
-        showMessage('No lessons found', 'error', 'invoiceFormMessage');
-        return;
-    }
-    
-    filtered.sort(function(a, b) { return a.start.localeCompare(b.start); });
-    
-    var totalEarnings = 0;
-    var totalHours = 0;
-    for (var i = 0; i < filtered.length; i++) {
-        totalEarnings += filtered[i].earnings;
-        totalHours += filtered[i].hours || 1.5;
-    }
-    
-    showMessage('Generating PDF from data...', 'success', 'invoiceFormMessage');
-    
-    try {
-        var { jsPDF } = window.jspdf;
-        var pdf = new jsPDF('p', 'mm', 'a4');
-        var pageWidth = 210;
-        var pageHeight = 297;
-        var margin = 15;
-        var y = margin;
-        var lineHeight = 7;
-        
-        // Helper function to add new page if needed
-        function checkPage(needed) {
-            if (y + needed > pageHeight - margin) {
-                pdf.addPage();
-                y = margin;
-                return true;
+        // SHARE INVOICE - DIRECT PDF FROM DATA (NO CUTOFF!)
+        async function shareInvoice() {
+            var groupId = document.getElementById('invoiceGroup').value;
+            var fromDate = document.getElementById('invoiceFromDate').value;
+            var toDate = document.getElementById('invoiceToDate').value;
+            
+            if (!groupId || !fromDate || !toDate) {
+                showMessage('Select family and date range first', 'error', 'invoiceFormMessage');
+                return;
             }
-            return false;
-        }
-        
-        // TITLE
-        pdf.setFontSize(20);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(0, 208, 156);
-        pdf.text("TUITION INVOICE", pageWidth / 2, y, { align: "center" });
-        y += 10;
-        
-        // SUBTITLE
-        pdf.setFontSize(12);
-        pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(100, 100, 100);
-        pdf.text("Mr Lee Math Tuition", pageWidth / 2, y, { align: "center" });
-        y += 8;
-        
-        // FAMILY AND DATE RANGE
-        pdf.setFontSize(11);
-        pdf.setTextColor(80, 80, 80);
-        pdf.text("Family: " + group.name, margin, y);
-        y += 6;
-        pdf.text("Period: " + formatDateDM(fromDate) + " to " + formatDateDM(toDate), margin, y);
-        y += 12;
-        
-        // TABLE HEADERS
-        pdf.setFontSize(10);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(0, 0, 0);
-        
-        var col1 = margin;
-        var col2 = margin + 30;
-        var col3 = margin + 70;
-        var col4 = margin + 115;
-        var col5 = margin + 150;
-        
-        pdf.setFillColor(245, 245, 245);
-        pdf.rect(col1 - 2, y - 5, pageWidth - (margin * 2) + 4, 8, 'F');
-        
-        pdf.text("Date", col1, y);
-        pdf.text("Student", col2, y);
-        pdf.text("Time", col3, y);
-        pdf.text("Dur", col4, y);
-        pdf.text("Amount", col5, y);
-        y += 8;
-        
-        // TABLE ROWS
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(9);
-        
-        for (var i = 0; i < filtered.length; i++) {
-            var l = filtered[i];
-            var ld = new Date(l.start.replace(' ', 'T'));
-            var ed = new Date(l.end.replace(' ', 'T'));
-            var duration = ((ed - ld) / 3600000).toFixed(1);
-            var formattedDate = String(ld.getDate()).padStart(2, '0') + '/' + String(ld.getMonth() + 1).padStart(2, '0');
-            var timeRange = ld.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + '-' + ed.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             
-            checkPage(lineHeight * 2);
+            var group = groups.find(function(g) { return g.id === groupId; });
+            if (!group) {
+                showMessage('Family not found', 'error', 'invoiceFormMessage');
+                return;
+            }
             
-            pdf.text(formattedDate, col1, y);
-            pdf.text(l.studentName.substring(0, 15), col2, y);
-            pdf.text(timeRange, col3, y);
-            pdf.text(duration + "h", col4, y);
-            pdf.text("$" + l.earnings.toFixed(2), col5, y);
-            y += lineHeight;
+            // Filter lessons from data directly
+            var filtered = [];
+            for (var i = 0; i < lessons.length; i++) {
+                var l = lessons[i];
+                if (!l.start) continue;
+                if (l.groupId !== groupId) continue;
+                var lessonDateStr = l.start.split(' ')[0];
+                if (lessonDateStr >= fromDate && lessonDateStr <= toDate) {
+                    filtered.push(l);
+                }
+            }
+            
+            if (filtered.length === 0) {
+                showMessage('No lessons found', 'error', 'invoiceFormMessage');
+                return;
+            }
+            
+            filtered.sort(function(a, b) { return a.start.localeCompare(b.start); });
+            
+            var totalEarnings = 0;
+            var totalHours = 0;
+            for (var i = 0; i < filtered.length; i++) {
+                totalEarnings += filtered[i].earnings;
+                totalHours += filtered[i].hours || 1.5;
+            }
+            
+            showMessage('Generating PDF from data...', 'success', 'invoiceFormMessage');
+            
+            try {
+                var { jsPDF } = window.jspdf;
+                var pdf = new jsPDF('p', 'mm', 'a4');
+                var pageWidth = 210;
+                var pageHeight = 297;
+                var margin = 15;
+                var y = margin;
+                var lineHeight = 7;
+                
+                function checkPage(needed) {
+                    if (y + needed > pageHeight - margin) {
+                        pdf.addPage();
+                        y = margin;
+                        return true;
+                    }
+                    return false;
+                }
+                
+                // Title
+                pdf.setFontSize(20);
+                pdf.setFont("helvetica", "bold");
+                pdf.setTextColor(0, 208, 156);
+                pdf.text("TUITION INVOICE", pageWidth / 2, y, { align: "center" });
+                y += 10;
+                
+                // Subtitle
+                pdf.setFontSize(12);
+                pdf.setFont("helvetica", "normal");
+                pdf.setTextColor(100, 100, 100);
+                pdf.text("Mr Lee Math Tuition", pageWidth / 2, y, { align: "center" });
+                y += 8;
+                
+                // Family and period
+                pdf.setFontSize(11);
+                pdf.setTextColor(80, 80, 80);
+                pdf.text("Family: " + group.name, margin, y);
+                y += 6;
+                pdf.text("Period: " + formatDateDM(fromDate) + " to " + formatDateDM(toDate), margin, y);
+                y += 12;
+                
+                // Table headers
+                pdf.setFontSize(10);
+                pdf.setFont("helvetica", "bold");
+                pdf.setTextColor(0, 0, 0);
+                
+                var col1 = margin;
+                var col2 = margin + 25;
+                var col3 = margin + 65;
+                var col4 = margin + 115;
+                var col5 = margin + 148;
+                
+                pdf.setFillColor(245, 245, 245);
+                pdf.rect(col1 - 2, y - 5, pageWidth - (margin * 2) + 4, 8, 'F');
+                
+                pdf.text("Date", col1, y);
+                pdf.text("Student", col2, y);
+                pdf.text("Time", col3, y);
+                pdf.text("Dur", col4, y);
+                pdf.text("Amount", col5, y);
+                y += 8;
+                
+                // Table rows
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(9);
+                
+                for (var i = 0; i < filtered.length; i++) {
+                    var l = filtered[i];
+                    var ld = new Date(l.start.replace(' ', 'T'));
+                    var ed = new Date(l.end.replace(' ', 'T'));
+                    var duration = ((ed - ld) / 3600000).toFixed(1);
+                    var formattedDate = String(ld.getDate()).padStart(2, '0') + '/' + String(ld.getMonth() + 1).padStart(2, '0');
+                    var timeRange = ld.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + '-' + ed.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                    
+                    checkPage(lineHeight * 2);
+                    
+                    pdf.text(formattedDate, col1, y);
+                    pdf.text(l.studentName.substring(0, 12), col2, y);
+                    pdf.text(timeRange, col3, y);
+                    pdf.text(duration + "h", col4, y);
+                    pdf.text("$" + l.earnings.toFixed(2), col5, y);
+                    y += lineHeight;
+                }
+                
+                y += 10;
+                
+                // Total line
+                checkPage(20);
+                pdf.line(margin, y - 3, pageWidth - margin, y - 3);
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(11);
+                pdf.text("Total Hours: " + totalHours.toFixed(1) + " hrs", pageWidth - margin - 55, y);
+                y += 7;
+                pdf.text("Total Amount: $" + totalEarnings.toFixed(2), pageWidth - margin - 55, y);
+                y += 10;
+                
+                // Thank you
+                pdf.setFontSize(9);
+                pdf.setFont("helvetica", "italic");
+                pdf.setTextColor(150, 150, 150);
+                pdf.text("Thank you for your business!", pageWidth / 2, pageHeight - margin, { align: "center" });
+                
+                // Share PDF
+                var pdfBlob = pdf.output('blob');
+                var file = new File([pdfBlob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
+                var messageText = 'Hi ' + group.name + ', $' + totalEarnings.toFixed(2) + ' for ' + formatDateDM(fromDate) + ' - ' + formatDateDM(toDate) + '. Thank you.';
+                
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: 'Tuition Invoice', text: messageText, files: [file] });
+                    showMessage('Invoice shared!', 'success', 'invoiceFormMessage');
+                } else {
+                    pdf.save('Tuition_Invoice.pdf');
+                    showMessage('PDF downloaded!', 'success', 'invoiceFormMessage');
+                }
+                
+            } catch(error) {
+                console.error('PDF Error:', error);
+                showMessage('Error: ' + error.message, 'error', 'invoiceFormMessage');
+            }
         }
         
-        y += 10;
-        
-        // TOTAL LINE
-        checkPage(20);
-        pdf.line(margin, y - 3, pageWidth - margin, y - 3);
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(11);
-        pdf.text("Total Hours: " + totalHours.toFixed(1) + " hrs", pageWidth - margin - 50, y);
-        y += 7;
-        pdf.text("Total Amount: $" + totalEarnings.toFixed(2), pageWidth - margin - 50, y);
-        y += 10;
-        
-        // THANK YOU
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "italic");
-        pdf.setTextColor(150, 150, 150);
-        pdf.text("Thank you for your business!", pageWidth / 2, pageHeight - margin, { align: "center" });
-        
-        // Generate PDF
-        var pdfBlob = pdf.output('blob');
-        var file = new File([pdfBlob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
-        
-        var messageText = 'Hi ' + group.name + ', $' + totalEarnings.toFixed(2) + ' for ' + formatDateDM(fromDate) + ' - ' + formatDateDM(toDate) + '. Thank you.';
-        
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                title: 'Tuition Invoice',
-                text: messageText,
-                files: [file]
-            });
-            showMessage('Invoice shared successfully!', 'success', 'invoiceFormMessage');
-        } else {
-            pdf.save('Tuition_Invoice.pdf');
-            showMessage('PDF downloaded!', 'success', 'invoiceFormMessage');
-        }
-        
-    } catch (error) {
-        console.error('PDF Error:', error);
-        showMessage('Error: ' + error.message, 'error', 'invoiceFormMessage');
-    }
-} 
         // Backup
         function exportToFile() {
             var data = { groups: groups, students: students, lessons: lessons, exportDate: new Date().toISOString() };
@@ -1062,35 +1050,13 @@
             if (mode === 'payment') renderGroupPayment();
         }
         
-        function openAddGroupModal() { 
-            document.getElementById('editGroupId').value = ''; 
-            document.getElementById('editGroupName').value = ''; 
-            document.getElementById('editGroupPaymentStatus').value = 'unpaid'; 
-            document.getElementById('groupModal').style.display = 'flex'; 
-        }
-        
-        function openAddStudentModal() { 
-            document.getElementById('editStudentId').value = ''; 
-            document.getElementById('editStudentName').value = ''; 
-            document.getElementById('editRateType').value = 'hourly'; 
-            document.getElementById('editRateAmount').value = ''; 
-            var sel = document.getElementById('editStudentGroup'); 
-            sel.innerHTML = '<option value="">-- Select Family --</option>'; 
-            for (var i = 0; i < groups.length; i++) {
-                sel.innerHTML += '<option value="' + groups[i].id + '">' + groups[i].name + '</option>';
-            }
-            document.getElementById('studentModal').style.display = 'flex'; 
-        }
-        
         // Attach to window
         window.toggleTheme = toggleTheme;
         window.addGroup = addGroup;
-        window.openAddGroupModal = openAddGroupModal;
-        window.openAddStudentModal = openAddStudentModal;
-        window.resetAllData = resetAllData;
-        window.switchMode = switchMode;
         window.addStudent = addStudent;
         window.addLesson = addLesson;
+        window.resetAllData = resetAllData;
+        window.switchMode = switchMode;
         window.renderGroupPayment = renderGroupPayment;
         window.updateGroupPaymentStatus = updateGroupPaymentStatus;
         window.generateAnalysis = generateAnalysis;
@@ -1111,7 +1077,6 @@
         window.changeMonth = changeMonth;
         window.copyTransaction = copyTransaction;
         window.editLessonFull = editLessonFull;
-        window.renderCalendar = renderCalendar;
         
         // Initialize
         loadAllData();
