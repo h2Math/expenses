@@ -629,7 +629,7 @@
         }
         
         // INVOICE REPORT
-      function generateInvoice() {
+ function generateInvoice() {
     const groupId = document.getElementById('invoiceGroup').value;
     const fromDate = document.getElementById('invoiceFromDate').value;
     const toDate = document.getElementById('invoiceToDate').value;
@@ -641,15 +641,50 @@
     filtered.sort((a,b) => new Date(a.start.replace(' ', 'T')) - new Date(b.start.replace(' ', 'T')));
     const totalEarnings = filtered.reduce((s,l) => s + l.earnings, 0);
     const totalHours = filtered.reduce((s,l) => s + (l.hours || 1.5), 0);
-    let html = `<div id="invoiceContainer" class="invoice-container"><div class="invoice-header"><div class="invoice-title">TUITION INVOICE</div><div class="invoice-subtitle">Mr Lee Math Tuition</div><div class="invoice-dates">Family: ${escapeHtml(group.name)}</div><div class="invoice-dates">Period: ${formatDateDM(fromDate)} to ${formatDateDM(toDate)}</div></div><table class="invoice-table"><thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Duration</th><th>Amount</th></tr></thead><tbody>`;
+    
+    // COMPACT DESIGN - better for PDF
+    let html = `<div id="invoiceContainer" class="invoice-container" style="max-width: 100%; padding: 20px; font-size: 12px;">
+        <div class="invoice-header" style="text-align: center; margin-bottom: 15px;">
+            <div class="invoice-title" style="font-size: 18px; font-weight: 700; color: #00d09c;">TUITION INVOICE</div>
+            <div class="invoice-subtitle" style="font-size: 11px; color: #666;">Mr Lee Math Tuition</div>
+            <div class="invoice-dates" style="font-size: 10px; color: #666;">Family: ${escapeHtml(group.name)}</div>
+            <div class="invoice-dates" style="font-size: 10px; color: #666;">Period: ${formatDateDM(fromDate)} to ${formatDateDM(toDate)}</div>
+        </div>
+        <table class="invoice-table" style="width: 100%; border-collapse: collapse; font-size: 11px;">
+            <thead>
+                <tr style="background: #f5f5f5;">
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: left;">Date</th>
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: left;">Student</th>
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: left;">Time</th>
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: left;">Dur</th>
+                    <th style="border: 1px solid #ddd; padding: 6px; text-align: left;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>`;
+    
     for (const l of filtered) {
         const ld = new Date(l.start.replace(' ', 'T'));
         const ed = new Date(l.end.replace(' ', 'T'));
         const duration = (ed - ld) / 3600000;
-        const formattedDate = `${String(ld.getDate()).padStart(2, '0')}/${String(ld.getMonth() + 1).padStart(2, '0')}/${ld.getFullYear()}`;
-        html += `<tr><td style="padding:8px">${formattedDate}</td><td style="padding:8px">${escapeHtml(l.studentName)}</td><td style="padding:8px">${ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} - ${ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td style="padding:8px">${duration.toFixed(1)} hr${duration!==1?'s':''}</td><td style="padding:8px">$${l.earnings.toFixed(2)}</td></tr>`;
+        const formattedDate = `${String(ld.getDate()).padStart(2, '0')}/${String(ld.getMonth() + 1).padStart(2, '0')}`;
+        html += `<tr>
+            <td style="border: 1px solid #ddd; padding: 6px;">${formattedDate}</td>
+            <td style="border: 1px solid #ddd; padding: 6px;">${escapeHtml(l.studentName)}</td>
+            <td style="border: 1px solid #ddd; padding: 6px;">${ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td>
+            <td style="border: 1px solid #ddd; padding: 6px;">${duration.toFixed(1)}h</td>
+            <td style="border: 1px solid #ddd; padding: 6px;">$${l.earnings.toFixed(2)}</td>
+        </tr>`;
     }
-    html += `</tbody></table><div class="invoice-total"><p><strong>Total Hours:</strong> ${totalHours.toFixed(1)} hrs</p><p><strong>Total Amount:</strong> $${totalEarnings.toFixed(2)}</p></div><div style="margin-top:20px;font-size:0.7rem;text-align:center;">Thank you!</div></div>`;
+    
+    html += `</tbody>
+        </table>
+        <div class="invoice-total" style="text-align: right; margin-top: 15px; padding-top: 10px; border-top: 2px solid #00d09c;">
+            <p style="margin: 5px 0;"><strong>Total Hours:</strong> ${totalHours.toFixed(1)} hrs</p>
+            <p style="margin: 5px 0; font-size: 14px;"><strong>Total Amount:</strong> $${totalEarnings.toFixed(2)}</p>
+        </div>
+        <div style="margin-top: 15px; font-size: 9px; text-align: center; color: #999;">Thank you!</div>
+    </div>`;
+    
     document.getElementById('invoicePreview').innerHTML = html;
     document.getElementById('invoicePreview').style.display = 'block';
     document.getElementById('shareInvoiceBtn').style.display = 'block';
@@ -658,52 +693,117 @@
 }
         
         // SHARE INVOICE WITH CUSTOM MESSAGE - "Hi Smith" (no extra "Family" word)
-        function shareInvoice() {
-            if (!currentInvoiceContainer) { showMessage('Generate an invoice first', 'error', 'invoiceFormMessage'); return; }
+       async function shareInvoice() {
+    if (!currentInvoiceContainer) { 
+        showMessage('Generate an invoice first', 'error', 'invoiceFormMessage'); 
+        return; 
+    }
+    
+    // Get family name, total amount, and date range
+    const groupId = document.getElementById('invoiceGroup').value;
+    const family = groups.find(g => g.id === groupId);
+    const fromDate = document.getElementById('invoiceFromDate').value;
+    const toDate = document.getElementById('invoiceToDate').value;
+    
+    // Calculate total amount from the invoice
+    const totalElement = document.querySelector('#invoiceContainer .invoice-total p:last-child');
+    let totalAmount = '0.00';
+    if (totalElement) {
+        const match = totalElement.innerText.match(/\$([\d.]+)/);
+        if (match) totalAmount = match[1];
+    }
+    
+    const familyName = family?.name || 'Parent';
+    const dateRange = `${formatDateDM(fromDate)} - ${formatDateDM(toDate)}`;
+    const messageText = `Hi ${familyName}, $${totalAmount} for ${dateRange}. Thank you.`;
+    
+    showMessage('Generating PDF...', 'success', 'invoiceFormMessage');
+    
+    try {
+        // Capture the invoice as canvas with HIGH quality
+        const canvas = await html2canvas(currentInvoiceContainer, { 
+            scale: 3,  // Higher quality
+            backgroundColor: '#ffffff',
+            logging: false,
+            useCORS: true
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        
+        // PDF dimensions (in mm)
+        const pdfWidth = 210; // A4 width in mm
+        const pdfHeight = 297; // A4 height in mm
+        
+        // Calculate image dimensions
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Create PDF with proper orientation
+        let pdf;
+        let currentPosition = 0;
+        
+        // If image is taller than one page, create multi-page PDF
+        if (imgHeight > pdfHeight) {
+            pdf = new jsPDF('p', 'mm', 'a4');
+            let remainingHeight = imgHeight;
+            let pageNumber = 1;
             
-            // Get family name, total amount, and date range
-            const groupId = document.getElementById('invoiceGroup').value;
-            const family = groups.find(g => g.id === groupId);
-            const fromDate = document.getElementById('invoiceFromDate').value;
-            const toDate = document.getElementById('invoiceToDate').value;
-            
-            // Calculate total amount from the invoice
-            const totalElement = document.querySelector('#invoiceContainer .invoice-total p:last-child');
-            let totalAmount = '0.00';
-            if (totalElement) {
-                const match = totalElement.innerText.match(/\$([\d.]+)/);
-                if (match) totalAmount = match[1];
-            }
-            
-            // Use the family name as-is (no extra "Family" word added)
-            const familyName = family?.name || 'Parent';
-            
-            const dateRange = `${formatDateDM(fromDate)} - ${formatDateDM(toDate)}`;
-            const messageText = `Hi ${familyName}, $${totalAmount} for ${dateRange}. Thank you.`;
-            
-            showMessage('Generating PDF...', 'success', 'invoiceFormMessage');
-            html2canvas(currentInvoiceContainer, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
-                const { jsPDF } = window.jspdf;
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgWidth = 210;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                const blob = pdf.output('blob');
-                const file = new File([blob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
-                
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        title: 'Tuition Invoice',
-                        text: messageText,
-                        files: [file]
-                    }).then(() => showMessage('Invoice shared!', 'success', 'invoiceFormMessage'));
-                } else {
-                    pdf.save('Tuition_Invoice.pdf');
-                    showMessage('PDF downloaded!', 'success', 'invoiceFormMessage');
+            while (remainingHeight > 0) {
+                if (pageNumber > 1) {
+                    pdf.addPage();
                 }
-            }).catch(() => showMessage('Error generating PDF', 'error', 'invoiceFormMessage'));
+                
+                // Calculate what portion of the image to show on this page
+                const yOffset = (pageNumber - 1) * pdfHeight;
+                const sourceY = (yOffset / imgHeight) * canvas.height;
+                const sourceHeight = Math.min(
+                    (pdfHeight / imgHeight) * canvas.height,
+                    canvas.height - sourceY
+                );
+                
+                // Add image slice for this page
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = sourceHeight;
+                const ctx = tempCanvas.getContext('2d');
+                ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+                
+                const pageImgData = tempCanvas.toDataURL('image/png');
+                pdf.addImage(pageImgData, 'PNG', 0, 0, imgWidth, (sourceHeight / canvas.height) * imgWidth);
+                
+                remainingHeight -= pdfHeight;
+                pageNumber++;
+            }
+        } else {
+            // Single page PDF
+            pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
         }
+        
+        // Generate PDF blob
+        const pdfBlob = pdf.output('blob');
+        const file = new File([pdfBlob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
+        
+        // Share via WhatsApp
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                title: 'Tuition Invoice',
+                text: messageText,
+                files: [file]
+            });
+            showMessage('Invoice shared successfully!', 'success', 'invoiceFormMessage');
+        } else {
+            // Fallback: download PDF
+            pdf.save('Tuition_Invoice.pdf');
+            showMessage('PDF downloaded! Open and share manually.', 'success', 'invoiceFormMessage');
+        }
+        
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        showMessage('Error generating PDF. Try a shorter date range.', 'error', 'invoiceFormMessage');
+    }
+}
         
         // Payment status
         function renderGroupPayment() {
