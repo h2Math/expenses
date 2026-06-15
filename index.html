@@ -693,19 +693,17 @@
 }
         
         // SHARE INVOICE WITH CUSTOM MESSAGE - "Hi Smith" (no extra "Family" word)
-       async function shareInvoice() {
+async function shareInvoice() {
     if (!currentInvoiceContainer) { 
         showMessage('Generate an invoice first', 'error', 'invoiceFormMessage'); 
         return; 
     }
     
-    // Get family name, total amount, and date range
     const groupId = document.getElementById('invoiceGroup').value;
     const family = groups.find(g => g.id === groupId);
     const fromDate = document.getElementById('invoiceFromDate').value;
     const toDate = document.getElementById('invoiceToDate').value;
     
-    // Calculate total amount from the invoice
     const totalElement = document.querySelector('#invoiceContainer .invoice-total p:last-child');
     let totalAmount = '0.00';
     if (totalElement) {
@@ -717,75 +715,90 @@
     const dateRange = `${formatDateDM(fromDate)} - ${formatDateDM(toDate)}`;
     const messageText = `Hi ${familyName}, $${totalAmount} for ${dateRange}. Thank you.`;
     
-    showMessage('Generating PDF...', 'success', 'invoiceFormMessage');
+    showMessage('Generating complete PDF...', 'success', 'invoiceFormMessage');
     
     try {
-        // Capture the invoice as canvas with HIGH quality
-        const canvas = await html2canvas(currentInvoiceContainer, { 
-            scale: 3,  // Higher quality
-            backgroundColor: '#ffffff',
-            logging: false,
-            useCORS: true
-        });
+        // Expand to show FULL content
+        const originalStyle = {
+            height: currentInvoiceContainer.style.height,
+            maxHeight: currentInvoiceContainer.style.maxHeight,
+            overflow: currentInvoiceContainer.style.overflow
+        };
         
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
+        currentInvoiceContainer.style.height = 'auto';
+        currentInvoiceContainer.style.maxHeight = 'none';
+        currentInvoiceContainer.style.overflow = 'visible';
         
-        // PDF dimensions (in mm)
-        const pdfWidth = 210; // A4 width in mm
-        const pdfHeight = 297; // A4 height in mm
-        
-        // Calculate image dimensions
-        const imgWidth = pdfWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        // Create PDF with proper orientation
-        let pdf;
-        let currentPosition = 0;
-        
-        // If image is taller than one page, create multi-page PDF
-        if (imgHeight > pdfHeight) {
-            pdf = new jsPDF('p', 'mm', 'a4');
-            let remainingHeight = imgHeight;
-            let pageNumber = 1;
-            
-            while (remainingHeight > 0) {
-                if (pageNumber > 1) {
-                    pdf.addPage();
-                }
-                
-                // Calculate what portion of the image to show on this page
-                const yOffset = (pageNumber - 1) * pdfHeight;
-                const sourceY = (yOffset / imgHeight) * canvas.height;
-                const sourceHeight = Math.min(
-                    (pdfHeight / imgHeight) * canvas.height,
-                    canvas.height - sourceY
-                );
-                
-                // Add image slice for this page
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = sourceHeight;
-                const ctx = tempCanvas.getContext('2d');
-                ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
-                
-                const pageImgData = tempCanvas.toDataURL('image/png');
-                pdf.addImage(pageImgData, 'PNG', 0, 0, imgWidth, (sourceHeight / canvas.height) * imgWidth);
-                
-                remainingHeight -= pdfHeight;
-                pageNumber++;
-            }
-        } else {
-            // Single page PDF
-            pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        // Also expand parent containers
+        let parent = currentInvoiceContainer.parentElement;
+        const parentStyles = [];
+        while (parent && parent !== document.body) {
+            parentStyles.push({
+                element: parent,
+                overflow: parent.style.overflow,
+                height: parent.style.height
+            });
+            parent.style.overflow = 'visible';
+            parent.style.height = 'auto';
+            parent = parent.parentElement;
         }
         
-        // Generate PDF blob
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Get the invoice elements for smart page breaking
+        const invoiceElements = currentInvoiceContainer.querySelectorAll('table tr, .invoice-total, .invoice-header');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = 210;
+        const pageHeight = 297;
+        let currentY = 15; // Start from top margin
+        
+        // Capture and add each section intelligently
+        for (let i = 0; i < invoiceElements.length; i++) {
+            const element = invoiceElements[i];
+            
+            // Temporarily isolate this element for capture
+            const tempContainer = document.createElement('div');
+            tempContainer.style.backgroundColor = 'white';
+            tempContainer.style.padding = '10px';
+            tempContainer.style.width = '180mm';
+            tempContainer.appendChild(element.cloneNode(true));
+            document.body.appendChild(tempContainer);
+            
+            const canvas = await html2canvas(tempContainer, {
+                scale: 2,
+                backgroundColor: '#ffffff'
+            });
+            
+            document.body.removeChild(tempContainer);
+            
+            const imgData = canvas.toDataURL('image/png');
+            const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+            
+            // Check if we need a new page
+            if (currentY + imgHeight > pageHeight - 15) {
+                pdf.addPage();
+                currentY = 15;
+            }
+            
+            pdf.addImage(imgData, 'PNG', 10, currentY, pdfWidth - 20, imgHeight);
+            currentY += imgHeight + 5; // Add small gap between sections
+        }
+        
+        // Restore original styles
+        currentInvoiceContainer.style.height = originalStyle.height;
+        currentInvoiceContainer.style.maxHeight = originalStyle.maxHeight;
+        currentInvoiceContainer.style.overflow = originalStyle.overflow;
+        
+        for (const ps of parentStyles) {
+            ps.element.style.overflow = ps.overflow;
+            ps.element.style.height = ps.height;
+        }
+        
+        // Share PDF
         const pdfBlob = pdf.output('blob');
         const file = new File([pdfBlob], 'Tuition_Invoice.pdf', { type: 'application/pdf' });
         
-        // Share via WhatsApp
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
                 title: 'Tuition Invoice',
@@ -794,14 +807,13 @@
             });
             showMessage('Invoice shared successfully!', 'success', 'invoiceFormMessage');
         } else {
-            // Fallback: download PDF
             pdf.save('Tuition_Invoice.pdf');
-            showMessage('PDF downloaded! Open and share manually.', 'success', 'invoiceFormMessage');
+            showMessage('PDF downloaded!', 'success', 'invoiceFormMessage');
         }
         
     } catch (error) {
-        console.error('PDF generation error:', error);
-        showMessage('Error generating PDF. Try a shorter date range.', 'error', 'invoiceFormMessage');
+        console.error('Error:', error);
+        showMessage('Error generating PDF', 'error', 'invoiceFormMessage');
     }
 }
         
