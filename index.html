@@ -3,85 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Tuition Manager | Auto-Save</title>
+    <title>Tuition Manager | Auto-Load</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    meta name="theme-color" content="#00d09c">
+    <meta name="theme-color" content="#00d09c">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:20px}
-        body.light{background:#f0f2f5}
+        body{background:#0a0e27;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:20px;color:#e2e8f0}
+        body.light{background:#f0f2f5;color:#1a1a2e}
+        body.light .card,body.light .instructions,body.light .modal-content,body.light .group-item,body.light .student-item{background:white}
+        body.light .calendar-day{background:white;border-color:#e2e8f0}
+        body.light .group-name,body.light .student-name{color:#1a1a2e !important}
+        body.light .group-details,body.light .student-rate{color:#4a5568 !important}
         .dashboard{max-width:1400px;margin:0 auto}
         .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;margin-bottom:30px;padding-bottom:20px;border-bottom:2px solid rgba(255,255,255,0.1)}
         .title-section h1{font-size:1.8rem;background:linear-gradient(135deg,#00d09c,#4ecdc4);-webkit-background-clip:text;background-clip:text;color:transparent}
+        .title-section p{color:#8892b0}
         button{background:#141832;border:1px solid #1e2342;color:white;padding:10px 20px;border-radius:40px;cursor:pointer}
+        body.light button{background:white;color:#1a1a2e;border-color:#e2e8f0}
         .btn-primary{background:linear-gradient(135deg,#00d09c,#4ecdc4);color:#0a0e27;border:none;font-weight:600}
         .btn-share{background:linear-gradient(135deg,#25D366,#128C7E);color:white;border:none}
         .btn-backup{background:linear-gradient(135deg,#5856D6,#4A44C4);color:white;border:none}
         .btn-calendar{background:linear-gradient(135deg,#007AFF,#0055CC);color:white;border:none}
         .mode-selector{display:flex;gap:10px;margin-bottom:25px;background:#141832;padding:8px;border-radius:60px;flex-wrap:wrap}
+        body.light .mode-selector{background:white;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
         .mode-btn{padding:10px 25px;border-radius:40px;cursor:pointer;font-weight:600;color:#8892b0}
         .mode-btn.active{background:linear-gradient(135deg,#00d09c,#4ecdc4);color:#0a0e27}
         .grid-2cols{display:grid;grid-template-columns:1fr 1.5fr;gap:25px}
         @media(max-width:768px){.grid-2cols{grid-template-columns:1fr}}
         .card{background:#141832;border-radius:20px;padding:25px;border:1px solid #1e2342}
+        body.light .card{background:white}
         .card-title{font-size:1.2rem;font-weight:700;color:white;margin-bottom:20px;border-left:4px solid #00d09c;padding-left:15px}
+        body.light .card-title{color:#1a1a2e}
         .form-group{margin-bottom:15px}
         label{display:block;margin-bottom:8px;font-weight:600;color:#8892b0}
         input,textarea,select{width:100%;padding:12px;background:#0a0e27;border:1px solid #1e2342;border-radius:12px;color:white}
+        body.light input,body.light textarea,body.light select{background:white;color:#1a1a2e;border-color:#e2e8f0}
         .group-list,.student-list{max-height:400px;overflow-y:auto}
-        .group-item,.student-item{padding:15px;border-bottom:1px solid #1e2342;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
-        .delete-btn{background:rgba(255,77,109,0.2);border:none;color:#ff4d6d;padding:8px 16px;border-radius:30px;cursor:pointer}
-        .edit-btn{background:rgba(78,205,196,0.2);border:none;color:#4ecdc4;padding:8px 16px;border-radius:30px;cursor:pointer;margin-right:8px}
+        .group-item,.student-item{background:#1a2040;padding:15px;border-radius:12px;margin-bottom:8px;border:1px solid #2d3750;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+        .group-name,.student-name{font-weight:600;color:white !important;font-size:1rem}
+        .group-details,.student-rate{font-size:0.75rem;color:#a0aec0 !important;margin-top:5px}
+        .delete-btn{background:rgba(255,77,109,0.2);border:none;color:#ff4d6d;padding:8px 16px;border-radius:30px;cursor:pointer;font-weight:600}
+        .delete-btn:hover{background:#ff4d6d;color:white}
+        .edit-btn{background:rgba(78,205,196,0.2);border:none;color:#4ecdc4;padding:8px 16px;border-radius:30px;cursor:pointer;font-weight:600;margin-right:8px}
+        .edit-btn:hover{background:#4ecdc4;color:#0a0e27}
         .stats-bar{display:flex;gap:20px;margin-bottom:20px;padding:15px;background:rgba(0,208,156,0.05);border-radius:12px}
         .stat{text-align:center;flex:1}
         .stat-number{font-size:1.5rem;font-weight:700;color:#00d09c}
+        .stat-label{color:#8892b0}
         .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center}
         .modal-content{background:#141832;border-radius:20px;padding:25px;width:90%;max-width:500px}
-        .calendar-container{background:#141832;border-radius:20px;padding:20px;margin-top:15px}
-        .calendar-header-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+        body.light .modal-content{background:white}
+        .calendar-container{background:#141832;border-radius:20px;padding:20px;border:1px solid #1e2342;margin-top:15px}
+        body.light .calendar-container{background:white}
+        .calendar-header-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
         .calendar-title{font-size:1.5rem;font-weight:700;color:white}
-        .calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}
+        body.light .calendar-title{color:#1a1a2e}
+        .calendar-nav-btn{background:#1e2342;border:none;padding:8px 16px;border-radius:30px;cursor:pointer;color:white}
+        body.light .calendar-nav-btn{background:#e2e8f0;color:#1a1a2e}
+        .calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:10px}
         .calendar-weekday{padding:10px;font-weight:600;color:#8892b0}
         .calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-        .calendar-day{min-height:100px;background:#1a2040;border-radius:12px;padding:8px;border:1px solid #1e2342;cursor:pointer;overflow-y:auto}
-        .calendar-day.empty{background:transparent;border:1px dashed #1e2342;cursor:default}
+        .calendar-day{min-height:100px;background:#1a2040;border-radius:12px;padding:8px;border:1px solid #2d3750;cursor:pointer;overflow-y:auto;color:#e2e8f0}
+        body.light .calendar-day{background:#f8fafc;border-color:#e2e8f0;color:#1a1a2e}
+        .calendar-day.empty{background:transparent;border:1px dashed #2d3750;cursor:default}
         .day-number{font-weight:600;margin-bottom:8px;color:#8892b0}
-        .calendar-lesson{background:rgba(0,208,156,0.15);border-left:3px solid #00d09c;padding:4px 6px;margin-bottom:4px;border-radius:6px;font-size:0.7rem}
-        .lesson-time{color:#00d09c;font-weight:600}
+        .calendar-lesson{background:rgba(0,208,156,0.15);border-left:3px solid #00d09c;padding:4px 6px;margin-bottom:4px;border-radius:6px;font-size:0.7rem;color:white !important}
+        body.light .calendar-lesson{color:#1a1a2e !important}
+        .lesson-time{color:#00d09c !important;font-weight:600}
         .copy-btn{background:transparent;border:none;color:#00d09c;cursor:pointer;font-size:12px;padding:0 5px}
         .invoice-container,.analysis-container{background:white;color:#1a1a2e;padding:30px;border-radius:20px;overflow-x:auto}
         .invoice-table{width:100%;border-collapse:collapse}
         .invoice-table th,.invoice-table td{border:1px solid #ddd;padding:8px;text-align:left}
-        .invoice-table th{background:#f5f5f5}
+        .invoice-table th{background:#f5f5f5;font-weight:600}
         .invoice-total{text-align:right;margin-top:15px;padding-top:10px;border-top:2px solid #00d09c}
-        .payment-status-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.75rem}
-        .status-paid{background:rgba(0,208,156,0.2);color:#00d09c}
-        .status-unpaid{background:rgba(255,77,109,0.2);color:#ff4d6d}
+        .payment-status-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600}
+        .status-paid{background:rgba(0,208,156,0.2);color:#00d09c !important}
+        .status-unpaid{background:rgba(255,77,109,0.2);color:#ff4d6d !important}
         .storage-status{background:#1a2040;border-radius:12px;padding:10px 15px;margin-bottom:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
-        .storage-status.saved{background:rgba(0,208,156,0.2);border-left:4px solid #00d09c}
-        .calendar-export-bar{display:flex;gap:10px;margin-top:15px;padding-top:15px;border-top:1px solid #1e2342;flex-wrap:wrap}
-        .success-box{background:rgba(0,208,156,0.1);border-left:4px solid #00d09c;padding:15px;border-radius:12px;margin:15px 0}
-        #groupPaymentInfo{display:none}
+        .storage-status.saved{background:rgba(0,208,156,0.2);border-left:4px solid #00d09c;color:white}
+        body.light .storage-status{background:#e2e8f0}
+        body.light .storage-status.saved{background:rgba(0,208,156,0.2)}
+        .calendar-export-bar{display:flex;gap:10px;margin-top:15px;padding-top:15px;border-top:1px solid #2d3750;flex-wrap:wrap}
+        .success-box{background:rgba(0,208,156,0.1);border-left:4px solid #00d09c;padding:15px;border-radius:12px;margin:15px 0;color:#e2e8f0}
+        body.light .success-box{color:#1a1a2e}
+        .backup-info{background:rgba(0,208,156,0.1);border-radius:12px;padding:15px;margin-bottom:20px;color:#e2e8f0}
+        body.light .backup-info{color:#1a1a2e}
+        .instructions{background:#1a2040;border-radius:20px;padding:25px;margin-top:25px}
+        body.light .instructions{background:#e2e8f0}
+        .instructions h3{color:#00d09c;margin-bottom:15px}
+        #groupPaymentInfo{display:none;color:#e2e8f0;background:rgba(0,208,156,0.1);padding:10px;border-radius:12px;margin-top:15px}
+        body.light #groupPaymentInfo{color:#1a1a2e}
+        .auto-load-status{background:rgba(0,208,156,0.15);border-radius:12px;padding:8px 12px;margin-bottom:15px;font-size:0.8rem;text-align:center;color:#e2e8f0}
+        body.light .auto-load-status{color:#1a1a2e}
+        .lesson-item{background:#1a2040;padding:10px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid #2d3750}
+        body.light .lesson-item{background:#f8fafc;border-color:#e2e8f0}
         @media(max-width:768px){.calendar-day{min-height:60px}}
     </style>
 </head>
 <body>
 <div class="dashboard">
 <div class="header">
-<div class="title-section"><h1>📚 Tuition Manager</h1><p>Auto-Save | Works on All Devices</p></div>
+<div class="title-section"><h1>📚 Tuition Manager</h1><p>Auto-Load + Auto-Save | Works on All Devices</p></div>
 <div class="controls"><button id="themeBtn">🌓 Dark/Light</button><button id="resetBtn" style="background:linear-gradient(135deg,#ff4d6d,#c9184a);color:white">🗑️ Reset</button></div>
 </div>
-<div id="storageStatus" class="storage-status saved"><span>📁 <span id="storageStatusText">No file open</span></span><div><button id="newFileBtn" class="btn-primary">➕ New</button><button id="openFileBtn" class="btn-primary">📂 Open File</button><button id="saveAsBtn" class="btn-backup">💾 Save As</button></div></div>
-<div class="mode-selector"><div class="mode-btn active" data-mode="groups">👥 Family</div><div class="mode-btn" data-mode="students">👨‍🎓 Students</div><div class="mode-btn" data-mode="lessons">📅 Calendar</div><div class="mode-btn" data-mode="payment">💰 Payment</div><div class="mode-btn" data-mode="analysis">📊 Analysis</div><div class="mode-btn" data-mode="invoice">🧾 Invoice</div><div class="mode-btn" data-mode="backup">💾 Backup</div></div>
-<div id="groupsView"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Family</div><div id="groupFormMessage"></div><input type="text" id="groupName" placeholder="Family Name"><button id="addGroupBtn" class="btn-primary" style="width:100%;margin-top:10px">Create Family</button></div><div class="card"><div class="card-title">👥 All Families</div><div id="groupList"></div></div></div></div>
-<div id="studentsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage"></div><input type="text" id="studentName" placeholder="Student Name"><select id="studentGroup"></select><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)"><button id="addStudentBtn" class="btn-primary" style="width:100%;margin-top:10px">Add Student</button></div><div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList"></div></div></div></div>
+
+<div id="autoLoadStatus" class="auto-load-status">
+<span id="autoLoadMessage">🔄 Loading your data...</span>
+</div>
+
+<div id="storageStatus" class="storage-status saved">
+<span>📁 <span id="storageStatusText">Ready</span></span>
+<div>
+<button id="newFileBtn" class="btn-primary">➕ New</button>
+<button id="saveToDeviceBtn" class="btn-backup">💾 Save to Device</button>
+<button id="manualOpenBtn" class="btn-primary">📂 Manual Open</button>
+</div>
+</div>
+
+<div class="mode-selector">
+<div class="mode-btn active" data-mode="groups">👥 Family</div>
+<div class="mode-btn" data-mode="students">👨‍🎓 Students</div>
+<div class="mode-btn" data-mode="lessons">📅 Calendar</div>
+<div class="mode-btn" data-mode="payment">💰 Payment</div>
+<div class="mode-btn" data-mode="analysis">📊 Analysis</div>
+<div class="mode-btn" data-mode="invoice">🧾 Invoice</div>
+<div class="mode-btn" data-mode="backup">💾 Backup</div>
+</div>
+
+<div id="groupsView"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Family</div><div id="groupFormMessage"></div><input type="text" id="groupName" placeholder="Family Name"><button id="addGroupBtn" class="btn-primary" style="width:100%;margin-top:10px">Create Family</button></div><div class="card"><div class="card-title">👥 All Families</div><div id="groupList" class="group-list"></div></div></div></div>
+<div id="studentsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">📝 Add Student</div><div id="studentFormMessage"></div><input type="text" id="studentName" placeholder="Student Name"><select id="studentGroup"></select><select id="rateType"><option value="hourly">💰 Per Hour</option><option value="session">📚 Per Session</option></select><input type="number" id="rateAmount" placeholder="Amount ($)"><button id="addStudentBtn" class="btn-primary" style="width:100%;margin-top:10px">Add Student</button></div><div class="card"><div class="card-title">👨‍🎓 Student List</div><div id="studentList" class="student-list"></div></div></div></div>
 <div id="lessonsView" style="display:none"><div class="grid-2cols"><div class="card"><div class="card-title">➕ Add Lesson</div><div id="lessonFormMessage"></div><select id="lessonStudent"></select><input type="datetime-local" id="lessonStart"><input type="datetime-local" id="lessonEnd"><input type="text" id="lessonTopic" placeholder="Topic"><textarea id="lessonNotes" rows="2" placeholder="Notes"></textarea><button id="addLessonBtn" class="btn-primary" style="width:100%;margin-top:10px">Add Lesson</button></div><div class="card"><div class="card-title">📅 Calendar</div><div class="stats-bar"><div class="stat"><div class="stat-number" id="totalLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-number" id="totalEarnings">$0</div><div class="stat-label">Earnings</div></div></div><div id="calendarViewContainer"></div><div class="calendar-export-bar"><button id="exportToAppleCalendarBtn" class="btn-calendar">📅 Export to Calendar</button><button id="exportToGoogleCalendarBtn" class="btn-calendar">🌐 Google Calendar</button><button id="exportAllToICSBtn" class="btn-backup">📁 Export All (.ics)</button></div></div></div></div>
 <div id="paymentView" style="display:none"><div class="card"><div class="card-title">💰 Payment Status</div><div id="paymentFormMessage"></div><select id="paymentGroupFilter"></select><select id="groupPaymentStatus"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select><button id="updatePaymentBtn" class="btn-primary">Update Status</button><div id="groupPaymentInfo"><strong>Total Lessons: <span id="groupTotalLessons">0</span></strong> | <strong>Total: <span id="groupTotalAmount">$0</span></strong></div><div id="groupPaymentList"></div></div></div>
 <div id="analysisView" style="display:none"><div class="card"><div class="card-title">📊 Analysis Report</div><div id="analysisFormMessage"></div><input type="date" id="analysisFromDate"><input type="date" id="analysisToDate"><div class="button-group"><button id="generateAnalysisBtn" class="btn-primary">Generate Report</button><button id="shareAnalysisBtn" class="btn-share" style="display:none">Share Report</button></div><div id="analysisPreview" style="display:none"></div></div></div>
 <div id="invoiceView" style="display:none"><div class="card"><div class="card-title">🧾 Invoice</div><div id="invoiceFormMessage"></div><select id="invoiceGroup"></select><input type="date" id="invoiceFromDate"><input type="date" id="invoiceToDate"><div class="button-group"><button id="generateInvoiceBtn" class="btn-primary">Generate Invoice</button><button id="shareInvoiceBtn" class="btn-share" style="display:none">Share Invoice</button></div><div id="invoicePreview" style="display:none"></div></div></div>
-<div id="backupView" style="display:none"><div class="card"><div class="card-title">💾 Backup</div><div id="backupFormMessage"></div><div class="backup-info"><strong>Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div><div class="success-box"><strong>✅ AUTO-SAVE ENABLED!</strong><br>1. Click "Open File" to load your data<br>2. Make changes - they save automatically<br>3. Click "Save As" first time to create a file</div></div></div>
+<div id="backupView" style="display:none"><div class="card"><div class="card-title">💾 Backup</div><div id="backupFormMessage"></div><div class="backup-info"><strong>Summary:</strong><br>Families: <span id="backupGroupCount">0</span><br>Students: <span id="backupStudentCount">0</span><br>Lessons: <span id="backupLessonCount">0</span></div><div class="success-box"><strong>✅ AUTO-LOAD ENABLED!</strong><br>• Your data automatically loads when you open the app<br>• No need to click "Open File" every time<br>• Click "Save to Device" once to save to iCloud Drive</div></div></div>
 <div class="status-text">Last updated: <span id="timestamp">--</span></div>
 </div>
 
@@ -93,7 +150,6 @@
 let groups=[], students=[], lessons=[];
 let currentCalendarYear=new Date().getFullYear(), currentCalendarMonth=new Date().getMonth();
 let copiedTransaction=null, currentAnalysisContainer=null;
-let currentFileName=null;
 
 function escapeHtml(s){if(!s)return '';return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}
 function formatTime(d){let t=new Date(d.replace(' ','T'));return t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
@@ -104,49 +160,52 @@ function toggleTheme(){document.body.classList.toggle('light')}
 function getDateTimeLocal(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function formatDateDM(d){if(!d)return '';let t=new Date(d);return String(t.getDate()).padStart(2,'0')+'/'+String(t.getMonth()+1).padStart(2,'0')+'/'+t.getFullYear()}
 
-// Save to localStorage (backup)
-function saveToLocalStorage(){localStorage.setItem('tuition_groups',JSON.stringify(groups));localStorage.setItem('tuition_students',JSON.stringify(students));localStorage.setItem('tuition_lessons',JSON.stringify(lessons));}
+// Auto-save to localStorage
+function autoSaveLocal(){
+    localStorage.setItem('tuition_groups',JSON.stringify(groups));
+    localStorage.setItem('tuition_students',JSON.stringify(students));
+    localStorage.setItem('tuition_lessons',JSON.stringify(lessons));
+    localStorage.setItem('tuition_lastFileData',JSON.stringify({groups,students,lessons,lastSaved:new Date().toISOString()}));
+    document.getElementById('storageStatusText').innerHTML='Auto-saved ✓';
+    setTimeout(()=>{if(document.getElementById('storageStatusText').innerHTML==='Auto-saved ✓')document.getElementById('storageStatusText').innerHTML='Ready';},1500);
+}
 
-// AUTO-SAVE FUNCTION
-function autoSaveToFile(){
-    if(!currentFileName) return;
+// Save to device
+function saveToDevice(){
     let data={groups,students,lessons,version:'2.0',lastSaved:new Date().toISOString()};
     let jsonStr=JSON.stringify(data,null,2);
     let blob=new Blob([jsonStr],{type:'application/json'});
     let url=URL.createObjectURL(blob);
     let a=document.createElement('a');
     a.href=url;
-    a.download=currentFileName;
+    a.download='tuition_data_'+new Date().toISOString().split('T')[0]+'.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    document.getElementById('storageStatusText').innerHTML=currentFileName+' ✓';
-    setTimeout(()=>{if(document.getElementById('storageStatusText').innerHTML===currentFileName+' ✓'){document.getElementById('storageStatusText').innerHTML=currentFileName}},1500);
-}
-function markChanged(){saveToLocalStorage();if(currentFileName)autoSaveToFile();}
-
-// Save As (first time or manual save)
-function saveAsFile(){
-    let data={groups,students,lessons,version:'2.0',lastSaved:new Date().toISOString()};
-    let jsonStr=JSON.stringify(data,null,2);
-    let blob=new Blob([jsonStr],{type:'application/json'});
-    let url=URL.createObjectURL(blob);
-    let a=document.createElement('a');
-    let suggestedName='tuition_data_'+new Date().toISOString().split('T')[0]+'.json';
-    a.href=url;
-    a.download=suggestedName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    currentFileName=suggestedName;
-    document.getElementById('storageStatusText').innerHTML=currentFileName+' ✓';
-    showMessage('File saved! Auto-save enabled.','success','backupFormMessage');
+    localStorage.setItem('tuition_backup_data',jsonStr);
+    showMessage('File saved to Downloads!','success','backupFormMessage');
 }
 
-// Open file
-function openFile(){
+// Load data from localStorage
+function loadDataFromStorage(){
+    let savedGroups=localStorage.getItem('tuition_groups');
+    let savedStudents=localStorage.getItem('tuition_students');
+    let savedLessons=localStorage.getItem('tuition_lessons');
+    
+    if(savedGroups && savedStudents && savedLessons){
+        groups=JSON.parse(savedGroups);
+        students=JSON.parse(savedStudents);
+        lessons=JSON.parse(savedLessons);
+        document.getElementById('autoLoadMessage').innerHTML='✅ Auto-loaded: '+groups.length+' families, '+students.length+' students, '+lessons.length+' lessons';
+        setTimeout(()=>{document.getElementById('autoLoadMessage').innerHTML='📁 Ready - Your data is loaded';},3000);
+        return true;
+    }
+    document.getElementById('autoLoadMessage').innerHTML='📁 No saved data found. Start adding data!';
+    return false;
+}
+
+function manualOpenFile(){
     let input=document.createElement('input');
     input.type='file';
     input.accept='.json';
@@ -160,11 +219,11 @@ function openFile(){
                 if(data.groups)groups=data.groups;
                 if(data.students)students=data.students;
                 if(data.lessons)lessons=data.lessons;
-                currentFileName=file.name;
-                document.getElementById('storageStatusText').innerHTML=currentFileName+' ✓';
-                saveToLocalStorage();
+                autoSaveLocal();
                 renderAll();
-                showMessage('Loaded '+file.name+' - Auto-save enabled!','success','backupFormMessage');
+                showMessage('Loaded '+file.name,'success','backupFormMessage');
+                document.getElementById('autoLoadMessage').innerHTML='✅ Loaded: '+file.name;
+                setTimeout(()=>{document.getElementById('autoLoadMessage').innerHTML='📁 Ready';},3000);
             }catch(err){showMessage('Error: '+err.message,'error','backupFormMessage')}
         };
         reader.readAsText(file);
@@ -177,24 +236,24 @@ function newFile(){
         if(!confirm('Create new file? Current data will be lost if not saved.'))return;
     }
     groups=[];students=[];lessons=[];
-    currentFileName=null;
-    document.getElementById('storageStatusText').innerHTML='No file open';
+    autoSaveLocal();
     renderAll();
-    showMessage('New file created. Use "Save As" to save.','success','backupFormMessage');
+    showMessage('New file created.','success','backupFormMessage');
 }
-function resetAllData(){if(confirm('Delete ALL data?')){groups=[];students=[];lessons=[];if(currentFileName)autoSaveToFile();renderAll();showMessage('All data cleared.','success','groupFormMessage')}}
+
+function resetAllData(){if(confirm('Delete ALL data?')){groups=[];students=[];lessons=[];autoSaveLocal();renderAll();showMessage('All data cleared.','success','groupFormMessage')}}
 
 // Groups
 function addGroup(){
     let name=document.getElementById('groupName').value.trim();
     if(!name){showMessage('Enter family name','error','groupFormMessage');return}
     groups.push({id:Date.now().toString(),name:name,paymentStatus:'unpaid'});
-    markChanged();
+    autoSaveLocal();
     renderGroups();
     updateSelectors();
     document.getElementById('groupName').value='';
     updateBackupStats();
-    showMessage('Family added! Auto-saving...','success','groupFormMessage');
+    showMessage('Family added!','success','groupFormMessage');
 }
 function renderGroups(){
     let c=document.getElementById('groupList');
@@ -206,14 +265,14 @@ function renderGroups(){
         let total=lessons.filter(l=>l.groupId===g.id).reduce((s,l)=>s+l.earnings,0);
         let cls=g.paymentStatus==='paid'?'status-paid':'status-unpaid';
         let txt=g.paymentStatus==='paid'?'Paid':'Unpaid';
-        return '<div class="group-item"><div><div class="group-name">'+escapeHtml(g.name)+'</div><div class="group-details">Students: '+sc+' | Lessons: '+lc+' | $'+total.toFixed(2)+'</div><div><span class="payment-status-badge '+cls+'">'+txt+'</span></div></div><div><button class="edit-btn" data-id="'+g.id+'">Edit</button><button class="delete-btn" data-id="'+g.id+'">Delete</button></div></div>';
+        return '<div class="group-item"><div><div class="group-name">'+escapeHtml(g.name)+'</div><div class="group-details">👨‍🎓 '+sc+' students | 📚 '+lc+' lessons | 💰 $'+total.toFixed(2)+'</div><div><span class="payment-status-badge '+cls+'">'+txt+'</span></div></div><div><button class="edit-btn" data-id="'+g.id+'">✏️ Edit</button><button class="delete-btn" data-id="'+g.id+'">🗑️ Delete</button></div></div>';
     }).join('');
     document.querySelectorAll('#groupList .edit-btn').forEach(btn=>btn.onclick=()=>openEditGroup(btn.dataset.id));
     document.querySelectorAll('#groupList .delete-btn').forEach(btn=>btn.onclick=()=>deleteGroup(btn.dataset.id));
 }
-function deleteGroup(id){groups=groups.filter(g=>g.id!==id);markChanged();renderGroups();updateSelectors();updateBackupStats();showMessage('Family deleted, auto-saving...','success','groupFormMessage')}
+function deleteGroup(id){groups=groups.filter(g=>g.id!==id);autoSaveLocal();renderGroups();updateSelectors();updateBackupStats();showMessage('Family deleted','success','groupFormMessage')}
 function openEditGroup(id){let g=groups.find(g=>g.id===id);if(!g)return;document.getElementById('editGroupId').value=g.id;document.getElementById('editGroupName').value=g.name;document.getElementById('editGroupPaymentStatus').value=g.paymentStatus||'unpaid';document.getElementById('groupModal').style.display='flex'}
-function saveGroupEdit(){let id=document.getElementById('editGroupId').value;let idx=groups.findIndex(g=>g.id===id);if(idx!==-1){groups[idx].name=document.getElementById('editGroupName').value.trim();groups[idx].paymentStatus=document.getElementById('editGroupPaymentStatus').value;markChanged();renderGroups();updateSelectors();closeGroupModal();updateBackupStats();showMessage('Family updated, auto-saving...','success','groupFormMessage')}}
+function saveGroupEdit(){let id=document.getElementById('editGroupId').value;let idx=groups.findIndex(g=>g.id===id);if(idx!==-1){groups[idx].name=document.getElementById('editGroupName').value.trim();groups[idx].paymentStatus=document.getElementById('editGroupPaymentStatus').value;autoSaveLocal();renderGroups();updateSelectors();closeGroupModal();updateBackupStats();showMessage('Family updated','success','groupFormMessage')}}
 function closeGroupModal(){document.getElementById('groupModal').style.display='none'}
 
 // Students
@@ -224,13 +283,13 @@ function addStudent(){
     let amt=parseFloat(document.getElementById('rateAmount').value);
     if(!name||!gid||isNaN(amt)||amt<=0){showMessage('Enter valid info','error','studentFormMessage');return}
     students.push({id:Date.now().toString(),name:name,groupId:gid,rateType:rt,rateAmount:amt});
-    markChanged();
+    autoSaveLocal();
     renderStudents();
     updateSelectors();
     document.getElementById('studentName').value='';
     document.getElementById('rateAmount').value='';
     updateBackupStats();
-    showMessage('Student added! Auto-saving...','success','studentFormMessage');
+    showMessage('Student added!','success','studentFormMessage');
 }
 function renderStudents(){
     let c=document.getElementById('studentList');
@@ -239,14 +298,14 @@ function renderStudents(){
     c.innerHTML=students.map(s=>{
         let g=groups.find(g=>g.id===s.groupId);
         let rate=s.rateType==='hourly'?'$'+s.rateAmount+'/hour':'$'+s.rateAmount+'/session';
-        return '<div class="student-item"><div><div class="student-name">'+escapeHtml(s.name)+'</div><div class="student-rate">Family: '+(g?.name||'No Family')+' | Rate: '+rate+'</div><div class="student-rate">Lessons: '+lessons.filter(l=>l.studentId===s.id).length+'</div></div><div><button class="edit-btn" data-id="'+s.id+'">Edit</button><button class="delete-btn" data-id="'+s.id+'">Delete</button></div></div>';
+        return '<div class="student-item"><div><div class="student-name">'+escapeHtml(s.name)+'</div><div class="student-rate">👥 '+(g?.name||'No Family')+' | 💰 '+rate+'</div><div class="student-rate">📚 '+lessons.filter(l=>l.studentId===s.id).length+' lessons</div></div><div><button class="edit-btn" data-id="'+s.id+'">✏️ Edit</button><button class="delete-btn" data-id="'+s.id+'">🗑️ Delete</button></div></div>';
     }).join('');
     document.querySelectorAll('#studentList .edit-btn').forEach(btn=>btn.onclick=()=>openEditStudent(btn.dataset.id));
     document.querySelectorAll('#studentList .delete-btn').forEach(btn=>btn.onclick=()=>deleteStudent(btn.dataset.id));
 }
-function deleteStudent(id){students=students.filter(s=>s.id!==id);lessons=lessons.filter(l=>l.studentId!==id);markChanged();renderStudents();renderCalendar();updateSelectors();updateLessonStats();updateBackupStats();showMessage('Student deleted, auto-saving...','success','studentFormMessage')}
+function deleteStudent(id){students=students.filter(s=>s.id!==id);lessons=lessons.filter(l=>l.studentId!==id);autoSaveLocal();renderStudents();renderCalendar();updateSelectors();updateLessonStats();updateBackupStats();showMessage('Student deleted','success','studentFormMessage')}
 function openEditStudent(id){let s=students.find(s=>s.id===id);if(!s)return;document.getElementById('editStudentId').value=s.id;document.getElementById('editStudentName').value=s.name;document.getElementById('editRateType').value=s.rateType;document.getElementById('editRateAmount').value=s.rateAmount;let sel=document.getElementById('editStudentGroup');sel.innerHTML='<option value="">-- Select Family --</option>';groups.forEach(g=>{sel.innerHTML+='<option value="'+g.id+'" '+(g.id===s.groupId?'selected':'')+'>'+g.name+'</option>'});document.getElementById('studentModal').style.display='flex'}
-function saveStudentEdit(){let id=document.getElementById('editStudentId').value;let idx=students.findIndex(s=>s.id===id);if(idx!==-1){students[idx].name=document.getElementById('editStudentName').value.trim();students[idx].groupId=document.getElementById('editStudentGroup').value;students[idx].rateType=document.getElementById('editRateType').value;students[idx].rateAmount=parseFloat(document.getElementById('editRateAmount').value);markChanged();renderStudents();updateSelectors();closeStudentModal();updateBackupStats();showMessage('Student updated, auto-saving...','success','studentFormMessage')}}
+function saveStudentEdit(){let id=document.getElementById('editStudentId').value;let idx=students.findIndex(s=>s.id===id);if(idx!==-1){students[idx].name=document.getElementById('editStudentName').value.trim();students[idx].groupId=document.getElementById('editStudentGroup').value;students[idx].rateType=document.getElementById('editRateType').value;students[idx].rateAmount=parseFloat(document.getElementById('editRateAmount').value);autoSaveLocal();renderStudents();updateSelectors();closeStudentModal();updateBackupStats();showMessage('Student updated','success','studentFormMessage')}}
 function closeStudentModal(){document.getElementById('studentModal').style.display='none'}
 
 // Lessons
@@ -266,13 +325,13 @@ function addLesson(){
     let hours=(endLocal-startLocal)/3600000;
     let earnings=calculateEarnings(student,startStr,endStr);
     lessons.push({id:Date.now().toString(),studentId:sid,studentName:student.name,groupId:student.groupId,start:startStr,end:endStr,topic:topic,notes:notes,earnings:earnings,hours:hours});
-    markChanged();
+    autoSaveLocal();
     renderCalendar();
     updateLessonStats();
     updateBackupStats();
     document.getElementById('lessonTopic').value='';
     document.getElementById('lessonNotes').value='';
-    showMessage('Lesson added! Auto-saving...','success','lessonFormMessage');
+    showMessage('Lesson added!','success','lessonFormMessage');
 }
 function updateSelectors(){
     ['studentGroup','editStudentGroup','paymentGroupFilter','invoiceGroup'].forEach(id=>{
@@ -316,16 +375,11 @@ function renderCalendar(){
     let html='<div class="calendar-container"><div class="calendar-header-nav"><button class="calendar-nav-btn" data-delta="-1">◀ Prev</button><div class="calendar-title">'+months[currentCalendarMonth]+' '+currentCalendarYear+'</div><button class="calendar-nav-btn" data-delta="1">Next ▶</button></div><div class="calendar-weekdays"><div class="calendar-weekday">Sun</div><div class="calendar-weekday">Mon</div><div class="calendar-weekday">Tue</div><div class="calendar-weekday">Wed</div><div class="calendar-weekday">Thu</div><div class="calendar-weekday">Fri</div><div class="calendar-weekday">Sat</div></div><div class="calendar-days">';
     for(let i=0;i<startDay;i++)html+='<div class="calendar-day empty"></div>';
     for(let day=1;day<=daysInMonth;day++){
-        let dayLessons=[];
-        for(let l of lessons){
-            if(!l.start)continue;
-            let d=new Date(l.start.replace(' ','T'));
-            if(d.getFullYear()===currentCalendarYear&&d.getMonth()===currentCalendarMonth&&d.getDate()===day)dayLessons.push(l);
-        }
+        let dayLessons=lessons.filter(l=>{if(!l.start)return false;let d=new Date(l.start.replace(' ','T'));return d.getFullYear()===currentCalendarYear&&d.getMonth()===currentCalendarMonth&&d.getDate()===day});
         dayLessons.sort((a,b)=>new Date(a.start.replace(' ','T'))-new Date(b.start.replace(' ','T')));
         html+='<div class="calendar-day" data-day="'+day+'"><div class="day-number">'+day+'</div>';
         for(let l of dayLessons){
-            html+='<div class="calendar-lesson" style="display:flex;justify-content:space-between;align-items:center;"><div style="flex:1;cursor:pointer" onclick="editLessonFull(\''+l.id+'\',event)"><span class="lesson-time">'+formatTime(l.start)+' - '+formatTime(l.end)+'</span> <span>'+escapeHtml(l.studentName)+'</span><div>$'+(l.earnings||0).toFixed(2)+'</div></div><div><button class="copy-btn" data-id="'+l.id+'" title="Copy">📋</button></div></div>';
+            html+='<div class="calendar-lesson" style="display:flex;justify-content:space-between;align-items:center;"><div style="flex:1;cursor:pointer" onclick="editLessonFull(\''+l.id+'\',event)"><span class="lesson-time">'+formatTime(l.start)+' - '+formatTime(l.end)+'</span> <span class="lesson-student">'+escapeHtml(l.studentName)+'</span><div style="font-size:0.6rem">💰 $'+(l.earnings||0).toFixed(2)+'</div></div><div><button class="copy-btn" data-id="'+l.id+'" title="Copy">📋</button><button class="edit-lesson-btn" onclick="editLessonFull(\''+l.id+'\',event)" style="background:rgba(78,205,196,0.2);border:none;color:#4ecdc4;cursor:pointer;font-size:10px;padding:2px 6px;border-radius:12px;margin-left:5px" title="Edit">✏️</button></div></div>';
         }
         html+='</div>';
     }
@@ -343,7 +397,7 @@ function copyTransaction(id){
     let sd=new Date(t.start.replace(' ','T')),ed=new Date(t.end.replace(' ','T'));
     copiedTransaction={studentId:t.studentId,studentName:t.studentName,groupId:t.groupId,earnings:t.earnings,hours:t.hours,topic:t.topic,notes:t.notes,startHour:sd.getHours(),startMinute:sd.getMinutes(),endHour:ed.getHours(),endMinute:ed.getMinutes()};
     document.querySelectorAll('.calendar-day:not(.empty)').forEach(day=>{day.style.border='2px solid #00d09c';day.style.cursor='copy';day.style.backgroundColor='rgba(0,208,156,0.1)';day.onclick=()=>pasteToDate(day)});
-    showMessage('Copied "'+t.studentName+'". Click a date to paste.','success','lessonFormMessage');
+    showMessage('📋 Copied "'+t.studentName+'" - Click a date to paste','success','lessonFormMessage');
 }
 function pasteToDate(dayEl){
     if(!copiedTransaction)return;
@@ -357,11 +411,11 @@ function pasteToDate(dayEl){
     let endStr=newEnd.getFullYear()+'-'+String(newEnd.getMonth()+1).padStart(2,'0')+'-'+String(newEnd.getDate()).padStart(2,'0')+'T'+String(newEnd.getHours()).padStart(2,'0')+':'+String(newEnd.getMinutes()).padStart(2,'0');
     let newLesson={id:Date.now().toString(),studentId:copiedTransaction.studentId,studentName:copiedTransaction.studentName,groupId:copiedTransaction.groupId,start:startStr.replace('T',' ')+':00',end:endStr.replace('T',' ')+':00',topic:copiedTransaction.topic||'',notes:copiedTransaction.notes||'',earnings:copiedTransaction.earnings,hours:copiedTransaction.hours};
     lessons.push(newLesson);
-    markChanged();
+    autoSaveLocal();
     renderCalendar();
     updateLessonStats();
     updateBackupStats();
-    showMessage('Pasted to '+day+'/'+(month+1)+'/'+year,'success','lessonFormMessage');
+    showMessage('✅ Pasted to '+day+'/'+(month+1)+'/'+year,'success','lessonFormMessage');
     document.querySelectorAll('.calendar-day:not(.empty)').forEach(day=>{day.style.border='';day.style.cursor='';day.style.backgroundColor='';day.onclick=null});
     copiedTransaction=null;
 }
@@ -395,14 +449,14 @@ function saveLessonEdit(id){
     l.studentId=sid;l.studentName=s.name;l.groupId=s.groupId;
     l.start=start.replace('T',' ')+':00';l.end=end.replace('T',' ')+':00';
     l.topic=topic;l.notes=notes;l.hours=hours;l.earnings=earnings;
-    markChanged();
+    autoSaveLocal();
     renderCalendar();
     updateLessonStats();
     updateBackupStats();
     closeEditLessonModal();
-    showMessage('Lesson updated, auto-saving...','success','lessonFormMessage');
+    showMessage('Lesson updated!','success','lessonFormMessage');
 }
-function deleteLessonFromEdit(id){if(confirm('Delete lesson?')){lessons=lessons.filter(l=>l.id!==id);markChanged();renderCalendar();updateLessonStats();updateBackupStats();closeEditLessonModal();showMessage('Deleted, auto-saving...','success','lessonFormMessage')}}
+function deleteLessonFromEdit(id){if(confirm('Delete lesson?')){lessons=lessons.filter(l=>l.id!==id);autoSaveLocal();renderCalendar();updateLessonStats();updateBackupStats();closeEditLessonModal();showMessage('Deleted','success','lessonFormMessage')}}
 function closeEditLessonModal(){let m=document.getElementById('editLessonModal');if(m)m.remove();}
 
 // Payment
@@ -413,21 +467,19 @@ function renderGroupPayment(){
     if(!g)return;
     document.getElementById('groupPaymentStatus').value=g.paymentStatus||'unpaid';
     let gl=lessons.filter(l=>l.groupId===gid);
-    let total=0;
-    for(let l of gl)total+=l.earnings;
+    let total=gl.reduce((s,l)=>s+l.earnings,0);
     document.getElementById('groupTotalLessons').innerHTML=gl.length;
     document.getElementById('groupTotalAmount').innerHTML='$'+total.toFixed(2);
     document.getElementById('groupPaymentInfo').style.display='flex';
-    let sorted=gl.slice().sort((a,b)=>new Date(b.start)-new Date(a.start));
     let html='';
-    for(let l of sorted){
-        html+='<div class="lesson-item" style="padding:10px;border-bottom:1px solid #1e2342;display:flex;justify-content:space-between"><div><strong>'+escapeHtml(l.studentName)+'</strong><br>'+formatDateDM(l.start.split(' ')[0])+' - $'+l.earnings.toFixed(2)+'</div><button class="delete-lesson-btn" data-id="'+l.id+'">Delete</button></div>';
+    for(let l of gl.slice().sort((a,b)=>new Date(b.start)-new Date(a.start))){
+        html+='<div class="lesson-item"><div><strong>'+escapeHtml(l.studentName)+'</strong><br>'+formatDateDM(l.start.split(' ')[0])+' - $'+l.earnings.toFixed(2)+'</div><button class="delete-btn" data-id="'+l.id+'" style="margin-left:10px">Delete</button></div>';
     }
     document.getElementById('groupPaymentList').innerHTML=html;
-    document.querySelectorAll('#groupPaymentList .delete-lesson-btn').forEach(btn=>btn.onclick=()=>deleteLesson(btn.dataset.id));
+    document.querySelectorAll('#groupPaymentList .delete-btn').forEach(btn=>btn.onclick=()=>deleteLesson(btn.dataset.id));
 }
-function updateGroupPaymentStatus(){let gid=document.getElementById('paymentGroupFilter').value;let ns=document.getElementById('groupPaymentStatus').value;if(!gid)return;let idx=groups.findIndex(g=>g.id===gid);if(idx!==-1){groups[idx].paymentStatus=ns;markChanged();renderGroups();renderGroupPayment();updateBackupStats();showMessage('Status updated, auto-saving...','success','paymentFormMessage')}}
-function deleteLesson(id){if(confirm('Delete lesson?')){lessons=lessons.filter(l=>l.id!==id);markChanged();renderCalendar();renderGroupPayment();updateLessonStats();updateBackupStats();showMessage('Deleted, auto-saving...','success','lessonFormMessage')}}
+function updateGroupPaymentStatus(){let gid=document.getElementById('paymentGroupFilter').value;let ns=document.getElementById('groupPaymentStatus').value;if(!gid)return;let idx=groups.findIndex(g=>g.id===gid);if(idx!==-1){groups[idx].paymentStatus=ns;autoSaveLocal();renderGroups();renderGroupPayment();updateBackupStats();showMessage('Status updated','success','paymentFormMessage')}}
+function deleteLesson(id){if(confirm('Delete lesson?')){lessons=lessons.filter(l=>l.id!==id);autoSaveLocal();renderCalendar();renderGroupPayment();updateLessonStats();updateBackupStats();showMessage('Deleted','success','lessonFormMessage')}}
 
 // Analysis
 function generateAnalysis(){
@@ -437,7 +489,7 @@ function generateAnalysis(){
     if(filtered.length===0){showMessage('No lessons','error','analysisFormMessage');return}
     let groupTotals={},total=0;
     for(let l of filtered){let g=groups.find(g=>g.id===l.groupId);let gn=g?g.name:'Unknown';groupTotals[gn]=(groupTotals[gn]||0)+l.earnings;total+=l.earnings}
-    let html='<div id="analysisContainer" class="analysis-container"><div class="analysis-header"><div class="analysis-title">FEE ANALYSIS REPORT</div><div class="analysis-dates">'+formatDateDM(from)+' - '+formatDateDM(to)+'</div></div><div style="background:rgba(0,208,156,0.1);border-radius:12px;padding:15px;text-align:center"><div style="font-size:2rem;font-weight:800;color:#00d09c">$'+total.toFixed(2)+'</div><div>Total Fees</div><div>Lessons: '+filtered.length+'</div></div><h3>By Family</h3><table class="invoice-table"><thead><tr><th>Family</th><th>Total</th><th>%</th></tr></thead><tbody>';
+    let html='<div id="analysisContainer" class="analysis-container"><div class="analysis-header"><div class="analysis-title">FEE ANALYSIS REPORT</div><div class="analysis-dates">'+formatDateDM(from)+' - '+formatDateDM(to)+'</div></div><div style="background:rgba(0,208,156,0.1);border-radius:12px;padding:15px;text-align:center"><div style="font-size:2rem;font-weight:800;color:#00d09c">$'+total.toFixed(2)+'</div><div>Total Fees</div><div>📊 '+filtered.length+' lessons</div></div><h3>By Family</h3><table class="invoice-table"><thead><tr><th>Family</th><th>Total</th><th>%</th></tr></thead><tbody>';
     let entries=Object.entries(groupTotals);
     entries.sort((a,b)=>b[1]-a[1]);
     for(let [gn,amt] of entries)html+='<tr><td>'+escapeHtml(gn)+'</td><td>$'+amt.toFixed(2)+'</td><td>'+(amt/total*100).toFixed(1)+'%</td></tr>';
@@ -459,9 +511,9 @@ function generateInvoice(){
     let filtered=lessons.filter(l=>l.start&&l.groupId===gid&&l.start.split(' ')[0]>=from&&l.start.split(' ')[0]<=to);
     if(filtered.length===0){showMessage('No lessons','error','invoiceFormMessage');return}
     filtered.sort((a,b)=>a.start.localeCompare(b.start));
-    let totalE=0,totalH=0;
-    for(let l of filtered){totalE+=l.earnings;totalH+=l.hours||1.5}
-    let html='<div id="invoiceContainer" class="invoice-container"><div class="invoice-header"><div class="invoice-title">TUITION INVOICE</div><div class="invoice-subtitle">Mr Lee Math Tuition</div><div class="invoice-dates">Family: '+escapeHtml(g.name)+'</div><div class="invoice-dates">Period: '+formatDateDM(from)+' to '+formatDateDM(to)+'</div></div><table class="invoice-table"><thead><tr><th>Date</th><th>Student</th><th>Time</th><th>Dur</th><th>Amount</th></tr></thead><tbody>';
+    let totalE=filtered.reduce((s,l)=>s+l.earnings,0);
+    let totalH=filtered.reduce((s,l)=>s+(l.hours||1.5),0);
+    let html='<div id="invoiceContainer" class="invoice-container"><div class="invoice-header"><div class="invoice-title">TUITION INVOICE</div><div class="invoice-subtitle">Mr Lee Math Tuition</div><div class="invoice-dates">Family: '+escapeHtml(g.name)+'</div><div class="invoice-dates">Period: '+formatDateDM(from)+' to '+formatDateDM(to)+'</div></div><table class="invoice-table"><thead><tr><th style="width:15%">Date</th><th style="width:25%">Student</th><th style="width:30%">Time</th><th style="width:10%">Dur</th><th style="width:20%">Amount</th></tr></thead><tbody>';
     for(let l of filtered){let ld=new Date(l.start.replace(' ','T')),ed=new Date(l.end.replace(' ','T'));let dur=((ed-ld)/3600000).toFixed(1);let date=String(ld.getDate()).padStart(2,'0')+'/'+String(ld.getMonth()+1).padStart(2,'0');let time=ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'-'+ed.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});html+='<tr><td>'+date+'</td><td>'+escapeHtml(l.studentName)+'</td><td>'+time+'</td><td>'+dur+'h</td><td>$'+l.earnings.toFixed(2)+'</td></tr>'}
     html+='</tbody></table><div class="invoice-total"><p><strong>Total Hours:</strong> '+totalH.toFixed(1)+' hrs</p><p><strong>Total Amount:</strong> $'+totalE.toFixed(2)+'</p></div><div style="margin-top:20px;font-size:0.7rem;text-align:center">Thank you!</div></div>';
     document.getElementById('invoicePreview').innerHTML=html;
@@ -526,15 +578,15 @@ function switchMode(mode){
 
 // Initialize
 function init(){
-    loadFromLocalStorage();
+    loadDataFromStorage();
     setDefaultDates();
     setupAutoEndTime();
     renderAll();
     document.getElementById('themeBtn').onclick=toggleTheme;
     document.getElementById('resetBtn').onclick=resetAllData;
     document.getElementById('newFileBtn').onclick=newFile;
-    document.getElementById('openFileBtn').onclick=openFile;
-    document.getElementById('saveAsBtn').onclick=saveAsFile;
+    document.getElementById('saveToDeviceBtn').onclick=saveToDevice;
+    document.getElementById('manualOpenBtn').onclick=manualOpenFile;
     document.getElementById('addGroupBtn').onclick=addGroup;
     document.getElementById('addStudentBtn').onclick=addStudent;
     document.getElementById('addLessonBtn').onclick=addLesson;
@@ -553,12 +605,6 @@ function init(){
     document.querySelectorAll('.mode-btn').forEach(btn=>btn.onclick=()=>switchMode(btn.dataset.mode));
     document.getElementById('paymentGroupFilter').onchange=renderGroupPayment;
     setInterval(updateTimestamp,1000);
-}
-function loadFromLocalStorage(){
-    let g=localStorage.getItem('tuition_groups');if(g)groups=JSON.parse(g);
-    let s=localStorage.getItem('tuition_students');if(s)students=JSON.parse(s);
-    let l=localStorage.getItem('tuition_lessons');if(l)lessons=JSON.parse(l);
-    updateBackupStats();
 }
 init();
 </script>
